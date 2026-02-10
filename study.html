@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internet Speed Test - Test Your Connection</title>
+    <meta name="description" content="Free internet speed test with detailed interpretation. Check your download, upload, ping, and jitter with consumer-friendly explanations.">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/icons/favicon-16x16.png">
+    <link rel="stylesheet" href="assets/css/index.css">
+    <style>
+        body { display: flex; flex-direction: column; align-items: stretch; padding-left: 0; padding-right: 0; }
+        .container { width: 100%; }
+        .footer { width: 100%; margin-top: 60px; border-top: 1px solid var(--border); background: var(--nav-bg); }
+        .footer-container { max-width: 900px; margin: 0 auto; padding: 30px 20px 20px; }
+        .footer-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        .footer-section h3 { color: var(--text); font-size: 1rem; margin-bottom: 12px; }
+        .footer-list, .footer-links { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; color: var(--text-muted); font-size: 0.95rem; }
+        .footer-list a, .footer-links a { color: var(--accent); text-decoration: none; }
+        .footer-list a:hover, .footer-links a:hover { text-decoration: underline; }
+        .footer-bottom { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--text-soft); font-size: 0.85rem; text-align: center; }
+        @media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr; } }
+        
+        /* Large Screen Improvements */
+        @media (min-width: 1920px) {
+            .footer-container { max-width: 1800px; padding: 60px 60px 40px; }
+            .footer-grid { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+            .footer-section h3 { font-size: 1.2rem; }
+            .footer-list, .footer-links { font-size: 1.05rem; }
+        }
+        
+        @media (min-width: 2560px) {
+            .footer-container { max-width: 2800px; }
+            body { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Hamburger Menu -->
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <a href="index.html">⚡ SpeedTest</a>
+            </div>
+            
+            <div class="hamburger" id="hamburger">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </div>
+
+            <nav class="nav-menu" id="navMenu">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="index.html" class="nav-link" data-i18n="nav.home">Home</a></li>
+                    <li class="nav-item"><a href="#info" class="nav-link" data-i18n="nav.info">Info</a></li>
+                    <li class="nav-item"><a href="#research" class="nav-link" data-i18n="nav.research">Researcher</a></li>
+                    <li class="nav-item"><a href="#contact" class="nav-link" data-i18n="nav.contact">Contact</a></li>
+                    <li class="nav-item">
+                        <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Dark mode</button>
+                    </li>
+                    <li class="nav-item"><a href="hosted.html" class="nav-link">Start Speed Test</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="language-toggle" aria-label="Language toggle" style="margin: 0 0 24px auto; width: fit-content;">
+            <button class="lang-btn active" type="button" data-lang="en" aria-pressed="true">English</button>
+            <button class="lang-btn" type="button" data-lang="tl" aria-pressed="false">Tagalog</button>
+        </div>
+
+        <div class="hero" id="top">
+            <h1>Study Details</h1>
+            <p>Explore the study sections, then return to the landing page for the overview.</p>
+            <div class="secondary-actions">
+                <a href="index.html#features" class="secondary-link">Features</a>
+                <a href="#info" class="secondary-link">Info</a>
+                <a href="#research" class="secondary-link">Researcher</a>
+                <a href="#contact" class="secondary-link">Contact</a>
+            </div>
+        </div>
+
+        <section id="info" class="info-section">
+            <h2 data-i18n="info.title">Study Overview</h2>
+            <p data-i18n="info.desc">
+                The study integrates the DeLone & McLean IS Success Model and the SERVQUAL framework to evaluate ISP performance and user satisfaction in Celina Plains Subdivision.
+            </p>
+            <div class="info-grid card-slider">
+                <div class="info-card card-slide">
+                    <h3 data-i18n="info.downloadTitle">System Quality</h3>
+                    <p data-i18n="info.downloadDesc">Measured through download speed, upload speed, latency, and jitter.</p>
+                </div>
+                <div class="info-card card-slide">
+                    <h3 data-i18n="info.uploadTitle">Service Quality</h3>
+                    <p data-i18n="info.uploadDesc">Assessed via reliability, responsiveness, assurance, empathy, and tangibles.</p>
+                </div>
+                <div class="info-card card-slide">
+                    <h3 data-i18n="info.pingTitle">User Satisfaction</h3>
+                    <p data-i18n="info.pingDesc">Correlates technical performance with resident feedback and net benefits.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="study-sections" class="info-section">
+            <h2>Study Sections</h2>
+            <p>Jump between sections without scrolling the full page.</p>
+            <div class="section-tabs" role="tablist" aria-label="Study sections">
+                <button class="tab-button active" type="button" role="tab" aria-selected="true" aria-controls="panel-methodology" data-tab="methodology">Methodology</button>
+                <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="panel-terms" data-tab="terms">Key Terms</button>
+                <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="panel-rating-criteria" data-tab="rating-criteria">Rating Criteria</button>
+                <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="panel-coverage" data-tab="coverage">ISP Coverage</button>
+                <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="panel-data-materials" data-tab="data-materials">Data & Materials</button>
+            </div>
+            <div class="tab-panels">
+                <div class="tab-panel active" id="panel-methodology" data-panel="methodology" role="tabpanel">
+                    <h2 data-i18n="method.title">Methodology Highlights</h2>
+                    <p data-i18n="method.desc">
+                        The study uses a comparative correlational design to analyze performance differences and relationships between ISP metrics and user satisfaction among Celina Plains residents.
+                    </p>
+                    <div class="info-grid card-slider" data-dots="methodology">
+                        <div class="info-card card-slide">
+                            <h3 data-i18n="method.designTitle">Research Design</h3>
+                            <p data-i18n="method.designDesc">Comparative correlational approach measuring peak and off‑peak performance.</p>
+                        </div>
+                        <div class="info-card card-slide">
+                            <h3 data-i18n="method.instrumentTitle">Instruments</h3>
+                            <p data-i18n="method.instrumentDesc">Speed tests for technical metrics and a SERVQUAL‑based survey for service quality.</p>
+                        </div>
+                        <div class="info-card card-slide">
+                            <h3 data-i18n="method.analysisTitle">Data Analysis</h3>
+                            <p data-i18n="method.analysisDesc">Descriptive stats, ANOVA, and Pearson correlation for performance and satisfaction links.</p>
+                        </div>
+                        <div class="info-card card-slide">
+                            <h3 data-i18n="method.samplingTitle">Sampling</h3>
+                            <p data-i18n="method.samplingDesc">Purposive sampling with quota distribution across major ISPs; 100 resident respondents.</p>
+                        </div>
+                        <div class="info-card card-slide">
+                            <h3 data-i18n="method.peakTitle">Peak vs Off‑Peak</h3>
+                            <p data-i18n="method.peakDesc">Tests conducted during evening peak hours and off‑peak periods to capture variability.</p>
+                        </div>
+                        <div class="info-card card-slide">
+                            <h3 data-i18n="method.protocolTitle">Device & Network Protocol</h3>
+                            <p data-i18n="method.protocolDesc">Standardized device setup; Wi‑Fi and Ethernet noted, with consistent test apps (Ookla, Fast.com).</p>
+                        </div>
+                    </div>
+                    <div class="dot-nav" data-dots-for="methodology" aria-label="Methodology slides"></div>
+                </div>
+                <div class="tab-panel" id="panel-terms" data-panel="terms" role="tabpanel">
+                    <h2 data-i18n="terms.title">Key Terms</h2>
+                    <div class="terms-grid card-slider" data-dots="terms">
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="terms.bandwidthTitle">Bandwidth</h3>
+                            <p data-i18n="terms.bandwidthDesc">Maximum rate data can be transmitted, measured in Mbps.</p>
+                        </div>
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="terms.latencyTitle">Download Speed</h3>
+                            <p data-i18n="terms.latencyDesc">Rate data is received from the internet to a device, in Mbps.</p>
+                        </div>
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="terms.jitterTitle">Upload Speed</h3>
+                            <p data-i18n="terms.jitterDesc">Rate data is sent from a device to the internet, in Mbps.</p>
+                        </div>
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="terms.throughputTitle">Latency & Jitter</h3>
+                            <p data-i18n="terms.throughputDesc">Latency is round‑trip delay; jitter is variation in latency over time.</p>
+                        </div>
+                    </div>
+                    <div class="dot-nav" data-dots-for="terms" aria-label="Key terms slides"></div>
+                </div>
+                <div class="tab-panel" id="panel-rating-criteria" data-panel="rating-criteria" role="tabpanel">
+                    <h2 data-i18n="criteria.title">Rating Criteria</h2>
+                    <div class="terms-grid card-slider" data-dots="rating-criteria">
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="criteria.downloadTitle">Download Thresholds</h3>
+                            <p data-i18n="criteria.downloadDesc">Excellent ≥100 Mbps • Good ≥25 • Fair ≥10 • Poor &lt;10</p>
+                        </div>
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="criteria.uploadTitle">Upload Thresholds</h3>
+                            <p data-i18n="criteria.uploadDesc">Single‑thread: Excellent ≥20 • Good ≥10 • Fair ≥3 • Poor &lt;3 | Multi‑thread (est.): Excellent ≥800 • Good ≥400 • Fair ≥120 • Poor &lt;120</p>
+                        </div>
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="criteria.pingTitle">Ping Thresholds</h3>
+                            <p data-i18n="criteria.pingDesc">Excellent ≤20 ms • Good ≤50 • Fair ≤100 • Poor &gt;100</p>
+                        </div>
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="criteria.jitterTitle">Jitter Thresholds</h3>
+                            <p data-i18n="criteria.jitterDesc">Excellent ≤5 ms • Good ≤20 • Fair ≤50 • Poor &gt;50</p>
+                        </div>
+                    </div>
+                    <div class="dot-nav" data-dots-for="rating-criteria" aria-label="Rating criteria slides"></div>
+                </div>
+                <div class="tab-panel" id="panel-coverage" data-panel="coverage" role="tabpanel">
+                    <h2 data-i18n="coverage.title">ISP Coverage</h2>
+                    <div class="terms-grid card-slider" data-dots="coverage">
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="coverage.isp1">PLDT</h3>
+                            <p data-i18n="coverage.isp1Desc">Fiber/DSL options evaluated for performance and service quality.</p>
+                        </div>
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="coverage.isp2">Globe</h3>
+                            <p data-i18n="coverage.isp2Desc">Residential plans assessed using consistent metrics.</p>
+                        </div>
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="coverage.isp3">Converge</h3>
+                            <p data-i18n="coverage.isp3Desc">Compared across peak and off‑peak hours.</p>
+                        </div>
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="coverage.isp4">Meridian</h3>
+                            <p data-i18n="coverage.isp4Desc">Evaluated using technical tests and resident feedback.</p>
+                        </div>
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="coverage.isp5">Cablelink</h3>
+                            <p data-i18n="coverage.isp5Desc">Assessed for stability, latency, and service responsiveness.</p>
+                        </div>
+                    </div>
+                    <div class="dot-nav" data-dots-for="coverage" aria-label="ISP coverage slides"></div>
+                </div>
+                <div class="tab-panel" id="panel-data-materials" data-panel="data-materials" role="tabpanel">
+                    <h2 data-i18n="data.title">Data & Materials</h2>
+                    <div class="terms-grid card-slider" data-dots="data-materials">
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="data.datasetTitle">Dataset (CSV)</h3>
+                            <p data-i18n="data.datasetDesc">Download anonymized test records and survey summaries.</p>
+                            <a href="assets/data/isp-dataset.csv" data-i18n="data.datasetLink">Download dataset</a>
+                        </div>
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="data.codebookTitle">Codebook</h3>
+                            <p data-i18n="data.codebookDesc">Variable definitions, scales, and survey mapping.</p>
+                            <a href="assets/data/codebook.md" data-i18n="data.codebookLink">View codebook</a>
+                        </div>
+                        <div class="term-card card-slide">
+                            <h3 data-i18n="data.analysisTitle">Analysis Notes</h3>
+                            <p data-i18n="data.analysisDesc">Summary of statistical methods and interpretation notes.</p>
+                            <a href="assets/data/analysis-notes.md" data-i18n="data.analysisLink">View notes</a>
+                        </div>
+                    </div>
+                    <div class="dot-nav" data-dots-for="data-materials" aria-label="Data materials slides"></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="stats">
+            <div class="stat">
+                <span class="stat-number" data-i18n="stats.guided">2 Models</span>
+                <span class="stat-label" data-i18n="stats.guidedLabel">Frameworks Used</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number" data-i18n="stats.actionable">4 Metrics</span>
+                <span class="stat-label" data-i18n="stats.actionableLabel">Download/Upload/Ping/Jitter</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number" data-i18n="stats.clear">Celina Plains</span>
+                <span class="stat-label" data-i18n="stats.clearLabel">Research Locale</span>
+            </div>
+        </div>
+
+        <section class="tips-section" id="objectives">
+            <h2 data-i18n="tips.title">Research Objectives</h2>
+            <ul class="tips-list">
+                <li data-i18n="tips.1">Compare ISP performance using download, upload, latency, and jitter.</li>
+                <li data-i18n="tips.2">Determine differences in service quality across providers.</li>
+                <li data-i18n="tips.3">Identify the ISP with the best balance of performance and feedback.</li>
+                <li data-i18n="tips.4">Assess the relationship between performance and user satisfaction.</li>
+                <li data-i18n="tips.5">Provide evidence-based guidance for residents’ ISP choices.</li>
+            </ul>
+        </section>
+
+
+        <div class="secondary-actions">
+            <a href="hosted.html" class="secondary-link" data-i18n="secondary.run">Run a Test</a>
+        </div>
+
+        <!-- Research Team Section -->
+        <section id="research" class="research-section">
+            <h2 data-i18n="research.title">Researcher & Guidance</h2>
+            <p class="research-intro" data-i18n="research.intro">Researchers who conducted the ISP performance study in Celina Plains Subdivision.</p>
+            
+            <div class="team-container research-carousel" id="researchCarousel">
+                <div class="flashcard">
+                    <div class="flashcard-content">
+                        <img src="assets/images/temp_profile.jpg" alt="Adrian Divinagracia" class="profile-image">
+                        <h3>Adrian Divinagracia</h3>
+                        <p class="title">Leader</p>
+                        <p class="bio">
+                            <a href="mailto:DivinagraceAdrian@gmail.com" style="color: var(--accent); text-decoration: none;">DivinagraceAdrian@gmail.com</a><br>
+                            0947-2017-689
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flashcard">
+                    <div class="flashcard-content">
+                        <img src="assets/images/temp_profile.jpg" alt="Christel Oraliza" class="profile-image">
+                        <h3>Christel Oraliza</h3>
+                        <p class="title">Member</p>
+                        <p class="bio">
+                            <a href="mailto:christeloraliza@gmail.com" style="color: var(--accent); text-decoration: none;">christeloraliza@gmail.com</a><br>
+                            0938-7300-265
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flashcard">
+                    <div class="flashcard-content">
+                        <img src="assets/images/Ian_Kent_Timbal.png" alt="Ian Kent Timbal" class="profile-image">
+                        <h3>Ian Kent Timbal</h3>
+                        <p class="title">Member</p>
+                        <p class="bio">
+                            <a href="mailto:Iankentimbal@gmail.com" style="color: var(--accent); text-decoration: none;">Iankentimbal@gmail.com</a><br>
+                            0968-3229-754
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flashcard">
+                    <div class="flashcard-content">
+                        <img src="assets/images/temp_profile.jpg" alt="Yuuma Miyazaki" class="profile-image">
+                        <h3>Yuuma Miyazaki</h3>
+                        <p class="title">Member</p>
+                        <p class="bio">
+                            <a href="mailto:yuunamiyazaki1130@gmail.com" style="color: var(--accent); text-decoration: none;">yuunamiyazaki1130@gmail.com</a><br>
+                            0956-0158-453
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-controls" aria-label="Researcher navigation">
+                <button class="carousel-btn" type="button" data-carousel-action="prev">Previous</button>
+                <button class="carousel-btn" type="button" data-carousel-action="next">Next</button>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer" id="contact">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>Researcher Contacts</h3>
+                    <ul class="footer-list">
+                        <li>Adrian Divinagracia — <a href="mailto:DivinagraceAdrian@gmail.com">DivinagraceAdrian@gmail.com</a> — 0947-2017-689</li>
+                        <li>Christel Oraliza — <a href="mailto:christeloraliza@gmail.com">christeloraliza@gmail.com</a> — 0938-7300-265</li>
+                        <li>Ian Kent Timbal — <a href="mailto:Iankentimbal@gmail.com">Iankentimbal@gmail.com</a> — 0968-3229-754</li>
+                        <li>Yuuma Miyazaki — <a href="mailto:yuunamiyazaki1130@gmail.com">yuunamiyazaki1130@gmail.com</a> — 0956-0158-453</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://facebook.com/yourpage" target="_blank" rel="noopener">Facebook (placeholder)</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">© 2026 Celina Plains ISP Study. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script>
+        // Hamburger menu toggle
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+
+        // Close menu when a link is clicked
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.navbar')) {
+                navMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+            }
+        });
+
+        const themeToggle = document.getElementById('themeToggle');
+
+        const setTheme = (theme) => {
+            document.body.classList.toggle('dark', theme === 'dark');
+            document.body.classList.toggle('light', theme === 'light');
+            if (themeToggle) {
+                themeToggle.setAttribute('aria-pressed', theme === 'dark');
+                themeToggle.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+            }
+            localStorage.setItem('theme', theme);
+        };
+
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+        setTheme(initialTheme);
+
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const isDark = document.body.classList.contains('dark');
+                setTheme(isDark ? 'light' : 'dark');
+            });
+        }
+
+        const carousel = document.getElementById('researchCarousel');
+        const carouselCards = carousel ? Array.from(carousel.querySelectorAll('.flashcard')) : [];
+        const carouselControls = document.querySelectorAll('[data-carousel-action]');
+        let carouselIndex = 0;
+        let carouselTimer = null;
+
+        const setCarouselIndex = (nextIndex) => {
+            if (!carouselCards.length) return;
+            carouselCards[carouselIndex].classList.remove('active');
+            carouselIndex = (nextIndex + carouselCards.length) % carouselCards.length;
+            carouselCards[carouselIndex].classList.add('active');
+        };
+
+        const startCarousel = () => {
+            if (!carouselCards.length) return;
+            if (carouselTimer) return;
+            carouselTimer = setInterval(() => {
+                setCarouselIndex(carouselIndex + 1);
+            }, 4000);
+        };
+
+        const stopCarousel = () => {
+            if (carouselTimer) {
+                clearInterval(carouselTimer);
+                carouselTimer = null;
+            }
+        };
+
+        if (carouselCards.length) {
+            carouselCards.forEach((card, index) => {
+                card.classList.toggle('active', index === 0);
+            });
+            startCarousel();
+
+            carouselControls.forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const action = btn.getAttribute('data-carousel-action');
+                    stopCarousel();
+                    setCarouselIndex(action === 'prev' ? carouselIndex - 1 : carouselIndex + 1);
+                    startCarousel();
+                });
+            });
+
+            if (carousel) {
+                carousel.addEventListener('mouseenter', stopCarousel);
+                carousel.addEventListener('mouseleave', startCarousel);
+                carousel.addEventListener('focusin', stopCarousel);
+                carousel.addEventListener('focusout', startCarousel);
+            }
+        }
+
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+
+        const activateTab = (tabId) => {
+            tabButtons.forEach((btn) => {
+                const isActive = btn.getAttribute('data-tab') === tabId;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-selected', isActive);
+            });
+
+            tabPanels.forEach((panel) => {
+                const isActive = panel.getAttribute('data-panel') === tabId;
+                panel.classList.toggle('active', isActive);
+            });
+
+            const activePanel = document.querySelector(`.tab-panel[data-panel="${tabId}"]`);
+            if (activePanel) {
+                const slidersInPanel = activePanel.querySelectorAll('.card-slider');
+                slidersInPanel.forEach((slider) => {
+                    slider.scrollTo({ left: 0, behavior: 'auto' });
+                });
+
+                requestAnimationFrame(() => {
+                    slidersInPanel.forEach((slider) => initDots(slider));
+                });
+            }
+        };
+
+        tabButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.getAttribute('data-tab');
+                activateTab(tabId);
+                if (tabId) {
+                    history.replaceState(null, '', `#${tabId}`);
+                }
+            });
+        });
+
+        const hashTab = window.location.hash.replace('#', '');
+        if (hashTab) {
+            const exists = Array.from(tabButtons).some((btn) => btn.getAttribute('data-tab') === hashTab);
+            if (exists) {
+                activateTab(hashTab);
+            }
+        }
+
+        const sliders = document.querySelectorAll('.card-slider');
+
+        const initDots = (slider) => {
+            const key = slider.getAttribute('data-dots');
+            if (!key) return;
+            const nav = document.querySelector(`[data-dots-for="${key}"]`);
+            if (!nav) return;
+            const slides = Array.from(slider.querySelectorAll('.card-slide'));
+            if (!slides.length) return;
+
+            nav.innerHTML = '';
+            const getStep = () => {
+                if (slides.length < 2) return slides[0].offsetWidth;
+                return slides[1].offsetLeft - slides[0].offsetLeft;
+            };
+
+            const getPageCount = () => {
+                const step = getStep();
+                if (!step) return 1;
+                const visible = Math.max(1, Math.round(slider.clientWidth / step));
+                return Math.max(1, slides.length - visible + 1);
+            };
+
+            const updateActiveDot = () => {
+                const step = getStep();
+                const pageCount = getPageCount();
+                const index = Math.min(pageCount - 1, Math.round(slider.scrollLeft / step));
+                const dots = nav.querySelectorAll('.dot-btn');
+                dots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === index);
+                });
+            };
+
+            const renderDots = () => {
+                const pageCount = getPageCount();
+                nav.innerHTML = '';
+                for (let index = 0; index < pageCount; index += 1) {
+                    const dot = document.createElement('button');
+                    dot.type = 'button';
+                    dot.className = 'dot-btn';
+                    dot.setAttribute('aria-label', `Slide ${index + 1}`);
+                    dot.addEventListener('click', () => {
+                        const step = getStep();
+                        if (!step) return;
+                        slider.scrollTo({ left: step * index, behavior: 'smooth' });
+                    });
+                    nav.appendChild(dot);
+                }
+            };
+
+            renderDots();
+            updateActiveDot();
+
+            let resizeTimer = null;
+            const handleResize = () => {
+                if (resizeTimer) return;
+                resizeTimer = requestAnimationFrame(() => {
+                    renderDots();
+                    updateActiveDot();
+                    resizeTimer = null;
+                });
+            };
+
+            let raf = null;
+            slider.addEventListener('scroll', () => {
+                if (raf) return;
+                raf = requestAnimationFrame(() => {
+                    updateActiveDot();
+                    raf = null;
+                });
+            });
+            window.addEventListener('resize', handleResize);
+        };
+
+        sliders.forEach((slider) => {
+            if (slider.closest('.tab-panel.active')) {
+                initDots(slider);
+            }
+        });
+
+        const handleWheel = (event, slider) => {
+            if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+            event.preventDefault();
+            const slides = slider.querySelectorAll('.card-slide');
+            if (!slides.length) return;
+            const step = slides.length > 1
+                ? slides[1].offsetLeft - slides[0].offsetLeft
+                : slides[0].offsetWidth + 18;
+            const direction = Math.sign(event.deltaY);
+            const next = slider.scrollLeft + step * direction;
+            slider.scrollTo({ left: next, behavior: 'smooth' });
+        };
+
+        sliders.forEach((slider) => {
+            slider.addEventListener('wheel', (event) => handleWheel(event, slider), { passive: false });
+        });
+
+        document.querySelectorAll('.card-slide').forEach((card) => {
+            card.addEventListener('wheel', (event) => {
+                const slider = card.closest('.card-slider');
+                if (!slider) return;
+                handleWheel(event, slider);
+            }, { passive: false });
+        });
+
+        // Language toggle
+        const langButtons = document.querySelectorAll('.lang-btn');
+        const translatableElements = document.querySelectorAll('[data-i18n]');
+
+        const translations = {
+            en: {
+                'nav.home': 'Home',
+                'nav.features': 'Features',
+                'nav.info': 'Info',
+                'nav.research': 'Researcher',
+                'nav.contact': 'Contact',
+                'nav.about': 'About',
+                'hero.title': 'ISP Connectivity Performance in Celina Plains',
+                'hero.subtitle': 'A comparative correlational study of internet service providers, combining technical metrics and service quality feedback from residents.',
+                'hero.cta': 'Start Speed Test',
+                'features.clearTitle': 'ISP Comparison',
+                'features.clearDesc': 'Compare PLDT, Globe, Converge, Meridian, and Cablelink using consistent performance indicators.',
+                'features.actionTitle': 'Service Quality (SERVQUAL)',
+                'features.actionDesc': 'Evaluate reliability, responsiveness, assurance, empathy, and tangibles using resident feedback.',
+                'features.basicsTitle': 'Performance Metrics',
+                'features.basicsDesc': 'Measure download, upload, latency, and jitter during peak and off‑peak hours.',
+                'info.title': 'Study Overview',
+                'info.desc': 'The study integrates the DeLone & McLean IS Success Model and the SERVQUAL framework to evaluate ISP performance and user satisfaction in Celina Plains Subdivision.',
+                'info.downloadTitle': 'System Quality',
+                'info.downloadDesc': 'Measured through download speed, upload speed, latency, and jitter.',
+                'info.uploadTitle': 'Service Quality',
+                'info.uploadDesc': 'Assessed via reliability, responsiveness, assurance, empathy, and tangibles.',
+                'info.pingTitle': 'User Satisfaction',
+                'info.pingDesc': 'Correlates technical performance with resident feedback and net benefits.',
+                'method.title': 'Methodology Highlights',
+                'method.desc': 'The study uses a comparative correlational design to analyze performance differences and relationships between ISP metrics and user satisfaction among Celina Plains residents.',
+                'method.designTitle': 'Research Design',
+                'method.designDesc': 'Comparative correlational approach measuring peak and off‑peak performance.',
+                'method.instrumentTitle': 'Instruments',
+                'method.instrumentDesc': 'Speed tests for technical metrics and a SERVQUAL‑based survey for service quality.',
+                'method.analysisTitle': 'Data Analysis',
+                'method.analysisDesc': 'Descriptive stats, ANOVA, and Pearson correlation for performance and satisfaction links.',
+                'method.samplingTitle': 'Sampling',
+                'method.samplingDesc': 'Purposive sampling with quota distribution across major ISPs; 100 resident respondents.',
+                'method.peakTitle': 'Peak vs Off‑Peak',
+                'method.peakDesc': 'Tests conducted during evening peak hours and off‑peak periods to capture variability.',
+                'method.protocolTitle': 'Device & Network Protocol',
+                'method.protocolDesc': 'Standardized device setup; Wi‑Fi and Ethernet noted, with consistent test apps (Ookla, Fast.com).',
+                'stats.guided': '2 Models',
+                'stats.guidedLabel': 'Frameworks Used',
+                'stats.actionable': '4 Metrics',
+                'stats.actionableLabel': 'Download/Upload/Ping/Jitter',
+                'stats.clear': 'Celina Plains',
+                'stats.clearLabel': 'Research Locale',
+                'tips.title': 'Research Objectives',
+                'tips.1': 'Compare ISP performance using download, upload, latency, and jitter.',
+                'tips.2': 'Determine differences in service quality across providers.',
+                'tips.3': 'Identify the ISP with the best balance of performance and feedback.',
+                'tips.4': 'Assess the relationship between performance and user satisfaction.',
+                'tips.5': 'Provide evidence-based guidance for residents’ ISP choices.',
+                'terms.title': 'Key Terms',
+                'terms.bandwidthTitle': 'Bandwidth',
+                'terms.bandwidthDesc': 'Maximum rate data can be transmitted, measured in Mbps.',
+                'terms.latencyTitle': 'Download Speed',
+                'terms.latencyDesc': 'Rate data is received from the internet to a device, in Mbps.',
+                'terms.jitterTitle': 'Upload Speed',
+                'terms.jitterDesc': 'Rate data is sent from a device to the internet, in Mbps.',
+                'terms.throughputTitle': 'Latency & Jitter',
+                'terms.throughputDesc': 'Latency is round‑trip delay; jitter is variation in latency over time.',
+                'criteria.title': 'Rating Criteria',
+                'criteria.downloadTitle': 'Download Thresholds',
+                'criteria.downloadDesc': 'Excellent ≥100 Mbps • Good ≥25 • Fair ≥10 • Poor <10',
+                'criteria.uploadTitle': 'Upload Thresholds',
+                'criteria.uploadDesc': 'Single‑thread: Excellent ≥20 • Good ≥10 • Fair ≥3 • Poor <3 | Multi‑thread (est.): Excellent ≥800 • Good ≥400 • Fair ≥120 • Poor <120',
+                'criteria.pingTitle': 'Ping Thresholds',
+                'criteria.pingDesc': 'Excellent ≤20 ms • Good ≤50 • Fair ≤100 • Poor >100',
+                'criteria.jitterTitle': 'Jitter Thresholds',
+                'criteria.jitterDesc': 'Excellent ≤5 ms • Good ≤20 • Fair ≤50 • Poor >50',
+                'coverage.title': 'ISP Coverage',
+                'coverage.isp1': 'PLDT',
+                'coverage.isp1Desc': 'Fiber/DSL options evaluated for performance and service quality.',
+                'coverage.isp2': 'Globe',
+                'coverage.isp2Desc': 'Residential plans assessed using consistent metrics.',
+                'coverage.isp3': 'Converge',
+                'coverage.isp3Desc': 'Compared across peak and off‑peak hours.',
+                'coverage.isp4': 'Meridian',
+                'coverage.isp4Desc': 'Evaluated using technical tests and resident feedback.',
+                'coverage.isp5': 'Cablelink',
+                'coverage.isp5Desc': 'Assessed for stability, latency, and service responsiveness.',
+                'data.title': 'Data & Materials',
+                'data.datasetTitle': 'Dataset (CSV)',
+                'data.datasetDesc': 'Download anonymized test records and survey summaries.',
+                'data.datasetLink': 'Download dataset',
+                'data.codebookTitle': 'Codebook',
+                'data.codebookDesc': 'Variable definitions, scales, and survey mapping.',
+                'data.codebookLink': 'View codebook',
+                'data.analysisTitle': 'Analysis Notes',
+                'data.analysisDesc': 'Summary of statistical methods and interpretation notes.',
+                'data.analysisLink': 'View notes',
+                'secondary.run': 'Run a Test',
+                'secondary.about': 'About',
+                'research.title': 'Researcher & Guidance',
+                'research.intro': 'Researchers who conducted the ISP performance study in Celina Plains Subdivision.',
+                'research.cardTitle': 'Lorem Ipsum',
+                'research.cardRole': 'Dolor Sit Amet',
+                'research.cardBio': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.'
+            },
+            tl: {
+                'nav.home': 'Bahay',
+                'nav.features': 'Mga Tampok',
+                'nav.info': 'Impormasyon',
+                'nav.research': 'Mananaliksik',
+                'nav.contact': 'Makipag-ugnayan',
+                'nav.about': 'Tungkol',
+                'hero.title': 'Pagganap ng ISP sa Celina Plains',
+                'hero.subtitle': 'Isang komparatibong korelasyonal na pag‑aaral ng mga ISP gamit ang teknikal na sukatan at feedback ng mga residente.',
+                'hero.cta': 'Simulan ang Speed Test',
+                'features.clearTitle': 'Paghahambing ng ISP',
+                'features.clearDesc': 'Ihambing ang PLDT, Globe, Converge, Meridian, at Cablelink gamit ang iisang sukatan.',
+                'features.actionTitle': 'Kalidad ng Serbisyo (SERVQUAL)',
+                'features.actionDesc': 'Sinusukat ang reliability, responsiveness, assurance, empathy, at tangibles gamit ang feedback ng residente.',
+                'features.basicsTitle': 'Mga Sukatan ng Performance',
+                'features.basicsDesc': 'Sukatin ang download, upload, latency, at jitter sa peak at off‑peak hours.',
+                'info.title': 'Buod ng Pag‑aaral',
+                'info.desc': 'Pinagsasama ng pag‑aaral ang DeLone & McLean IS Success Model at SERVQUAL para sa pagsusuri ng performance at kasiyahan ng gumagamit.',
+                'info.downloadTitle': 'Kalidad ng Sistema',
+                'info.downloadDesc': 'Sinusukat gamit ang download speed, upload speed, latency, at jitter.',
+                'info.uploadTitle': 'Kalidad ng Serbisyo',
+                'info.uploadDesc': 'Sinusuri ang reliability, responsiveness, assurance, empathy, at tangibles.',
+                'info.pingTitle': 'Kasiyahan ng Gumagamit',
+                'info.pingDesc': 'Iniuugnay ang teknikal na performance sa feedback ng residente at net benefits.',
+                'method.title': 'Mga Highlight ng Metodolohiya',
+                'method.desc': 'Gumamit ang pag‑aaral ng komparatibong korelasyonal na disenyo para suriin ang pagkakaiba at ugnayan ng sukatan at kasiyahan ng mga residente ng Celina Plains.',
+                'method.designTitle': 'Disenyo ng Pananaliksik',
+                'method.designDesc': 'Komparatibo at korelasyonal na pagsusuri sa peak at off‑peak performance.',
+                'method.instrumentTitle': 'Mga Instrumento',
+                'method.instrumentDesc': 'Speed test para sa teknikal na sukatan at SERVQUAL‑based na survey para sa kalidad ng serbisyo.',
+                'method.analysisTitle': 'Pagsusuri ng Datos',
+                'method.analysisDesc': 'Descriptive stats, ANOVA, at Pearson correlation para sa ugnayan ng performance at kasiyahan.',
+                'method.samplingTitle': 'Pagpili ng Kalahok',
+                'method.samplingDesc': 'Purposive sampling na may quota para sa bawat ISP; 100 resident respondents.',
+                'method.peakTitle': 'Peak at Off‑Peak',
+                'method.peakDesc': 'Ginagawa ang tests sa peak hours sa gabi at off‑peak periods para sa variability.',
+                'method.protocolTitle': 'Device at Network Protocol',
+                'method.protocolDesc': 'Standardized na device setup; Wi‑Fi at Ethernet ay itinala, gamit ang Ookla at Fast.com.',
+                'stats.guided': '2 Modelo',
+                'stats.guidedLabel': 'Mga Framework',
+                'stats.actionable': '4 Sukatan',
+                'stats.actionableLabel': 'Download/Upload/Ping/Jitter',
+                'stats.clear': 'Celina Plains',
+                'stats.clearLabel': 'Lugar ng Pag‑aaral',
+                'tips.title': 'Mga Layunin ng Pag‑aaral',
+                'tips.1': 'Ihambing ang performance ng ISP gamit ang download, upload, latency, at jitter.',
+                'tips.2': 'Tukuyin ang pagkakaiba ng kalidad ng serbisyo ng bawat ISP.',
+                'tips.3': 'Kilalanin ang ISP na may pinakamainam na balanse ng performance at feedback.',
+                'tips.4': 'Suriin ang ugnayan ng performance at kasiyahan ng gumagamit.',
+                'tips.5': 'Magbigay ng batay‑sa‑ebidensyang gabay sa pagpili ng ISP.',
+                'terms.title': 'Mahahalagang Termino',
+                'terms.bandwidthTitle': 'Bandwidth',
+                'terms.bandwidthDesc': 'Pinakamataas na bilis ng pagpapadala ng data, sinusukat sa Mbps.',
+                'terms.latencyTitle': 'Download Speed',
+                'terms.latencyDesc': 'Bilis ng pagtanggap ng data mula sa internet papunta sa device.',
+                'terms.jitterTitle': 'Upload Speed',
+                'terms.jitterDesc': 'Bilis ng pagpapadala ng data mula sa device papunta sa internet.',
+                'terms.throughputTitle': 'Latency at Jitter',
+                'terms.throughputDesc': 'Latency ang round‑trip delay; jitter ang pagbabago‑bago ng latency.',
+                'criteria.title': 'Pamantayan ng Rating',
+                'criteria.downloadTitle': 'Download Thresholds',
+                'criteria.downloadDesc': 'Excellent ≥100 Mbps • Good ≥25 • Fair ≥10 • Poor <10',
+                'criteria.uploadTitle': 'Upload Thresholds',
+                'criteria.uploadDesc': 'Single‑thread: Excellent ≥20 • Good ≥10 • Fair ≥3 • Poor <3 | Multi‑thread (est.): Excellent ≥800 • Good ≥400 • Fair ≥120 • Poor <120',
+                'criteria.pingTitle': 'Ping Thresholds',
+                'criteria.pingDesc': 'Excellent ≤20 ms • Good ≤50 • Fair ≤100 • Poor >100',
+                'criteria.jitterTitle': 'Jitter Thresholds',
+                'criteria.jitterDesc': 'Excellent ≤5 ms • Good ≤20 • Fair ≤50 • Poor >50',
+                'coverage.title': 'Saklaw na ISP',
+                'coverage.isp1': 'PLDT',
+                'coverage.isp1Desc': 'Sinusuri ang fiber/DSL sa performance at kalidad ng serbisyo.',
+                'coverage.isp2': 'Globe',
+                'coverage.isp2Desc': 'Mga planong pang‑residential na sinusukat gamit ang iisang sukatan.',
+                'coverage.isp3': 'Converge',
+                'coverage.isp3Desc': 'Inihambing sa peak at off‑peak hours.',
+                'coverage.isp4': 'Meridian',
+                'coverage.isp4Desc': 'Sinuri gamit ang teknikal na test at feedback ng residente.',
+                'coverage.isp5': 'Cablelink',
+                'coverage.isp5Desc': 'Tinatasa sa stability, latency, at responsiveness ng serbisyo.',
+                'data.title': 'Datos at Materyales',
+                'data.datasetTitle': 'Dataset (CSV)',
+                'data.datasetDesc': 'I‑download ang anonymized na test records at survey summaries.',
+                'data.datasetLink': 'I‑download ang dataset',
+                'data.codebookTitle': 'Codebook',
+                'data.codebookDesc': 'Kahulugan ng mga variable, scale, at survey mapping.',
+                'data.codebookLink': 'Tingnan ang codebook',
+                'data.analysisTitle': 'Mga Tala ng Pagsusuri',
+                'data.analysisDesc': 'Buod ng estadistikal na pamamaraan at notes sa interpretasyon.',
+                'data.analysisLink': 'Tingnan ang notes',
+                'secondary.run': 'Mag‑test',
+                'secondary.about': 'Tungkol',
+                'research.title': 'Mananaliksik at Gabay',
+                'research.intro': 'Mga mananaliksik na nagsagawa ng pag‑aaral sa performance ng ISP sa Celina Plains Subdivision.',
+                'research.cardTitle': 'Lorem Ipsum',
+                'research.cardRole': 'Dolor Sit Amet',
+                'research.cardBio': 'Ang lorem ipsum ay pansamantalang teksto para sa layout at disenyo.'
+            }
+        };
+
+        const setLanguage = (lang) => {
+            const dictionary = translations[lang];
+            translatableElements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dictionary && dictionary[key]) {
+                    el.textContent = dictionary[key];
+                }
+            });
+
+            document.documentElement.lang = lang;
+
+            langButtons.forEach(btn => {
+                const isActive = btn.getAttribute('data-lang') === lang;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+
+            try {
+                localStorage.setItem('preferredLang', lang);
+            } catch (e) {
+                // ignore storage errors
+            }
+        };
+
+        langButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const lang = button.getAttribute('data-lang');
+                setLanguage(lang);
+            });
+        });
+
+        const savedLang = (typeof localStorage !== 'undefined' && localStorage.getItem('preferredLang')) || 'en';
+        setLanguage(savedLang);
+    </script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celina Plains ISP Study - Home</title>
+    <meta name="description" content="ISP Connectivity Performance in Celina Plains. Compare providers, service quality, and performance metrics.">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/icons/favicon-16x16.png">
+    <link rel="stylesheet" href="assets/css/index.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <a href="index.html">⚡ SpeedTest</a>
+            </div>
+
+            <div class="hamburger" id="hamburger">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </div>
+
+            <nav class="nav-menu" id="navMenu">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="index.html" class="nav-link" data-i18n="nav.home">Home</a></li>
+                    <li class="nav-item"><a href="study.html#info" class="nav-link" data-i18n="nav.info">Info</a></li>
+                    <li class="nav-item"><a href="study.html#research" class="nav-link" data-i18n="nav.research">Researcher</a></li>
+                    <li class="nav-item"><a href="study.html#contact" class="nav-link" data-i18n="nav.contact">Contact</a></li>
+                    <li class="nav-item">
+                        <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Dark mode</button>
+                    </li>
+                    <li class="nav-item"><a href="hosted.html" class="nav-link">Start Speed Test</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="language-toggle" aria-label="Language toggle" style="margin: 0 0 24px auto; width: fit-content;">
+            <button class="lang-btn active" type="button" data-lang="en" aria-pressed="true">English</button>
+            <button class="lang-btn" type="button" data-lang="tl" aria-pressed="false">Tagalog</button>
+        </div>
+        <div class="hero" id="home">
+            <h1 data-i18n="hero.title">ISP Connectivity Performance in Celina Plains</h1>
+            <p data-i18n="hero.subtitle">
+                A comparative correlational study of internet service providers, combining technical metrics and service quality feedback from residents.
+            </p>
+            <a href="hosted.html" class="cta-button" data-i18n="hero.cta">Start Speed Test</a>
+            <div class="secondary-actions">
+                <a href="study.html#info" class="secondary-link" data-i18n="secondary.info">Info</a>
+                <a href="study.html#research" class="secondary-link" data-i18n="secondary.research">Researcher</a>
+                <a href="study.html#contact" class="secondary-link" data-i18n="secondary.contact">Contact</a>
+            </div>
+        </div>
+
+        <div class="features card-slider" id="features">
+            <div class="feature-card card-slide">
+                <span class="feature-icon">📊</span>
+                <h3 data-i18n="features.clearTitle">ISP Comparison</h3>
+                <p data-i18n="features.clearDesc">Compare PLDT, Globe, Converge, Meridian, and Cablelink using consistent performance indicators.</p>
+            </div>
+
+            <div class="feature-card card-slide">
+                <span class="feature-icon">🛠️</span>
+                <h3 data-i18n="features.actionTitle">Service Quality (SERVQUAL)</h3>
+                <p data-i18n="features.actionDesc">Evaluate reliability, responsiveness, assurance, empathy, and tangibles using resident feedback.</p>
+            </div>
+
+            <div class="feature-card card-slide">
+                <span class="feature-icon">📚</span>
+                <h3 data-i18n="features.basicsTitle">Performance Metrics</h3>
+                <p data-i18n="features.basicsDesc">Measure download, upload, latency, and jitter during peak and off-peak hours.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const hamburger = document.getElementById('hamburger');
+        const navMenu = document.getElementById('navMenu');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.navbar')) {
+                navMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+            }
+        });
+
+        const themeToggle = document.getElementById('themeToggle');
+        const langButtons = document.querySelectorAll('.lang-btn');
+        const translatableElements = document.querySelectorAll('[data-i18n]');
+
+        const setTheme = (theme) => {
+            document.body.classList.toggle('dark', theme === 'dark');
+            document.body.classList.toggle('light', theme === 'light');
+            if (themeToggle) {
+                themeToggle.setAttribute('aria-pressed', theme === 'dark');
+                themeToggle.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+            }
+            localStorage.setItem('theme', theme);
+        };
+
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+        setTheme(initialTheme);
+
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const isDark = document.body.classList.contains('dark');
+                setTheme(isDark ? 'light' : 'dark');
+            });
+        }
+
+        const translations = {
+            en: {
+                'nav.home': 'Home',
+                'nav.info': 'Info',
+                'nav.research': 'Researcher',
+                'nav.contact': 'Contact',
+                'hero.title': 'ISP Connectivity Performance in Celina Plains',
+                'hero.subtitle': 'A comparative correlational study of internet service providers, combining technical metrics and service quality feedback from residents.',
+                'hero.cta': 'Start Speed Test',
+                'secondary.info': 'Info',
+                'secondary.research': 'Researcher',
+                'secondary.contact': 'Contact',
+                'features.clearTitle': 'ISP Comparison',
+                'features.clearDesc': 'Compare PLDT, Globe, Converge, Meridian, and Cablelink using consistent performance indicators.',
+                'features.actionTitle': 'Service Quality (SERVQUAL)',
+                'features.actionDesc': 'Evaluate reliability, responsiveness, assurance, empathy, and tangibles using resident feedback.',
+                'features.basicsTitle': 'Performance Metrics',
+                'features.basicsDesc': 'Measure download, upload, latency, and jitter during peak and off-peak hours.'
+            },
+            tl: {
+                'nav.home': 'Bahay',
+                'nav.info': 'Impormasyon',
+                'nav.research': 'Mananaliksik',
+                'nav.contact': 'Makipag-ugnayan',
+                'hero.title': 'Pagganap ng ISP sa Celina Plains',
+                'hero.subtitle': 'Isang komparatibong korelasyonal na pag-aaral ng mga ISP gamit ang teknikal na sukatan at feedback ng mga residente.',
+                'hero.cta': 'Simulan ang Speed Test',
+                'secondary.info': 'Impormasyon',
+                'secondary.research': 'Mananaliksik',
+                'secondary.contact': 'Makipag-ugnayan',
+                'features.clearTitle': 'Paghahambing ng ISP',
+                'features.clearDesc': 'Ihambing ang PLDT, Globe, Converge, Meridian, at Cablelink gamit ang iisang sukatan.',
+                'features.actionTitle': 'Kalidad ng Serbisyo (SERVQUAL)',
+                'features.actionDesc': 'Sinusukat ang reliability, responsiveness, assurance, empathy, at tangibles gamit ang feedback ng residente.',
+                'features.basicsTitle': 'Mga Sukatan ng Performance',
+                'features.basicsDesc': 'Sukatin ang download, upload, latency, at jitter sa peak at off-peak hours.'
+            }
+        };
+
+        const setLanguage = (lang) => {
+            const dictionary = translations[lang];
+            translatableElements.forEach((el) => {
+                const key = el.getAttribute('data-i18n');
+                if (dictionary && dictionary[key]) {
+                    el.textContent = dictionary[key];
+                }
+            });
+
+            document.documentElement.lang = lang;
+
+            langButtons.forEach((btn) => {
+                const isActive = btn.getAttribute('data-lang') === lang;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+            });
+
+            try {
+                localStorage.setItem('preferredLang', lang);
+            } catch (e) {
+                // ignore storage errors
+            }
+        };
+
+        const savedLang = (typeof localStorage !== 'undefined' && localStorage.getItem('preferredLang')) || 'en';
+        setLanguage(savedLang);
+
+        langButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const lang = btn.getAttribute('data-lang');
+                if (lang) setLanguage(lang);
+            });
+        });
+
+        const sliders = document.querySelectorAll('.card-slider');
+        const sliderTimers = new Map();
+
+        const startSlider = (slider) => {
+            if (sliderTimers.has(slider)) return;
+            const interval = setInterval(() => {
+                const slide = slider.querySelector('.card-slide');
+                if (!slide) return;
+                const step = slide.getBoundingClientRect().width + 18;
+                const maxScroll = slider.scrollWidth - slider.clientWidth;
+                const nextScroll = slider.scrollLeft + step;
+                slider.scrollTo({
+                    left: nextScroll >= maxScroll ? 0 : nextScroll,
+                    behavior: 'smooth'
+                });
+            }, 6000);
+            sliderTimers.set(slider, interval);
+        };
+
+        const stopSlider = (slider) => {
+            const interval = sliderTimers.get(slider);
+            if (interval) {
+                clearInterval(interval);
+                sliderTimers.delete(slider);
+            }
+        };
+
+        const handleWheel = (event, slider) => {
+            if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+            event.preventDefault();
+            const slides = slider.querySelectorAll('.card-slide');
+            if (!slides.length) return;
+            const step = slides.length > 1
+                ? slides[1].offsetLeft - slides[0].offsetLeft
+                : slides[0].offsetWidth + 18;
+            const direction = Math.sign(event.deltaY);
+            const next = slider.scrollLeft + step * direction;
+            slider.scrollTo({ left: next, behavior: 'smooth' });
+        };
+
+        sliders.forEach((slider) => {
+            startSlider(slider);
+            slider.addEventListener('mouseenter', () => stopSlider(slider));
+            slider.addEventListener('mouseleave', () => startSlider(slider));
+            slider.addEventListener('focusin', () => stopSlider(slider));
+            slider.addEventListener('focusout', () => startSlider(slider));
+            slider.addEventListener('touchstart', () => stopSlider(slider), { passive: true });
+            slider.addEventListener('touchend', () => startSlider(slider));
+            slider.addEventListener('wheel', (event) => handleWheel(event, slider), { passive: false });
+        });
+
+        document.querySelectorAll('.card-slide').forEach((card) => {
+            card.addEventListener('wheel', (event) => {
+                const slider = card.closest('.card-slider');
+                if (!slider) return;
+                handleWheel(event, slider);
+            }, { passive: false });
+        });
+    </script>
+</body>
+</html>
