@@ -583,7 +583,8 @@
 
     @media (max-width: 768px) {
       .hamburger { display: flex; }
-      .nav-links, .nav-controls { display: none; }
+      .nav-links { display: none; }
+      .nav-controls { display: none; }
       .features-grid { grid-template-columns: 1fr; }
       .stats-bar { grid-template-columns: 1fr; }
       .hero { padding: 80px 20px 60px; }
@@ -624,10 +625,10 @@
         <button class="lang-btn" data-lang="tl">TL</button>
       </div>
       <button class="theme-btn" id="themeBtn">☀ Light</button>
-      <button class="hamburger" id="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
     </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
 
   <div class="mobile-menu" id="mobileMenu">
