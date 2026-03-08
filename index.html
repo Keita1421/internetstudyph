@@ -939,9 +939,9 @@ body.light .fab-badge{border-color:#f5f7ff}
 <script>
 (function(){
   /* ── Hugging Face Space endpoint ──
-     Uses the free Inference API with Mistral-7B-Instruct.
+     Uses the free Inference API with Llama-3.2-3B-Instruct.
      Falls back to local answers if the API is unavailable / rate-limited. */
-  const HF_API = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3';
+  const HF_API = 'https://keita1421-celinaisp.hf.space/api/chat';
 
   const SYS = `You are a friendly customer-service assistant for the Celina Plains ISP Study website (Celina Plains Subdivision, Philippines).
 You help residents understand ISP performance results from the study and answer general internet questions.
@@ -1017,23 +1017,27 @@ RULES: Be concise (≤3 sentences), friendly, and accurate. Reply in the same la
   const hideTyping = () => { const el = document.getElementById('typing-ind'); if(el) el.remove(); };
 
   const callHF = async (userMsg) => {
-    /* Build Mistral instruct prompt */
     const recent = history.slice(-6);
-    let conv = recent.map(m => (m.role==='user'?'User: ':'Assistant: ') + m.content).join('\n');
-    const prompt = `<s>[INST] ${SYS}\n\n${conv ? conv+'\n' : ''}User: ${userMsg} [/INST]`;
+    const messages = [
+      {role: 'system', content: SYS},
+      ...recent,
+      {role: 'user', content: userMsg}
+    ];
 
     const res = await fetch(HF_API, {
       method: 'POST',
-      headers: {'Content-Type':'application/json', 'Authorization':'Bearer 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'},
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        inputs: prompt,
-        parameters: { max_new_tokens:180, temperature:0.4, top_p:0.9, return_full_text:false }
+        model: 'meta-llama/Llama-3.2-3B-Instruct',
+        messages: messages,
+        max_tokens: 200,
+        temperature: 0.4
       })
     });
     if (!res.ok) throw new Error(res.status);
     const data = await res.json();
-    let reply = (Array.isArray(data) ? data[0]?.generated_text : data?.generated_text) || '';
-    reply = reply.replace(/^\s*(Assistant:|Bot:|AI:)\s*/i,'').replace(/\[INST\].*$/s,'').trim();
+    let reply = data?.choices?.[0]?.message?.content || '';
+    reply = reply.trim();
     if (!reply) throw new Error('empty');
     return reply;
   };
