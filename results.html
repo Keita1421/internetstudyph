@@ -394,17 +394,58 @@
     let leafletMap = null;
     let markerLayer = null;
 
+    // The 7-point study polygon (Celina Plains target area)
+    const STUDY_POLYGON = [
+      [14.39213646011687,  120.92771037534898],
+      [14.391935469701682, 120.9267630821814 ],
+      [14.390974208692445, 120.92668188562419],
+      [14.39135871359272,  120.9244264257014 ],
+      [14.392721952903868, 120.92384000612147],
+      [14.392866141190439, 120.9257481252161 ],
+      [14.392944789307501, 120.92708786841024],
+    ];
+    const POLYGON_CENTER = [14.39213396, 120.92603683];
+    const POLYGON_ZOOM   = 17;
+
+    // Bounding box with small buffer to filter local-only markers
+    const polyLats = STUDY_POLYGON.map(p => p[0]);
+    const polyLngs = STUDY_POLYGON.map(p => p[1]);
+    const POLY_BOUNDS = {
+      minLat: Math.min(...polyLats) - 0.002,
+      maxLat: Math.max(...polyLats) + 0.002,
+      minLng: Math.min(...polyLngs) - 0.002,
+      maxLng: Math.max(...polyLngs) + 0.002,
+    };
+
     const renderMap = (records) => {
       const withLocation = records.filter(r => r.lat && r.lng);
 
-      // Init map once
+      // Init map once — always locked to polygon area
       if (!leafletMap) {
-        // Center on Celina Plains, General Trias, Cavite
-        leafletMap = L.map('ispMap').setView([14.3919073, 120.9267400], 17);
+        leafletMap = L.map('ispMap', {
+          center: POLYGON_CENTER,
+          zoom: POLYGON_ZOOM,
+          maxZoom: 19,
+        });
+
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors',
           maxZoom: 19
         }).addTo(leafletMap);
+
+        // Draw the study area polygon boundary
+        L.polygon(STUDY_POLYGON, {
+          color: '#4fffb0',
+          weight: 2.5,
+          opacity: 0.9,
+          fillColor: '#4fffb0',
+          fillOpacity: 0.07,
+          dashArray: '6 4',
+        }).addTo(leafletMap).bindTooltip('📍 Celina Plains Study Area', {
+          permanent: false,
+          direction: 'center',
+        });
+
         markerLayer = L.layerGroup().addTo(leafletMap);
       }
 
@@ -412,6 +453,7 @@
 
       if (!withLocation.length) return;
 
+      // Plot ALL markers — local and PH-wide
       withLocation.forEach(r => {
         const color = ISP_COLORS[r.isp] || '#6b7280';
         const dlRating = r.downloadSpeed >= 100 ? 'Excellent' : r.downloadSpeed >= 25 ? 'Good' : r.downloadSpeed >= 10 ? 'Fair' : 'Poor';
@@ -443,11 +485,8 @@
           .addTo(markerLayer);
       });
 
-      // Fit map to markers if we have some
-      if (withLocation.length > 0) {
-        const group = L.featureGroup(markerLayer.getLayers());
-        leafletMap.fitBounds(group.getBounds().pad(0.2));
-      }
+      // Always snap back to polygon center — never drift to PH-wide view
+      leafletMap.setView(POLYGON_CENTER, POLYGON_ZOOM);
     };
     // ─────────────────────────────────────────────────
 

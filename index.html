@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-x: hidden; }
 
     :root {
       --bg: #07090f;
@@ -240,11 +241,13 @@
 
     .hero h1 {
       font-family: 'Syne', sans-serif;
-      font-size: clamp(2.4rem, 6vw, 5rem);
+      font-size: clamp(1.8rem, 5vw, 5rem);
       font-weight: 800;
       line-height: 1.05;
       letter-spacing: -0.03em;
       margin-bottom: 24px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
     }
 
     .hero h1 .grad {
