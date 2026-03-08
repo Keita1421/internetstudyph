@@ -1,262 +1,845 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Celina Plains ISP Study - Home</title>
-    <meta name="description" content="ISP Connectivity Performance in Celina Plains. Compare providers, service quality, and performance metrics.">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/icons/favicon-16x16.png">
-    <link rel="stylesheet" href="assets/css/index.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Celina Plains ISP Study</title>
+  <meta name="description" content="ISP Connectivity Performance in Celina Plains. Compare providers, service quality, and performance metrics." />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/icons/favicon-16x16.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #07090f;
+      --bg2: #0c1018;
+      --surface: rgba(255,255,255,0.04);
+      --surface2: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --text: #f0f4ff;
+      --muted: #7a8aaa;
+      --accent: #4fffb0;
+      --accent2: #38c8ff;
+      --accent3: #7c6fff;
+      --glow: rgba(79,255,176,0.2);
+      --glow2: rgba(56,200,255,0.15);
+      --danger: #ff6b6b;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Ambient background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(79,255,176,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(56,200,255,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(124,111,255,0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Grid texture */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7,9,15,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo .logo-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); background: var(--surface2); }
+
+    .nav-cta {
+      background: var(--accent) !important;
+      color: #07090f !important;
+      font-weight: 700 !important;
+      padding: 7px 16px !important;
+      border-radius: 8px !important;
+    }
+
+    .nav-cta:hover { filter: brightness(1.1); background: var(--accent) !important; }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .lang-btn {
+      border: none;
+      background: none;
+      color: var(--muted);
+      font: 500 0.8rem 'DM Sans', sans-serif;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lang-btn.active {
+      background: var(--accent);
+      color: #07090f;
+      font-weight: 700;
+    }
+
+    .theme-btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font: 500 0.8rem 'DM Sans', sans-serif;
+      padding: 7px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .theme-btn:hover { border-color: var(--border2); color: var(--text); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      border: none;
+      background: none;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* MAIN */
+    main {
+      position: relative;
+      z-index: 1;
+      padding-top: 64px;
+    }
+
+    /* HERO */
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 120px 24px 80px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(79,255,176,0.3);
+      background: rgba(79,255,176,0.06);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 32px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 .grad {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      font-weight: 300;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #07090f;
+      font: 700 1rem 'DM Sans', sans-serif;
+      padding: 14px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 0 30px rgba(79,255,176,0.3);
+    }
+
+    .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 0 40px rgba(79,255,176,0.4); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      color: var(--text);
+      font: 600 1rem 'DM Sans', sans-serif;
+      padding: 14px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: 1px solid var(--border2);
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
+
+    /* STATS BAR */
+    .stats-bar {
+      max-width: 900px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .stat-item {
+      background: var(--bg2);
+      padding: 24px;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+    .stat-item:hover { background: var(--surface2); }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent);
+      display: block;
+    }
+
+    .stat-label { color: var(--muted); font-size: 0.85rem; }
+
+    /* FEATURES */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .feature-card {
+      background: var(--bg2);
+      padding: 32px 28px;
+      transition: background 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feature-card:hover { background: var(--surface2); }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .feature-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .feature-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+    /* ISP LOGOS ROW */
+    .isp-row {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .isp-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .isp-chip {
+      border: 1px solid var(--border2);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 999px;
+      transition: all 0.2s;
+    }
+
+    .isp-chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(79,255,176,0.06); }
+
+    /* CTA BANNER */
+    .cta-banner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .cta-inner {
+      background: linear-gradient(135deg, rgba(79,255,176,0.08) 0%, rgba(56,200,255,0.06) 50%, rgba(124,111,255,0.06) 100%);
+      border: 1px solid rgba(79,255,176,0.2);
+      border-radius: 24px;
+      padding: 60px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at center, rgba(79,255,176,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .cta-inner h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .cta-inner p { color: var(--muted); margin-bottom: 32px; font-size: 1rem; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--bg2);
+      padding: 48px 24px 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .footer-brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .footer-brand-sub { color: var(--muted); font-size: 0.85rem; max-width: 260px; }
+
+    .footer-links-col h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .footer-links-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .footer-links-col a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .footer-links-col a:hover { color: var(--accent); }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 32px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* LIGHT MODE */
+    body.light {
+      --bg: #f5f7ff;
+      --bg2: #eef1fb;
+      --surface: rgba(0,0,0,0.03);
+      --surface2: rgba(0,0,0,0.06);
+      --border: rgba(0,0,0,0.08);
+      --border2: rgba(0,0,0,0.14);
+      --text: #0d1117;
+      --muted: #5a6480;
+      --accent: #00a86b;
+      --accent2: #0077cc;
+      --accent3: #5c4dcc;
+      --glow: rgba(0,168,107,0.2);
+    }
+
+    body.light::before {
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0,168,107,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(0,119,204,0.05) 0%, transparent 55%);
+    }
+
+    body.light::after {
+      background-image: linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    body.light nav { background: rgba(245,247,255,0.9); }
+    body.light .feature-card { background: #fff; }
+    body.light .feature-card:hover { background: #f0f4ff; }
+    body.light .stat-item { background: #fff; }
+    body.light .stat-item:hover { background: #f0f4ff; }
+    body.light .btn-primary { color: #fff; background: var(--accent); }
+    body.light .isp-chip { background: #fff; }
+    body.light .cta-inner { background: linear-gradient(135deg, rgba(0,168,107,0.06) 0%, rgba(0,119,204,0.04) 100%); }
+
+    /* NAV MOBILE */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      background: rgba(7,9,15,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      z-index: 99;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    body.light .mobile-menu { background: rgba(245,247,255,0.97); }
+
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--muted); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1rem; font-weight: 500; }
+    .mobile-menu a:last-child { border: none; }
+    .mobile-menu a:hover { color: var(--text); }
+
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-links, .nav-controls { display: none; }
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-bar { grid-template-columns: 1fr; }
+      .hero { padding: 80px 20px 60px; }
+      .hero h1 { font-size: 2.4rem; }
+      .footer-inner { flex-direction: column; gap: 32px; }
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero > * { animation: fadeUp 0.6s ease both; }
+    .hero-badge { animation-delay: 0.1s; }
+    .hero h1 { animation-delay: 0.2s; }
+    .hero p { animation-delay: 0.3s; }
+    .hero-actions { animation-delay: 0.4s; }
+  </style>
 </head>
 <body>
-    <header class="navbar">
-        <div class="navbar-container">
-            <div class="navbar-logo">
-                <a href="index.html">⚡ SpeedTest</a>
-            </div>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span class="logo-dot"></span>
+      CelinaISP
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="study.html#info" data-i18n="nav.info">Info</a></li>
+      <li><a href="study.html#research" data-i18n="nav.research">Researcher</a></li>
+      <li><a href="study.html#contact" data-i18n="nav.contact">Contact</a></li>
+      <li><a href="results.html" data-i18n="nav.results">Community</a></li>
+      <li><a href="hosted.html" class="nav-cta" data-i18n="nav.test">Run Test</a></li>
+    </ul>
+    <div class="nav-controls">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="tl">TL</button>
+      </div>
+      <button class="theme-btn" id="themeBtn">☀ Light</button>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
 
-            <div class="hamburger" id="hamburger">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" data-i18n="nav.home">Home</a>
+    <a href="study.html#info" data-i18n="nav.info">Info</a>
+    <a href="study.html#research" data-i18n="nav.research">Researcher</a>
+    <a href="study.html#contact" data-i18n="nav.contact">Contact</a>
+    <a href="results.html" data-i18n="nav.results">Community Results</a>
+    <a href="hosted.html" data-i18n="nav.test">Run Speed Test →</a>
+  </div>
 
-            <nav class="nav-menu" id="navMenu">
-                <ul class="nav-list">
-                    <li class="nav-item"><a href="index.html" class="nav-link" data-i18n="nav.home">Home</a></li>
-                    <li class="nav-item"><a href="study.html#info" class="nav-link" data-i18n="nav.info">Info</a></li>
-                    <li class="nav-item"><a href="study.html#research" class="nav-link" data-i18n="nav.research">Researcher</a></li>
-                    <li class="nav-item"><a href="study.html#contact" class="nav-link" data-i18n="nav.contact">Contact</a></li>
-                    <li class="nav-item">
-                        <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false">Dark mode</button>
-                    </li>
-                    <li class="nav-item"><a href="hosted.html" class="nav-link">Start Speed Test</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+  <main>
+    <section class="hero">
+      <div class="hero-badge" data-i18n="hero.badge">Celina Plains Research Study</div>
+      <h1><span class="grad" data-i18n="hero.title1">ISP Connectivity</span><br data-i18n="hero.title2"> Performance Study</h1>
+      <p data-i18n="hero.subtitle">A comparative correlational study of internet service providers, combining technical metrics and service quality feedback from residents.</p>
+      <div class="hero-actions">
+        <a href="hosted.html" class="btn-primary" data-i18n="hero.cta">⚡ Start Speed Test</a>
+        <a href="study.html" class="btn-secondary" data-i18n="hero.secondary">View Research →</a>
+      </div>
+    </section>
 
-    <div class="container">
-        <div class="language-toggle" aria-label="Language toggle" style="margin: 0 0 24px auto; width: fit-content;">
-            <button class="lang-btn active" type="button" data-lang="en" aria-pressed="true">English</button>
-            <button class="lang-btn" type="button" data-lang="tl" aria-pressed="false">Tagalog</button>
-        </div>
-        <div class="hero" id="home">
-            <h1 data-i18n="hero.title">ISP Connectivity Performance in Celina Plains</h1>
-            <p data-i18n="hero.subtitle">
-                A comparative correlational study of internet service providers, combining technical metrics and service quality feedback from residents.
-            </p>
-            <a href="hosted.html" class="cta-button" data-i18n="hero.cta">Start Speed Test</a>
-            <div class="secondary-actions">
-                <a href="study.html#info" class="secondary-link" data-i18n="secondary.info">Info</a>
-                <a href="study.html#research" class="secondary-link" data-i18n="secondary.research">Researcher</a>
-                <a href="study.html#contact" class="secondary-link" data-i18n="secondary.contact">Contact</a>
-            </div>
-        </div>
-
-        <div class="features card-slider" id="features">
-            <div class="feature-card card-slide">
-                <span class="feature-icon">📊</span>
-                <h3 data-i18n="features.clearTitle">ISP Comparison</h3>
-                <p data-i18n="features.clearDesc">Compare PLDT, Globe, Converge, Meridian, and Cablelink using consistent performance indicators.</p>
-            </div>
-
-            <div class="feature-card card-slide">
-                <span class="feature-icon">🛠️</span>
-                <h3 data-i18n="features.actionTitle">Service Quality (SERVQUAL)</h3>
-                <p data-i18n="features.actionDesc">Evaluate reliability, responsiveness, assurance, empathy, and tangibles using resident feedback.</p>
-            </div>
-
-            <div class="feature-card card-slide">
-                <span class="feature-icon">📚</span>
-                <h3 data-i18n="features.basicsTitle">Performance Metrics</h3>
-                <p data-i18n="features.basicsDesc">Measure download, upload, latency, and jitter during peak and off-peak hours.</p>
-            </div>
-        </div>
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-num" data-i18n="stat.models">2</span>
+        <span class="stat-label" data-i18n="stat.modelsLabel">Research Frameworks</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" data-i18n="stat.isps">5+</span>
+        <span class="stat-label" data-i18n="stat.ispsLabel">ISPs Studied</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" data-i18n="stat.respondents">100</span>
+        <span class="stat-label" data-i18n="stat.respondentsLabel">Resident Respondents</span>
+      </div>
     </div>
 
-    <script>
-        const hamburger = document.getElementById('hamburger');
-        const navMenu = document.getElementById('navMenu');
-        const navLinks = document.querySelectorAll('.nav-link');
+    <section class="section" id="features">
+      <div class="section-label" data-i18n="features.label">What We Study</div>
+      <h2 class="section-title" data-i18n="features.title">Built on Real Research</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">📊</span>
+          <h3 data-i18n="features.f1Title">ISP Comparison</h3>
+          <p data-i18n="features.f1Desc">Compare PLDT, Globe, Converge, Meridian, and Cablelink using consistent performance indicators measured in Celina Plains.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🛠️</span>
+          <h3 data-i18n="features.f2Title">Service Quality (SERVQUAL)</h3>
+          <p data-i18n="features.f2Desc">Evaluate reliability, responsiveness, assurance, empathy, and tangibles using direct resident feedback.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📡</span>
+          <h3 data-i18n="features.f3Title">Performance Metrics</h3>
+          <p data-i18n="features.f3Desc">Measure download, upload, latency, and jitter during peak and off-peak hours for accurate benchmarks.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🏆</span>
+          <h3 data-i18n="features.f4Title">How You Compare</h3>
+          <p data-i18n="features.f4Desc">Submit your speed results and instantly see how you stack up against our Celina Plains study averages per ISP.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🌐</span>
+          <h3 data-i18n="features.f5Title">Community Dashboard</h3>
+          <p data-i18n="features.f5Desc">Live charts from community-submitted results, filterable by ISP, connection type, and time of day.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">⏱️</span>
+          <h3 data-i18n="features.f6Title">Peak Hour Detection</h3>
+          <p data-i18n="features.f6Desc">Automatically detects if you're testing during peak hours (7–10PM) and factors it into your analysis.</p>
+        </div>
+      </div>
+    </section>
 
-        hamburger.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            hamburger.classList.toggle('active');
-        });
+    <section class="isp-row">
+      <div class="section-label" data-i18n="isps.label">Providers Covered</div>
+      <h2 class="section-title" data-i18n="isps.title">ISPs in This Study</h2>
+      <div class="isp-chips">
+        <span class="isp-chip">PLDT</span>
+        <span class="isp-chip">Globe</span>
+        <span class="isp-chip">Converge</span>
+        <span class="isp-chip">Meridian</span>
+        <span class="isp-chip">Cablelink</span>
+        <span class="isp-chip">Smart</span>
+        <span class="isp-chip">TNT</span>
+        <span class="isp-chip">Dito</span>
+        <span class="isp-chip">TM</span>
+        <span class="isp-chip">Sky Broadband</span>
+      </div>
+    </section>
 
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                navMenu.classList.remove('active');
-                hamburger.classList.remove('active');
-            });
-        });
+    <section class="cta-banner">
+      <div class="cta-inner">
+        <h2 data-i18n="cta.title">See How Your Connection Compares</h2>
+        <p data-i18n="cta.desc">Run a speed test on SpeedTestGo, enter your results, and get an instant analysis against our research benchmarks.</p>
+        <a href="hosted.html" class="btn-primary" data-i18n="cta.btn">⚡ Start Now — It's Free</a>
+      </div>
+    </section>
+  </main>
 
-        document.addEventListener('click', (event) => {
-            if (!event.target.closest('.navbar')) {
-                navMenu.classList.remove('active');
-                hamburger.classList.remove('active');
-            }
-        });
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">CelinaISP Study</div>
+        <div class="footer-brand-sub" data-i18n="footer.desc">ISP Connectivity Performance Research in Celina Plains Subdivision, Philippines.</div>
+      </div>
+      <div class="footer-links-col">
+        <h4 data-i18n="footer.pages">Pages</h4>
+        <ul>
+          <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+          <li><a href="study.html" data-i18n="nav.info">Study Details</a></li>
+          <li><a href="hosted.html" data-i18n="nav.test">Run Test</a></li>
+          <li><a href="results.html" data-i18n="nav.results">Community</a></li>
+        </ul>
+      </div>
+      <div class="footer-links-col">
+        <h4 data-i18n="footer.study">Study</h4>
+        <ul>
+          <li><a href="study.html#info" data-i18n="nav.info">Info</a></li>
+          <li><a href="study.html#research" data-i18n="nav.research">Researchers</a></li>
+          <li><a href="study.html#contact" data-i18n="nav.contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Celina Plains ISP Study. All rights reserved.</span>
+      <span data-i18n="footer.locale">Celina Plains, Philippines</span>
+    </div>
+  </footer>
 
-        const themeToggle = document.getElementById('themeToggle');
-        const langButtons = document.querySelectorAll('.lang-btn');
-        const translatableElements = document.querySelectorAll('[data-i18n]');
+  <script>
+    // Theme
+    const themeBtn = document.getElementById('themeBtn');
+    const applyTheme = (t) => {
+      document.body.classList.toggle('light', t === 'light');
+      themeBtn.textContent = t === 'light' ? '🌙 Dark' : '☀ Light';
+      localStorage.setItem('theme', t);
+    };
+    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    applyTheme(savedTheme);
+    themeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light') ? 'dark' : 'light'));
 
-        const setTheme = (theme) => {
-            document.body.classList.toggle('dark', theme === 'dark');
-            document.body.classList.toggle('light', theme === 'light');
-            if (themeToggle) {
-                themeToggle.setAttribute('aria-pressed', theme === 'dark');
-                themeToggle.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
-            }
-            localStorage.setItem('theme', theme);
-        };
+    // Mobile menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    document.addEventListener('click', (e) => { if (!e.target.closest('nav') && !e.target.closest('.mobile-menu')) mobileMenu.classList.remove('open'); });
 
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-        setTheme(initialTheme);
+    // Language
+    const translations = {
+      en: {
+        'nav.home': 'Home', 'nav.info': 'Info', 'nav.research': 'Researcher',
+        'nav.contact': 'Contact', 'nav.results': 'Community', 'nav.test': 'Run Test',
+        'hero.badge': 'Celina Plains Research Study',
+        'hero.title1': 'ISP Connectivity', 'hero.title2': ' Performance Study',
+        'hero.subtitle': 'A comparative correlational study of internet service providers, combining technical metrics and service quality feedback from residents.',
+        'hero.cta': '⚡ Start Speed Test', 'hero.secondary': 'View Research →',
+        'stat.models': '2', 'stat.modelsLabel': 'Research Frameworks',
+        'stat.isps': '5+', 'stat.ispsLabel': 'ISPs Studied',
+        'stat.respondents': '100', 'stat.respondentsLabel': 'Resident Respondents',
+        'features.label': 'What We Study', 'features.title': 'Built on Real Research',
+        'features.f1Title': 'ISP Comparison', 'features.f1Desc': 'Compare PLDT, Globe, Converge, Meridian, and Cablelink using consistent performance indicators measured in Celina Plains.',
+        'features.f2Title': 'Service Quality (SERVQUAL)', 'features.f2Desc': 'Evaluate reliability, responsiveness, assurance, empathy, and tangibles using direct resident feedback.',
+        'features.f3Title': 'Performance Metrics', 'features.f3Desc': 'Measure download, upload, latency, and jitter during peak and off-peak hours for accurate benchmarks.',
+        'features.f4Title': 'How You Compare', 'features.f4Desc': 'Submit your speed results and instantly see how you stack up against our Celina Plains study averages per ISP.',
+        'features.f5Title': 'Community Dashboard', 'features.f5Desc': 'Live charts from community-submitted results, filterable by ISP, connection type, and time of day.',
+        'features.f6Title': 'Peak Hour Detection', 'features.f6Desc': 'Automatically detects if you\'re testing during peak hours (7–10PM) and factors it into your analysis.',
+        'isps.label': 'Providers Covered', 'isps.title': 'ISPs in This Study',
+        'cta.title': 'See How Your Connection Compares',
+        'cta.desc': 'Run a speed test on SpeedTestGo, enter your results, and get an instant analysis against our research benchmarks.',
+        'cta.btn': '⚡ Start Now — It\'s Free',
+        'footer.desc': 'ISP Connectivity Performance Research in Celina Plains Subdivision, Philippines.',
+        'footer.pages': 'Pages', 'footer.study': 'Study', 'footer.locale': 'Celina Plains, Philippines'
+      },
+      tl: {
+        'nav.home': 'Bahay', 'nav.info': 'Impormasyon', 'nav.research': 'Mananaliksik',
+        'nav.contact': 'Makipag-ugnayan', 'nav.results': 'Komunidad', 'nav.test': 'Mag-test',
+        'hero.badge': 'Pananaliksik sa Celina Plains',
+        'hero.title1': 'Pagganap ng ISP', 'hero.title2': ' Pag-aaral',
+        'hero.subtitle': 'Isang komparatibong korelasyonal na pag-aaral ng mga ISP gamit ang teknikal na sukatan at feedback ng mga residente.',
+        'hero.cta': '⚡ Simulan ang Speed Test', 'hero.secondary': 'Tingnan ang Pananaliksik →',
+        'stat.models': '2', 'stat.modelsLabel': 'Mga Framework',
+        'stat.isps': '5+', 'stat.ispsLabel': 'Mga ISP na Sinuri',
+        'stat.respondents': '100', 'stat.respondentsLabel': 'Mga Respondent',
+        'features.label': 'Ano ang Sinisuri', 'features.title': 'Batay sa Tunay na Pananaliksik',
+        'features.f1Title': 'Paghahambing ng ISP', 'features.f1Desc': 'Ihambing ang PLDT, Globe, Converge, Meridian, at Cablelink gamit ang iisang sukatan sa Celina Plains.',
+        'features.f2Title': 'Kalidad ng Serbisyo (SERVQUAL)', 'features.f2Desc': 'Sinusukat ang reliability, responsiveness, assurance, empathy, at tangibles.',
+        'features.f3Title': 'Mga Sukatan ng Performance', 'features.f3Desc': 'Sinusukat ang download, upload, latency, at jitter sa peak at off-peak hours.',
+        'features.f4Title': 'Paano Ka Kumpara', 'features.f4Desc': 'Isumite ang iyong resulta at agad makita kung paano ito kumpara sa aming mga benchmark.',
+        'features.f5Title': 'Community Dashboard', 'features.f5Desc': 'Live charts mula sa mga resulta ng komunidad, mafi-filter sa ISP, uri ng koneksyon, at oras.',
+        'features.f6Title': 'Pag-detect ng Peak Hour', 'features.f6Desc': 'Awtomatikong dine-detect kung nagta-test ka sa peak hours (7–10PM).',
+        'isps.label': 'Mga Provider', 'isps.title': 'Mga ISP sa Pag-aaral',
+        'cta.title': 'Tingnan Kung Paano ang Iyong Koneksyon',
+        'cta.desc': 'Mag-test sa SpeedTestGo, ilagay ang iyong resulta, at makakuha ng agarang pagsusuri.',
+        'cta.btn': '⚡ Magsimula — Libre',
+        'footer.desc': 'Pananaliksik sa Pagganap ng ISP sa Celina Plains Subdivision, Pilipinas.',
+        'footer.pages': 'Mga Pahina', 'footer.study': 'Pag-aaral', 'footer.locale': 'Celina Plains, Pilipinas'
+      }
+    };
 
-        if (themeToggle) {
-            themeToggle.addEventListener('click', () => {
-                const isDark = document.body.classList.contains('dark');
-                setTheme(isDark ? 'light' : 'dark');
-            });
-        }
-
-        const translations = {
-            en: {
-                'nav.home': 'Home',
-                'nav.info': 'Info',
-                'nav.research': 'Researcher',
-                'nav.contact': 'Contact',
-                'hero.title': 'ISP Connectivity Performance in Celina Plains',
-                'hero.subtitle': 'A comparative correlational study of internet service providers, combining technical metrics and service quality feedback from residents.',
-                'hero.cta': 'Start Speed Test',
-                'secondary.info': 'Info',
-                'secondary.research': 'Researcher',
-                'secondary.contact': 'Contact',
-                'features.clearTitle': 'ISP Comparison',
-                'features.clearDesc': 'Compare PLDT, Globe, Converge, Meridian, and Cablelink using consistent performance indicators.',
-                'features.actionTitle': 'Service Quality (SERVQUAL)',
-                'features.actionDesc': 'Evaluate reliability, responsiveness, assurance, empathy, and tangibles using resident feedback.',
-                'features.basicsTitle': 'Performance Metrics',
-                'features.basicsDesc': 'Measure download, upload, latency, and jitter during peak and off-peak hours.'
-            },
-            tl: {
-                'nav.home': 'Bahay',
-                'nav.info': 'Impormasyon',
-                'nav.research': 'Mananaliksik',
-                'nav.contact': 'Makipag-ugnayan',
-                'hero.title': 'Pagganap ng ISP sa Celina Plains',
-                'hero.subtitle': 'Isang komparatibong korelasyonal na pag-aaral ng mga ISP gamit ang teknikal na sukatan at feedback ng mga residente.',
-                'hero.cta': 'Simulan ang Speed Test',
-                'secondary.info': 'Impormasyon',
-                'secondary.research': 'Mananaliksik',
-                'secondary.contact': 'Makipag-ugnayan',
-                'features.clearTitle': 'Paghahambing ng ISP',
-                'features.clearDesc': 'Ihambing ang PLDT, Globe, Converge, Meridian, at Cablelink gamit ang iisang sukatan.',
-                'features.actionTitle': 'Kalidad ng Serbisyo (SERVQUAL)',
-                'features.actionDesc': 'Sinusukat ang reliability, responsiveness, assurance, empathy, at tangibles gamit ang feedback ng residente.',
-                'features.basicsTitle': 'Mga Sukatan ng Performance',
-                'features.basicsDesc': 'Sukatin ang download, upload, latency, at jitter sa peak at off-peak hours.'
-            }
-        };
-
-        const setLanguage = (lang) => {
-            const dictionary = translations[lang];
-            translatableElements.forEach((el) => {
-                const key = el.getAttribute('data-i18n');
-                if (dictionary && dictionary[key]) {
-                    el.textContent = dictionary[key];
-                }
-            });
-
-            document.documentElement.lang = lang;
-
-            langButtons.forEach((btn) => {
-                const isActive = btn.getAttribute('data-lang') === lang;
-                btn.classList.toggle('active', isActive);
-                btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-            });
-
-            try {
-                localStorage.setItem('preferredLang', lang);
-            } catch (e) {
-                // ignore storage errors
-            }
-        };
-
-        const savedLang = (typeof localStorage !== 'undefined' && localStorage.getItem('preferredLang')) || 'en';
-        setLanguage(savedLang);
-
-        langButtons.forEach((btn) => {
-            btn.addEventListener('click', () => {
-                const lang = btn.getAttribute('data-lang');
-                if (lang) setLanguage(lang);
-            });
-        });
-
-        const sliders = document.querySelectorAll('.card-slider');
-        const sliderTimers = new Map();
-
-        const startSlider = (slider) => {
-            if (sliderTimers.has(slider)) return;
-            const interval = setInterval(() => {
-                const slide = slider.querySelector('.card-slide');
-                if (!slide) return;
-                const step = slide.getBoundingClientRect().width + 18;
-                const maxScroll = slider.scrollWidth - slider.clientWidth;
-                const nextScroll = slider.scrollLeft + step;
-                slider.scrollTo({
-                    left: nextScroll >= maxScroll ? 0 : nextScroll,
-                    behavior: 'smooth'
-                });
-            }, 6000);
-            sliderTimers.set(slider, interval);
-        };
-
-        const stopSlider = (slider) => {
-            const interval = sliderTimers.get(slider);
-            if (interval) {
-                clearInterval(interval);
-                sliderTimers.delete(slider);
-            }
-        };
-
-        const handleWheel = (event, slider) => {
-            if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-            event.preventDefault();
-            const slides = slider.querySelectorAll('.card-slide');
-            if (!slides.length) return;
-            const step = slides.length > 1
-                ? slides[1].offsetLeft - slides[0].offsetLeft
-                : slides[0].offsetWidth + 18;
-            const direction = Math.sign(event.deltaY);
-            const next = slider.scrollLeft + step * direction;
-            slider.scrollTo({ left: next, behavior: 'smooth' });
-        };
-
-        sliders.forEach((slider) => {
-            startSlider(slider);
-            slider.addEventListener('mouseenter', () => stopSlider(slider));
-            slider.addEventListener('mouseleave', () => startSlider(slider));
-            slider.addEventListener('focusin', () => stopSlider(slider));
-            slider.addEventListener('focusout', () => startSlider(slider));
-            slider.addEventListener('touchstart', () => stopSlider(slider), { passive: true });
-            slider.addEventListener('touchend', () => startSlider(slider));
-            slider.addEventListener('wheel', (event) => handleWheel(event, slider), { passive: false });
-        });
-
-        document.querySelectorAll('.card-slide').forEach((card) => {
-            card.addEventListener('wheel', (event) => {
-                const slider = card.closest('.card-slider');
-                if (!slider) return;
-                handleWheel(event, slider);
-            }, { passive: false });
-        });
-    </script>
+    let lang = localStorage.getItem('lang') || 'en';
+    const applyLang = (l) => {
+      lang = l;
+      localStorage.setItem('lang', l);
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const k = el.getAttribute('data-i18n');
+        if (translations[l] && translations[l][k]) el.textContent = translations[l][k];
+      });
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === l));
+    };
+    applyLang(lang);
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => applyLang(btn.dataset.lang)));
+  </script>
 </body>
 </html>

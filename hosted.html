@@ -1,1685 +1,480 @@
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="UTF-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=5.0,user-scalable=yes">
-      <title>Speed Test - SpeedTestGo</title>
-      <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png">
-      <link href="assets/css/index.css" rel="stylesheet" type="text/css" />
-      <link href="assets/css/resultsUI.css" rel="stylesheet" type="text/css" />
-      <style>
-         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-         }
-         html {
-            height: 100%;
-            scrollbar-width: none;
-            overflow-y: auto;
-         }
-         html::-webkit-scrollbar {
-            display: none;
-         }
-         body {
-            margin: 0;
-            font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            padding-top: 0;
-            display: flex;
-            flex-direction: column;
-         }
-         .nav-header {
-            position: sticky;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: var(--nav-bg);
-            backdrop-filter: blur(10px);
-            padding: 18px 30px;
-            box-shadow: 0 2px 20px var(--shadow);
-            border-bottom: 1px solid var(--border);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-         }
-         .nav-header::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(120deg, rgba(var(--accent-rgb), 0.12), transparent 40%);
-            pointer-events: none;
-         }
-         .nav-header > * {
-            position: relative;
-            z-index: 1;
-         }
-         .back-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 0 24px;
-            height: 40px;
-            background: var(--accent-gradient);
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px var(--accent-glow);
-            position: relative;
-            overflow: hidden;
-         }
-         
-         .back-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-         }
-         
-         .back-button:hover::before {
-            left: 100%;
-         }
-         
-         .back-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--accent-glow);
-         }
-         
-         @media (max-width: 768px) {
-            .back-button .btn-text {
-               display: none;
-            }
-            .back-button {
-               padding: 0 16px;
-               min-width: 48px;
-               height: 48px;
-               justify-content: center;
-            }
-            .nav-title {
-               display: none;
-            }
-            .language-toggle {
-               margin-left: auto;
-            }
-            .lang-btn {
-               height: 44px;
-               padding: 0 14px;
-               font-size: 0.85rem;
-            }
-            .theme-toggle {
-               width: 44px;
-               height: 44px;
-            }
-            .nav-header {
-               padding: 12px 20px;
-            }
-         }
-         
-         .nav-title {
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--text);
-            padding: 8px 12px;
-            border-radius: 999px;
-            background: var(--bg-elev);
-            border: 1px solid var(--border);
-            height: 40px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-         }
-         .language-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0;
-            margin-left: auto;
-         }
-         .lang-btn {
-            background: transparent;
-            color: var(--text-muted);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 999px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            height: 40px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-         }
-         .lang-btn.active {
-            background: var(--accent-gradient);
-            color: #ffffff;
-            box-shadow: 0 6px 16px var(--accent-glow);
-         }
-         .lang-btn:hover {
-            color: var(--text);
-            background: var(--bg-soft);
-         }
-         .lang-btn.active:hover {
-            color: #ffffff;
-            background: var(--accent-gradient);
-         }
-         .theme-toggle {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-            margin-left: 12px;
-         }
-         .theme-toggle:hover {
-            background: var(--bg-elev);
-            border-color: var(--accent);
-            transform: scale(1.05);
-         }
-         .theme-toggle:active {
-            transform: scale(0.95);
-         }
-         .manual-input-section {
-            padding: 20px 30px;
-            background: var(--bg);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            z-index: 10;
-         }
-         .toggle-input-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
-            background: var(--accent-gradient);
-            color: white;
-            text-decoration: none;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px var(--accent-glow);
-         }
-         .toggle-input-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--accent-glow);
-         }
-         .inline-form {
-            margin-top: 20px;
-            animation: slideDown 0.3s ease;
-            width: 100%;
-            max-width: 600px;
-         }
-         @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-         }
-         .input-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 20px;
-         }
-         .input-field label {
-            display: block;
-            color: var(--text);
-            font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-         }
-         .input-field input {
-            width: 100%;
-            padding: 10px 14px;
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-         }
-         .input-field input:focus {
-            outline: none;
-            border-color: var(--accent);
-            background: var(--bg-elev);
-            box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.2);
-         }
-         .form-actions {
-            display: flex;
-            justify-content: center;
-         }
-         .submit-btn {
-            padding: 12px 32px;
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px var(--accent-glow);
-         }
-         .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--accent-glow);
-         }
-         @media (max-width: 768px) {
-            .manual-input-section {
-               padding: 16px 20px;
-            }
-            .input-grid {
-               grid-template-columns: 1fr;
-               gap: 12px;
-            }
-            .toggle-input-btn {
-               min-height: 48px;
-               padding: 14px 24px;
-            }
-            .submit-btn {
-               min-height: 48px;
-               padding: 14px 32px;
-            }
-            .input-field input {
-               min-height: 48px;
-               padding: 12px 14px;
-               font-size: 16px;
-            }
-         }
-         #speedtest-container {
-            margin-top: 0;
-            width: 100%;
-            min-height: 600px;
-            overflow: visible;
-            position: relative;
-            z-index: 1;
-            pointer-events: auto;
-            background: var(--bg);
-         }
-         #speedtest-container.hidden {
-            display: none;
-         }
-         #speedtest-container > div {
-            width: 100%;
-            height: 600px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-         }
-         #speedtest-container iframe {
-            display: block;
-            width: 600px;
-            max-width: 100%;
-            height: 600px;
-            min-height: 500px;
-            border: none;
-            scrollbar-width: none;
-         }
-         #speedtest-container iframe::-webkit-scrollbar {
-            display: none;
-         }
-         @media (max-width: 768px) {
-            #speedtest-container {
-               min-height: 500px;
-            }
-            #speedtest-container > div {
-               height: 500px;
-            }
-            #speedtest-container iframe {
-               height: 500px;
-               min-height: 400px;
-            }
-         }
-         
-         #results-container {
-            display: none;
-            padding: 40px 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-            overflow-y: auto;
-            height: 100%;
-         }
-         #results-container.visible {
-            display: block;
-         }
-         .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
-         }
-         .metric-card {
-            background: var(--bg-elev);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-         }
-         .metric-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--accent-gradient);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-         }
-         .metric-card:hover::before {
-            transform: scaleX(1);
-         }
-         .metric-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px var(--shadow);
-         }
-         .metric-icon {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
-         }
-         .metric-label {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
-         }
-         .metric-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 4px;
-         }
-         .metric-unit {
-            font-size: 0.95rem;
-            color: var(--text-soft);
-         }
-         .metric-rating {
-            margin-top: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 999px;
-            display: inline-block;
-         }
-         .rating-excellent { background: #10b981; color: white; }
-         .rating-good { background: #3b82f6; color: white; }
-         .rating-fair { background: #f59e0b; color: white; }
-         .rating-poor { background: #ef4444; color: white; }
-         
-         .overall-score-card {
-            background: var(--bg-elev);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 40px;
-            text-align: center;
-            margin-bottom: 32px;
-         }
-         .overall-score-card h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: var(--text);
-         }
-         .score-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 32px;
-            margin-bottom: 16px;
-         }
-         .score-circle {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: var(--accent-gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: white;
-            box-shadow: 0 8px 24px var(--accent-glow);
-         }
-         .score-grade {
-            font-size: 3rem;
-            font-weight: 700;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-         }
-         .score-description {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            max-width: 600px;
-            margin: 0 auto;
-         }
-         
-         .performance-breakdown,
-         .activities-card,
-         .recommendations-card {
-            background: var(--bg-elev);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 24px;
-         }
-         .performance-breakdown h3,
-         .activities-card h3,
-         .recommendations-card h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-         }
-         .performance-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-         }
-         .performance-item {
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-         }
-         .performance-item h4 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-         }
-         .performance-item p {
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin: 0;
-         }
-         
-         .activities-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-         }
-         .activity-item {
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.3s ease;
-         }
-         .activity-item:hover {
-            background: var(--bg-elev);
-            transform: translateX(4px);
-         }
-         .activity-icon {
-            font-size: 2rem;
-         }
-         .activity-info {
-            flex: 1;
-         }
-         .activity-name {
-            font-weight: 600;
-            color: var(--text);
-            font-size: 0.95rem;
-         }
-         .activity-status {
-            font-size: 0.85rem;
-            margin-top: 4px;
-         }
-         .status-excellent { color: #10b981; }
-         .status-good { color: #3b82f6; }
-         .status-fair { color: #f59e0b; }
-         .status-poor { color: #ef4444; }
-         
-         .recommendations-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-         }
-         .recommendations-list li {
-            background: var(--bg-soft);
-            border-left: 4px solid var(--accent);
-            border-radius: 8px;
-            padding: 16px 20px;
-            color: var(--text);
-            line-height: 1.6;
-            display: flex;
-            align-items: start;
-            gap: 12px;
-         }
-         .recommendations-list li::before {
-            content: '💡';
-            font-size: 1.3rem;
-            flex-shrink: 0;
-         }
-         
-         .summary-card {
-            background: var(--bg-elev);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            margin-top: 24px;
-         }
-         .summary-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-         }
-         .summary-text {
-            color: var(--text);
-            line-height: 1.6;
-            font-size: 1.05rem;
-         }
-         .action-buttons {
-            display: flex;
-            gap: 16px;
-            margin-top: 32px;
-            justify-content: center;
-         }
-         .action-btn {
-            padding: 14px 32px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-         }
-         .btn-primary {
-            background: var(--accent-gradient);
-            color: white;
-            box-shadow: 0 4px 12px var(--accent-glow);
-         }
-         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--accent-glow);
-         }
-         .btn-secondary {
-            background: var(--bg-soft);
-            color: var(--text);
-            border: 1px solid var(--border);
-         }
-         .btn-secondary:hover {
-            background: var(--bg-elev);
-            border-color: var(--accent);
-         }
-         @media (max-width: 768px) {
-            .nav-header {
-               padding: 12px 20px;
-            }
-            .lang-row {
-               padding: 8px 20px 0;
-            }
-            .nav-title {
-               font-size: 16px;
-            }
-            .manual-input-btn {
-               padding: 10px 16px;
-               font-size: 13px;
-            }
-            #results-container {
-               padding: 24px 16px;
-            }
-            .results-grid {
-               grid-template-columns: 1fr;
-               gap: 16px;
-            }
-            .action-buttons {
-               flex-direction: column;
-            }
-            
-            /* Comprehensive Results Mobile */
-            .overall-score-card {
-               padding: 24px 16px;
-            }
-            .score-container {
-               flex-direction: column;
-               gap: 20px;
-            }
-            .score-circle {
-               width: 100px;
-               height: 100px;
-               font-size: 2rem;
-            }
-            .score-grade {
-               font-size: 2.5rem;
-            }
-            
-            .performance-breakdown,
-            .activities-card,
-            .recommendations-card {
-               padding: 20px 16px;
-            }
-            .performance-breakdown h3,
-            .activities-card h3,
-            .recommendations-card h3 {
-               font-size: 1.3rem;
-            }
-            .performance-grid {
-               grid-template-columns: 1fr;
-               gap: 16px;
-            }
-            .performance-item {
-               padding: 16px;
-            }
-            
-            .activities-grid {
-               grid-template-columns: repeat(2, 1fr);
-               gap: 12px;
-            }
-            
-            .activity-item {
-               flex-direction: column;
-               padding: 12px;
-               text-align: center;
-               gap: 8px;
-            }
-            
-            .activity-icon {
-               font-size: 1.8rem;
-            }
-            
-            .activity-info {
-               display: flex;
-               flex-direction: column;
-               align-items: center;
-               gap: 4px;
-            }
-            
-            .activity-name {
-               font-size: 0.8rem;
-               line-height: 1.2;
-            }
-            
-            .activity-status {
-               font-size: 0;
-               margin-top: 0;
-               display: flex;
-               align-items: center;
-               justify-content: center;
-            }
-            
-            /* Hide status text, show only emoji */
-            .activity-status .status-emoji {
-               font-size: 1.5rem;
-            }
-            
-            .activity-status .status-text {
-               display: none;
-            }
-            
-            .recommendations-list li {
-               padding: 12px 16px;
-               font-size: 0.95rem;
-            }
-            
-            .toggle-input-btn,
-            .submit-btn {
-               min-height: 48px;
-               font-size: 16px;
-            }
-            
-            .form-group input {
-               min-height: 48px;
-               font-size: 16px;
-            }
-         }
-         
-         /* Manual Input Modal */
-         .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(5px);
-            z-index: 20000;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-         }
-         
-         .modal-overlay.active {
-            display: flex;
-         }
-         
-         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-         }
-         
-         .modal-content {
-            background: var(--bg-elev);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 20px 60px var(--shadow);
-            animation: slideUp 0.3s ease;
-            position: relative;
-         }
-         .modal-content::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 16px;
-            border: 1px solid rgba(var(--accent-rgb), 0.15);
-            pointer-events: none;
-         }
-         
-         @keyframes slideUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-         }
-         
-         .modal-header {
-            margin-bottom: 24px;
-         }
-         
-         .modal-header h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 0 0 8px 0;
-         }
-         
-         .modal-header p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin: 0;
-         }
-         
-         .form-group {
-            margin-bottom: 20px;
-         }
-         
-         .form-group label {
-            display: block;
-            color: var(--text);
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-         }
-         
-         .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-soft);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-         }
-         
-         .form-group input:focus {
-            outline: none;
-            border-color: var(--accent);
-            background: var(--bg-elev);
-            box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.2);
-         }
-         
-         .form-group small {
-            display: block;
-            color: var(--text-soft);
-            font-size: 0.85rem;
-            margin-top: 4px;
-         }
-         
-         .modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 28px;
-         }
-         
-         .modal-btn {
-            flex: 1;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-         }
-         
-         .modal-btn-primary {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-         }
-         
-         .modal-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-         }
-         
-         .modal-btn-secondary {
-            background: var(--bg-soft);
-            color: var(--text);
-            border: 1px solid var(--border);
-         }
-         
-         .modal-btn-secondary:hover {
-            background: var(--bg-elev);
-         }
-         
-         /* Large Screen Improvements */
-         @media (min-width: 1920px) {
-            .nav-header {
-               padding: 20px 60px;
-               max-width: 2400px;
-               margin: 0 auto;
-            }
-            .manual-input-section {
-               padding: 30px 60px;
-               max-width: 2400px;
-               margin: 0 auto;
-            }
-            #speedtest-container {
-               max-width: 1400px;
-               margin: 0 auto;
-               padding: 40px 60px;
-            }
-            #speedtest-container iframe {
-               width: 800px;
-               height: 700px;
-            }
-            #speedtest-container > div {
-               height: 700px;
-            }
-            #results-container {
-               max-width: 1400px;
-               margin: 0 auto;
-               padding: 60px;
-            }
-            .metrics-grid {
-               grid-template-columns: repeat(4, 1fr);
-               gap: 32px;
-            }
-            .metric-value {
-               font-size: 3rem;
-            }
-            .summary-card {
-               padding: 40px;
-               font-size: 1.1rem;
-            }
-            .inline-form {
-               max-width: 900px;
-               padding: 32px;
-            }
-            .form-group input {
-               font-size: 1.1rem;
-               padding: 16px 18px;
-            }
-            .nav-title {
-               font-size: 16px;
-            }
-            
-            /* Comprehensive Results Large Screen */
-            .overall-score-card {
-               padding: 50px;
-            }
-            .score-circle {
-               width: 140px;
-               height: 140px;
-               font-size: 3rem;
-            }
-            .score-grade {
-               font-size: 3.5rem;
-            }
-            .score-description {
-               font-size: 1.2rem;
-            }
-            
-            .performance-breakdown,
-            .activities-card,
-            .recommendations-card {
-               padding: 40px;
-            }
-            .performance-grid {
-               grid-template-columns: repeat(2, 1fr);
-               gap: 28px;
-            }
-            .performance-item {
-               padding: 24px;
-            }
-            .activities-grid {
-               grid-template-columns: repeat(3, 1fr);
-               gap: 20px;
-            }
-         }
-         
-         @media (min-width: 2560px) {
-            .nav-header,
-            .manual-input-section,
-            #speedtest-container,
-            #results-container {
-               max-width: 2800px;
-            }
-            #speedtest-container iframe {
-               width: 1000px;
-               height: 800px;
-            }
-            #speedtest-container > div {
-               height: 800px;
-            }
-            body {
-               font-size: 18px;
-            }
-         }
-      </style>
-   </head>
-   <body>
-      <div class="nav-header">
-         <a href="index.html" class="back-button">
-            <span>←</span>
-            <span class="btn-text" data-i18n="nav.back">Back to Home</span>
-         </a>
-         <span class="nav-title" data-i18n="nav.title">SpeedTestGo</span>
-         
-         <div class="language-toggle" aria-label="Language toggle">
-            <button class="lang-btn active" type="button" data-lang="en" aria-pressed="true">English</button>
-            <button class="lang-btn" type="button" data-lang="tl" aria-pressed="false">Tagalog</button>
-         </div>
-         
-         <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle dark/light mode">
-            <span id="theme-icon">🌙</span>
-         </button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speed Test — Celina Plains ISP Study</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #07090f; --bg2: #0c1018;
+      --surface: rgba(255,255,255,0.04); --surface2: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+      --text: #f0f4ff; --muted: #7a8aaa;
+      --accent: #4fffb0; --accent2: #38c8ff; --accent3: #7c6fff;
+      --danger: #ff6b6b; --input: rgba(255,255,255,0.05);
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; line-height: 1.6; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 70% 50% at 15% -5%, rgba(79,255,176,0.07) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 85% 105%, rgba(56,200,255,0.06) 0%, transparent 55%); pointer-events: none; z-index: 0; }
+    body::after { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: rgba(7,9,15,0.85); backdrop-filter: blur(16px); }
+    .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-logo .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 6px 12px; border-radius: 8px; transition: color 0.2s, background 0.2s; }
+    .nav-links a:hover { color: var(--text); background: var(--surface2); }
+    .nav-controls { display: flex; align-items: center; gap: 8px; }
+    .lang-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 2px; }
+    .lang-btn { border: none; background: none; color: var(--muted); font: 500 0.8rem 'DM Sans', sans-serif; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .lang-btn.active { background: var(--accent); color: #07090f; font-weight: 700; }
+    .theme-btn { border: 1px solid var(--border); background: var(--surface); color: var(--muted); font: 500 0.8rem 'DM Sans', sans-serif; padding: 7px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .theme-btn:hover { border-color: var(--border2); color: var(--text); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; border: none; background: none; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
+    .mobile-menu { display: none; position: fixed; top: 64px; left: 0; right: 0; background: rgba(7,9,15,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 16px 24px; z-index: 99; flex-direction: column; gap: 4px; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--muted); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1rem; font-weight: 500; }
+
+    main { position: relative; z-index: 1; padding: 80px 24px 60px; max-width: 1200px; margin: 0 auto; }
+    .page-header { padding: 32px 0 36px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+    .section-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .page-header p { color: var(--muted); font-size: 0.95rem; max-width: 560px; }
+
+    .main-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 20px; }
+    .panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 24px; }
+    .panel-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .panel-title .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .span2 { grid-column: span 2; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 0.82rem; color: var(--muted); font-weight: 600; letter-spacing: 0.02em; }
+    .field input, .field select { background: var(--input); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font: 400 0.95rem 'DM Sans', sans-serif; padding: 11px 13px; width: 100%; transition: border-color 0.2s, box-shadow 0.2s; }
+    .field input:focus, .field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,255,176,0.12); }
+    .field select option { background: #0c1018; }
+    .field .hint { font-size: 0.77rem; color: var(--muted); }
+
+    .form-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .btn-primary { background: var(--accent); color: #07090f; font: 700 0.95rem 'DM Sans', sans-serif; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 20px rgba(79,255,176,0.2); }
+    .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .btn-ghost { background: var(--surface2); color: var(--muted); font: 600 0.9rem 'DM Sans', sans-serif; padding: 12px 20px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+    .btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+
+    .iframe-box { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; min-height: 520px; background: #020910; }
+    .iframe-box iframe { display: block; width: 100%; min-height: 520px; border: 0; }
+
+    .results-panel { display: none; margin-top: 20px; }
+    .results-panel.visible { display: block; animation: fadeUp 0.4s ease; }
+
+    .metric-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 16px; }
+    .metric-box { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px; transition: border-color 0.2s, transform 0.2s; }
+    .metric-box:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .metric-lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    .metric-val { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; margin: 4px 0; }
+    .metric-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--surface2); border: 1px solid var(--border); }
+
+    .score-block { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 14px; display: flex; align-items: center; gap: 20px; }
+    .score-circle { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: grid; place-items: center; font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: #07090f; flex-shrink: 0; box-shadow: 0 0 24px rgba(79,255,176,0.25); }
+    .score-meta h3 { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 4px; }
+    .grade-tag { display: inline-block; background: rgba(79,255,176,0.1); border: 1px solid rgba(79,255,176,0.3); color: var(--accent); font-weight: 700; font-size: 0.9rem; padding: 4px 12px; border-radius: 8px; margin-bottom: 6px; }
+    .score-desc { color: var(--muted); font-size: 0.85rem; }
+
+    .analysis-block, .compare-block, .recs-block { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 14px; }
+    .block-title { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 14px; }
+
+    .analysis-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .analysis-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .analysis-item h4 { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; }
+    .analysis-item p { color: var(--muted); font-size: 0.82rem; }
+
+    .compare-desc { color: var(--muted); font-size: 0.83rem; margin-bottom: 14px; }
+    .compare-block { overflow: hidden; }
+    .compare-charts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; min-width: 0; }
+    .cmp-chart { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px 8px; min-width: 0; overflow: hidden; }
+    .cmp-chart h4 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 8px; white-space: normal; word-break: break-word; }
+    .cmp-chart .chart-wrap { position: relative; height: 120px; width: 100%; min-width: 0; }
+    .cmp-chart canvas { display: block; width: 100% !important; height: 100% !important; }
+    .mobile-note { margin-top: 10px; padding: 12px 14px; background: rgba(56,200,255,0.06); border: 1px solid rgba(56,200,255,0.2); border-radius: 10px; color: var(--muted); font-size: 0.83rem; }
+
+    .recs-list { display: flex; flex-direction: column; gap: 8px; list-style: none; }
+    .recs-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.88rem; color: var(--muted); }
+    .recs-list li::before { content: '→'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+    .cta-row { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .count-badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 999px; font-size: 0.8rem; font-weight: 600; padding: 5px 12px; color: var(--muted); }
+    .community-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #07090f; font: 700 0.88rem 'DM Sans', sans-serif; padding: 10px 18px; border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+    .community-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+    /* Light mode */
+    body.light { --bg: #f5f7ff; --bg2: #eef1fb; --surface: rgba(0,0,0,0.03); --surface2: rgba(0,0,0,0.06); --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.14); --text: #0d1117; --muted: #5a6480; --accent: #00a86b; --accent2: #0077cc; --accent3: #5c4dcc; --input: rgba(0,0,0,0.03); }
+    body.light::before { background: radial-gradient(ellipse 70% 50% at 15% -5%, rgba(0,168,107,0.05) 0%, transparent 60%); }
+    body.light::after { background-image: linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px); background-size: 60px 60px; }
+    body.light nav { background: rgba(245,247,255,0.9); }
+    body.light .panel { background: #fff; }
+    body.light .metric-box, body.light .score-block, body.light .analysis-block, body.light .compare-block, body.light .recs-block, body.light .cta-row { background: #fff; }
+    body.light .analysis-item, body.light .cmp-chart { background: #f5f7ff; }
+    body.light .mobile-menu { background: rgba(245,247,255,0.97); }
+    body.light .field input, body.light .field select { background: #fff; color: #0d1117; }
+    body.light .field select option { background: #fff; }
+    body.light .btn-primary { color: #fff; }
+    body.light .score-circle { color: #fff; }
+
+    footer { border-top: 1px solid var(--border); background: var(--bg2); padding: 32px 24px; position: relative; z-index: 1; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .footer-brand { font-family: 'Syne', sans-serif; font-weight: 800; color: var(--text); }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy { color: var(--muted); font-size: 0.8rem; }
+
+    @media (max-width: 1000px) { .main-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 700px) {
+      .hamburger { display: flex; }
+      .nav-links { display: none; }
+      .nav-controls { display: flex; margin-left: auto; }
+      .nav-controls .lang-toggle, .nav-controls .theme-btn { display: none; }
+      .metric-strip { grid-template-columns: repeat(2,1fr); }
+      .analysis-cols, .compare-charts { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .span2 { grid-column: auto; }
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo"><span class="logo-dot"></span>CelinaISP</a>
+    <ul class="nav-links">
+      <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="study.html" data-i18n="nav.study">Study</a></li>
+      <li><a href="results.html" data-i18n="nav.results">Community</a></li>
+    </ul>
+    <div class="nav-controls">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="tl">TL</button>
+      </div>
+      <button class="theme-btn" id="themeBtn">☀ Light</button>
+      <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" data-i18n="nav.home">Home</a>
+    <a href="study.html" data-i18n="nav.study">Study Details</a>
+    <a href="results.html" data-i18n="nav.results">Community Results</a>
+  </div>
+
+  <main>
+    <div class="page-header">
+      <div class="section-label" data-i18n="page.label">Speed Test Tool</div>
+      <h1 data-i18n="page.title">Run Your Speed Test</h1>
+      <p data-i18n="page.subtitle">Test on SpeedTestGo, enter your values below, and get instant analysis against our Celina Plains study benchmarks.</p>
+    </div>
+
+    <div class="main-grid">
+      <div>
+        <div class="panel">
+          <div class="panel-title"><span class="dot"></span><span data-i18n="form.title">Result Input Form</span></div>
+          <form id="speedForm">
+            <div class="form-grid">
+              <div class="field span2">
+                <label data-i18n="f.isp">ISP / Provider</label>
+                <select id="isp" required>
+                  <option value="PLDT">PLDT</option><option value="Globe">Globe</option>
+                  <option value="Converge">Converge</option><option value="Meridian">Meridian</option>
+                  <option value="Cablelink">Cablelink</option><option value="Smart">Smart</option>
+                  <option value="TNT">TNT</option><option value="Dito">Dito</option>
+                  <option value="TM (Touch Mobile)">TM (Touch Mobile)</option>
+                  <option value="Sky Broadband">Sky Broadband</option><option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label data-i18n="f.conn">Connection Type</label>
+                <select id="connType" required>
+                  <option value="fiber">Fiber</option><option value="dsl">DSL</option>
+                  <option value="cable">Cable</option><option value="mobile4g">Mobile Data (4G)</option>
+                  <option value="mobile5g">Mobile Data (5G)</option><option value="fixedWireless">Fixed Wireless</option>
+                </select>
+              </div>
+              <div class="field">
+                <label data-i18n="f.time">Time of Day</label>
+                <select id="timeOfDay" required>
+                  <option value="peak">Peak Hours 7PM–10PM</option>
+                  <option value="offpeak">Off-Peak</option>
+                </select>
+                <span class="hint" id="timeHint"></span>
+              </div>
+              <div class="field"><label data-i18n="f.dl">Download (Mbps)</label><input id="dl" type="number" min="0" step="0.01" required /></div>
+              <div class="field"><label data-i18n="f.ul">Upload (Mbps)</label><input id="ul" type="number" min="0" step="0.01" required /></div>
+              <div class="field"><label data-i18n="f.ping">Ping (ms)</label><input id="ping" type="number" min="0" step="0.01" required /></div>
+              <div class="field"><label data-i18n="f.jitter">Jitter (ms)</label><input id="jitter" type="number" min="0" step="0.01" required /></div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary" data-i18n="f.submit">Show Results</button>
+              <button type="button" id="resetBtn" class="btn-ghost" data-i18n="f.clear">Clear</button>
+            </div>
+          </form>
+
+          <div class="results-panel" id="resultsPanel">
+            <div class="metric-strip">
+              <div class="metric-box"><div class="metric-lbl" data-i18n="m.dl">Download</div><div class="metric-val" id="mDl">—</div><div class="metric-badge" id="bDl"></div></div>
+              <div class="metric-box"><div class="metric-lbl" data-i18n="m.ul">Upload</div><div class="metric-val" id="mUl">—</div><div class="metric-badge" id="bUl"></div></div>
+              <div class="metric-box"><div class="metric-lbl" data-i18n="m.ping">Ping</div><div class="metric-val" id="mPing">—</div><div class="metric-badge" id="bPing"></div></div>
+              <div class="metric-box"><div class="metric-lbl" data-i18n="m.jitter">Jitter</div><div class="metric-val" id="mJitter">—</div><div class="metric-badge" id="bJitter"></div></div>
+            </div>
+            <div class="score-block">
+              <div class="score-circle" id="scoreNum">0</div>
+              <div class="score-meta">
+                <h3 data-i18n="score.title">Overall Score</h3>
+                <div class="grade-tag" id="scoreGrade">—</div>
+                <div class="score-desc" id="scoreDesc"></div>
+              </div>
+            </div>
+            <div class="analysis-block">
+              <div class="block-title" data-i18n="analysis.title">Performance Analysis</div>
+              <div class="analysis-cols">
+                <div class="analysis-item" id="aDl"></div>
+                <div class="analysis-item" id="aUl"></div>
+                <div class="analysis-item" id="aPing"></div>
+                <div class="analysis-item" id="aJitter"></div>
+              </div>
+            </div>
+            <div class="compare-block">
+              <div class="block-title" data-i18n="cmp.title">How You Compare</div>
+              <div class="compare-desc" id="cmpDesc"></div>
+              <div class="compare-charts" id="cmpCharts" style="display:none">
+                <div class="cmp-chart"><h4>Download (Mbps)</h4><div class="chart-wrap"><canvas id="ccDl"></canvas></div></div>
+                <div class="cmp-chart"><h4>Upload (Mbps)</h4><div class="chart-wrap"><canvas id="ccUl"></canvas></div></div>
+                <div class="cmp-chart"><h4>Ping (ms) ↓ lower=better</h4><div class="chart-wrap"><canvas id="ccPing"></canvas></div></div>
+                <div class="cmp-chart"><h4>Jitter (ms) ↓ lower=better</h4><div class="chart-wrap"><canvas id="ccJitter"></canvas></div></div>
+              </div>
+              <div class="mobile-note" id="mobileNote" style="display:none"></div>
+            </div>
+            <div class="recs-block">
+              <div class="block-title" data-i18n="recs.title">Recommendations</div>
+              <ul class="recs-list" id="recsList"></ul>
+            </div>
+            <div class="cta-row">
+              <span class="count-badge" id="countBadge"></span>
+              <a href="results.html" class="community-btn" data-i18n="cta.community">📊 See Community Results</a>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- Manual Input Section -->
-      <div class="manual-input-section">
-         <button class="toggle-input-btn" onclick="toggleManualInput()">
-            <span>📝</span>
-            <span data-i18n="nav.manualInput">Enter Results</span>
-         </button>
-         
-         <div id="inlineInputForm" class="inline-form" style="display: none;">
-            <form id="manualInputForm">
-               <div class="input-grid">
-                  <div class="input-field">
-                     <label for="downloadSpeed" data-i18n="form.downloadLabel">Download (Mbps) *</label>
-                     <input type="number" id="downloadSpeed" step="0.01" min="0" required placeholder="100.50">
-                  </div>
-                  
-                  <div class="input-field">
-                     <label for="uploadSpeed" data-i18n="form.uploadLabel">Upload (Mbps) *</label>
-                     <input type="number" id="uploadSpeed" step="0.01" min="0" required placeholder="20.00">
-                  </div>
-                  
-                  <div class="input-field">
-                     <label for="pingLatency" data-i18n="form.pingLabel">Ping (ms) *</label>
-                     <input type="number" id="pingLatency" step="1" min="0" required placeholder="25">
-                  </div>
-                  
-                  <div class="input-field">
-                     <label for="jitterValue" data-i18n="form.jitterLabel">Jitter (ms) *</label>
-                     <input type="number" id="jitterValue" step="0.1" min="0" required placeholder="5">
-                  </div>
-               </div>
-               
-               <div class="form-actions">
-                  <button type="submit" class="submit-btn" data-i18n="form.analyze">Show Results</button>
-               </div>
-            </form>
-         </div>
+      <div>
+        <div class="panel">
+          <div class="panel-title"><span class="dot"></span><span data-i18n="iframe.title">SpeedTestGo Panel</span></div>
+          <p style="color:var(--muted);font-size:0.85rem;margin-bottom:14px" data-i18n="iframe.hint">Run your test here, then copy the Download, Upload, Ping, and Jitter values into the form.</p>
+          <div class="iframe-box">
+            <iframe src="https://speedtest.ph/" title="SpeedTestGo" scrolling="no" allowfullscreen></iframe>
+          </div>
+        </div>
       </div>
+    </div>
+  </main>
 
-      <div id="speedtest-container">
-         <div>
-            <iframe
-               src="https://speedtest.ph/"
-               scrolling="no"
-               allowfullscreen>
-            </iframe>
-         </div>
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">CelinaISP Study</div>
+      <div class="footer-links">
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="study.html" data-i18n="nav.study">Study</a>
+        <a href="results.html" data-i18n="nav.results">Community</a>
       </div>
+      <div class="footer-copy">© 2026 Celina Plains ISP Study</div>
+    </div>
+  </footer>
+
+  <script>
+    const benchmarks = { PLDT:{dl:85,ul:40,ping:18,jitter:4}, Globe:{dl:62,ul:28,ping:24,jitter:7}, Converge:{dl:110,ul:55,ping:15,jitter:3}, Meridian:{dl:45,ul:20,ping:30,jitter:9}, Cablelink:{dl:38,ul:15,ping:35,jitter:11} };
+    const mobileISPs = new Set(['Smart','TNT','Dito','TM (Touch Mobile)']);
+
+    const themeBtn = document.getElementById('themeBtn');
+    const applyTheme = t => { document.body.classList.toggle('light', t==='light'); themeBtn.textContent = t==='light'?'🌙 Dark':'☀ Light'; localStorage.setItem('theme',t); };
+    applyTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+    themeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light')?'dark':'light'));
+
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    document.addEventListener('click', e => { if(!e.target.closest('nav')&&!e.target.closest('.mobile-menu')) mobileMenu.classList.remove('open'); });
+
+    const timeSelect = document.getElementById('timeOfDay');
+    const timeHint = document.getElementById('timeHint');
+    const detectTime = () => { const h=new Date().getHours(); const peak=h>=19&&h<22; timeSelect.value=peak?'peak':'offpeak'; timeHint.textContent=peak?'⚡ Auto-detected: Peak hours':'✓ Auto-detected: Off-peak'; };
+    detectTime();
+
+    // Firebase Firestore save (replaces localStorage)
+    const saveRecord = async (r) => {
+      try {
+        // Wait for Firebase to initialize
+        while (!window.firestoreReady) await new Promise(resolve => setTimeout(resolve, 50));
+        
+        const { getFirestore, collection, addDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        const db = window.firestoreDB;
+        
+        await addDoc(collection(db, 'submissions'), {
+          ...r,
+          createdAt: new Date().toISOString()
+        });
+        
+        // Get count (optional, for display)
+        const { getDocs, query } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        const q = query(collection(db, 'submissions'));
+        const snapshot = await getDocs(q);
+        return snapshot.size;
+      } catch (error) {
+        console.error('Firebase save error:', error);
+        alert('Error saving to database. Please try again.');
+        return 0;
+      }
+    };
+
+    const rateDl = v => { if(v>=100)return{lbl:'Excellent',score:100}; if(v>=50)return{lbl:'Very Good',score:85}; if(v>=25)return{lbl:'Good',score:70}; if(v>=10)return{lbl:'Fair',score:50}; return{lbl:'Poor',score:30}; };
+    const rateUl = v => { if(v>=35)return{lbl:'Excellent',score:100}; if(v>=10)return{lbl:'Very Good',score:80}; if(v>=5)return{lbl:'Good',score:65}; if(v>=2)return{lbl:'Fair',score:45}; return{lbl:'Poor',score:25}; };
+    const ratePing = v => { if(v<20)return{lbl:'Excellent',score:100}; if(v<50)return{lbl:'Good',score:80}; if(v<100)return{lbl:'Fair',score:60}; return{lbl:'Poor',score:30}; };
+    const rateJitter = v => { if(v<5)return{lbl:'Excellent',score:100}; if(v<10)return{lbl:'Good',score:80}; if(v<20)return{lbl:'Fair',score:60}; return{lbl:'Poor',score:30}; };
+    const overallScore = (dl,ul,ping,jitter) => Math.round(rateDl(dl).score*0.4+rateUl(ul).score*0.25+ratePing(ping).score*0.2+rateJitter(jitter).score*0.15);
+    const gradeMeta = s => { if(s>=90)return{grade:'Grade A',desc:'Outstanding connection quality.'}; if(s>=80)return{grade:'Grade B',desc:'Strong and reliable for most workloads.'}; if(s>=70)return{grade:'Grade C',desc:'Functional but with occasional limits.'}; if(s>=60)return{grade:'Grade D',desc:'Below average — upgrades may help.'}; return{grade:'Grade F',desc:'Poor quality under current conditions.'}; };
+    const analyzeDesc = (v,key) => { if(key==='dl'){if(v>=50)return'Excellent for 4K streaming and multi-device use.';if(v>=20)return'Good for HD streaming and work apps.';return'Fair — basic browsing with occasional buffering.';} if(key==='ul'){if(v>=15)return'Great for video calls, uploads, and cloud sync.';if(v>=5)return'Suitable for standard meetings and uploads.';return'May struggle with uploads and HD calls.';} if(key==='ping'){if(v<40)return'Low latency — great for gaming and real-time calls.';if(v<90)return'Acceptable for most everyday activities.';return'Noticeable lag in calls and games.';} if(v<8)return'Stable link, minimal packet timing variation.';if(v<20)return'Generally stable with occasional inconsistency.';return'Unstable — may impact call and stream quality.'; };
+
+    const makeChart = (id, yourVal, benchVal, unit, lowerBetter) => {
+      if (typeof Chart === 'undefined') return;
+      const canvas = document.getElementById(id);
+      const existing = Chart.getChart(canvas); if(existing) existing.destroy();
+      const isDark = !document.body.classList.contains('light');
+      const mutedColor = isDark?'#7a8aaa':'#5a6480';
+      const gridColor = isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+      const aboveBench = yourVal > benchVal;
+      const yourColor = lowerBetter?(aboveBench?'#ff6b6b':'#4fffb0'):(aboveBench?'#4fffb0':'#ff6b6b');
+      new Chart(canvas.getContext('2d'), {
+        type:'bar',
+        data:{ labels:['You','Study Avg'], datasets:[{data:[yourVal,benchVal], backgroundColor:[yourColor,isDark?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.1)'], borderColor:[yourColor,'transparent'], borderWidth:1, borderRadius:6}]},
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y.toFixed(2)} ${unit}`}}}, scales:{ x:{ticks:{color:mutedColor,font:{size:11}},grid:{color:gridColor}}, y:{beginAtZero:true,ticks:{color:mutedColor,font:{size:10}},grid:{color:gridColor}} } }
+      });
+    };
+
+    document.getElementById('speedForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const isp = document.getElementById('isp').value;
+      const connType = document.getElementById('connType').value;
+      const timeOfDay = document.getElementById('timeOfDay').value;
+      const dl = parseFloat(document.getElementById('dl').value);
+      const ul = parseFloat(document.getElementById('ul').value);
+      const ping = parseFloat(document.getElementById('ping').value);
+      const jitter = parseFloat(document.getElementById('jitter').value);
+      if([dl,ul,ping,jitter].some(v=>isNaN(v)||v<0)){alert('Please enter valid non-negative values.');return;}
       
-      <!-- Results Container -->
-      <div id="results-container">
-         <div class="results-grid">
-            <div class="metric-card">
-               <div class="metric-icon">⬇️</div>
-               <div class="metric-label" data-i18n="results.download">Download</div>
-               <div class="metric-value" id="download-value">0</div>
-               <div class="metric-unit">Mbps</div>
-               <div class="metric-rating" id="download-rating"></div>
-            </div>
-            
-            <div class="metric-card">
-               <div class="metric-icon">⬆️</div>
-               <div class="metric-label" data-i18n="results.upload">Upload</div>
-               <div class="metric-value" id="upload-value">0</div>
-               <div class="metric-unit">Mbps</div>
-               <div class="metric-rating" id="upload-rating"></div>
-            </div>
-            
-            <div class="metric-card">
-               <div class="metric-icon">📡</div>
-               <div class="metric-label" data-i18n="results.ping">Ping</div>
-               <div class="metric-value" id="ping-value">0</div>
-               <div class="metric-unit">ms</div>
-               <div class="metric-rating" id="ping-rating"></div>
-            </div>
-            
-            <div class="metric-card">
-               <div class="metric-icon">📊</div>
-               <div class="metric-label" data-i18n="results.jitter">Jitter</div>
-               <div class="metric-value" id="jitter-value">0</div>
-               <div class="metric-unit">ms</div>
-               <div class="metric-rating" id="jitter-rating"></div>
-            </div>
-         </div>
-         
-         <!-- Overall Score -->
-         <div class="overall-score-card">
-            <h3 data-i18n="results.overallScore">Overall Connection Score</h3>
-            <div class="score-container">
-               <div class="score-circle" id="overall-score">0</div>
-               <div class="score-grade" id="overall-grade">-</div>
-            </div>
-            <div class="score-description" id="score-description"></div>
-         </div>
-         
-         <!-- Performance Breakdown -->
-         <div class="performance-breakdown">
-            <h3 data-i18n="results.performanceTitle">Performance Analysis</h3>
-            <div class="performance-grid">
-               <div class="performance-item" id="download-analysis"></div>
-               <div class="performance-item" id="upload-analysis"></div>
-               <div class="performance-item" id="latency-analysis"></div>
-               <div class="performance-item" id="stability-analysis"></div>
-            </div>
-         </div>
-         
-         <!-- Supported Activities -->
-         <div class="activities-card">
-            <h3 data-i18n="results.activitiesTitle">What You Can Do</h3>
-            <div class="activities-grid" id="activities-list"></div>
-         </div>
-         
-         <!-- Recommendations -->
-         <div class="recommendations-card">
-            <h3 data-i18n="results.recommendationsTitle">Recommendations</h3>
-            <ul class="recommendations-list" id="recommendations-list"></ul>
-         </div>
-         
-         <div class="action-buttons">
-            <button class="action-btn btn-secondary" onclick="resetTest()">
-               <span>🔄</span>
-               <span data-i18n="results.testAgain">Test Again</span>
-            </button>
-            <button class="action-btn btn-primary" onclick="openManualInput()">
-               <span>📝</span>
-               <span data-i18n="results.newInput">New Input</span>
-            </button>
-         </div>
-      </div>
+      const submitBtn = e.target.querySelector('[type="submit"]');
+      submitBtn.textContent = 'Saving...';
+      submitBtn.disabled = true;
       
-      <!-- Manual Input Modal -->
-      <div id="manualInputModal" class="modal-overlay">
-         <div class="modal-content">
-            <div class="modal-header">
-               <h2 data-i18n="modal.title">Enter Speed Test Results</h2>
-               <p data-i18n="modal.subtitle">Input your test results from SpeedTestGo</p>
-            </div>
-            
-            <form id="manualInputForm">
-               <div class="form-group">
-                  <label for="downloadSpeed" data-i18n="form.downloadLabel">Download Speed (Mbps) *</label>
-                  <input type="number" id="downloadSpeed" step="0.01" min="0" required placeholder="e.g., 100.50" data-i18n-placeholder="form.downloadPlaceholder">
-                  <small data-i18n="form.downloadHelp">Your download speed in megabits per second</small>
-               </div>
-               
-               <div class="form-group">
-                  <label for="uploadSpeed" data-i18n="form.uploadLabel">Upload Speed (Mbps) *</label>
-                  <input type="number" id="uploadSpeed" step="0.01" min="0" required placeholder="e.g., 20.00" data-i18n-placeholder="form.uploadPlaceholder">
-                  <small data-i18n="form.uploadHelp">Your upload speed in megabits per second</small>
-               </div>
-               
-               <div class="form-group">
-                  <label for="pingLatency" data-i18n="form.pingLabel">Ping / Latency (ms) *</label>
-                  <input type="number" id="pingLatency" step="1" min="0" required placeholder="e.g., 25" data-i18n-placeholder="form.pingPlaceholder">
-                  <small data-i18n="form.pingHelp">Response time - Typical range: 10-100 ms</small>
-               </div>
-               
-               <div class="form-group">
-                  <label for="jitterValue" data-i18n="form.jitterLabel">Jitter (ms) *</label>
-                  <input type="number" id="jitterValue" step="0.1" min="0" required placeholder="e.g., 5" data-i18n-placeholder="form.jitterPlaceholder">
-                  <small data-i18n="form.jitterHelp">Ping variation - Lower is better (< 10 ms is good)</small>
-               </div>
-               
-               <div class="modal-actions">
-                  <button type="button" class="modal-btn modal-btn-secondary" onclick="closeManualInput()" data-i18n="form.cancel">Cancel</button>
-                  <button type="submit" class="modal-btn modal-btn-primary" data-i18n="form.analyze">Show Results</button>
-               </div>
-            </form>
-         </div>
-      </div>
+      const connLabels={fiber:'Fiber',dsl:'DSL',cable:'Cable',mobile4g:'Mobile Data (4G)',mobile5g:'Mobile Data (5G)',fixedWireless:'Fixed Wireless'};
+      const count = await saveRecord({isp,connectionType:connType,connectionTypeLabel:connLabels[connType]||connType,timeOfDay,timeOfDayLabel:timeOfDay==='peak'?'Peak Hours 7PM–10PM':'Off-Peak',downloadSpeed:dl,uploadSpeed:ul,ping,jitter,timestamp:Date.now()});
       
-      <script>
-         function toggleManualInput() {
-            const form = document.getElementById('inlineInputForm');
-            if (form.style.display === 'none') {
-               form.style.display = 'block';
-            } else {
-               form.style.display = 'none';
-            }
-         }
-         
-         function resetTest() {
-            document.getElementById('speedtest-container').classList.remove('hidden');
-            document.getElementById('results-container').classList.remove('visible');
-         }
-         
-         function showResults(download, upload, ping, jitter) {
-            // Update metric values
-            document.getElementById('download-value').textContent = download.toFixed(2);
-            document.getElementById('upload-value').textContent = upload.toFixed(2);
-            document.getElementById('ping-value').textContent = ping.toFixed(0);
-            document.getElementById('jitter-value').textContent = jitter.toFixed(1);
-            
-            // Add ratings to metrics
-            addMetricRating('download-rating', evaluateDownload(download));
-            addMetricRating('upload-rating', evaluateUpload(upload));
-            addMetricRating('ping-rating', evaluatePing(ping));
-            addMetricRating('jitter-rating', evaluateJitter(jitter));
-            
-            // Calculate overall score
-            const overallScore = calculateOverallScore(download, upload, ping, jitter);
-            displayOverallScore(overallScore);
-            
-            // Generate comprehensive analysis
-            generateComprehensiveAnalysis(download, upload, ping, jitter);
-            
-            // Display supported activities
-            displaySupportedActivities(download, upload, ping, jitter);
-            
-            // Generate recommendations
-            generateRecommendations(download, upload, ping, jitter);
-            
-            // Hide iframe, show results
-            document.getElementById('speedtest-container').classList.add('hidden');
-            document.getElementById('results-container').classList.add('visible');
-         }
-         
-         function addMetricRating(elementId, evaluation) {
-            const element = document.getElementById(elementId);
-            element.textContent = evaluation.label;
-            element.className = 'metric-rating ' + evaluation.class;
-         }
-         
-         function evaluateDownload(speed) {
-            if (speed >= 100) return { label: 'Excellent', class: 'rating-excellent', score: 100 };
-            if (speed >= 50) return { label: 'Very Good', class: 'rating-good', score: 85 };
-            if (speed >= 25) return { label: 'Good', class: 'rating-good', score: 70 };
-            if (speed >= 10) return { label: 'Fair', class: 'rating-fair', score: 50 };
-            return { label: 'Poor', class: 'rating-poor', score: 30 };
-         }
-         
-         function evaluateUpload(speed) {
-            if (speed >= 35) return { label: 'Excellent', class: 'rating-excellent', score: 100 };
-            if (speed >= 10) return { label: 'Very Good', class: 'rating-good', score: 80 };
-            if (speed >= 5) return { label: 'Good', class: 'rating-good', score: 65 };
-            if (speed >= 2) return { label: 'Fair', class: 'rating-fair', score: 45 };
-            return { label: 'Poor', class: 'rating-poor', score: 25 };
-         }
-         
-         function evaluatePing(ping) {
-            if (ping < 20) return { label: 'Excellent', class: 'rating-excellent', score: 100 };
-            if (ping < 50) return { label: 'Good', class: 'rating-good', score: 80 };
-            if (ping < 100) return { label: 'Fair', class: 'rating-fair', score: 60 };
-            if (ping < 150) return { label: 'Poor', class: 'rating-poor', score: 40 };
-            return { label: 'Very Poor', class: 'rating-poor', score: 20 };
-         }
-         
-         function evaluateJitter(jitter) {
-            if (jitter < 5) return { label: 'Excellent', class: 'rating-excellent', score: 100 };
-            if (jitter < 10) return { label: 'Good', class: 'rating-good', score: 80 };
-            if (jitter < 20) return { label: 'Fair', class: 'rating-fair', score: 60 };
-            if (jitter < 30) return { label: 'Poor', class: 'rating-poor', score: 40 };
-            return { label: 'Very Poor', class: 'rating-poor', score: 20 };
-         }
-         
-         function calculateOverallScore(download, upload, ping, jitter) {
-            const downloadScore = evaluateDownload(download).score;
-            const uploadScore = evaluateUpload(upload).score;
-            const pingScore = evaluatePing(ping).score;
-            const jitterScore = evaluateJitter(jitter).score;
-            
-            // Weighted average: Download 40%, Upload 25%, Ping 20%, Jitter 15%
-            const weighted = (downloadScore * 0.4) + (uploadScore * 0.25) + (pingScore * 0.2) + (jitterScore * 0.15);
-            return Math.round(weighted);
-         }
-         
-         function displayOverallScore(score) {
-            document.getElementById('overall-score').textContent = score;
-            
-            let grade, description;
-            if (score >= 90) {
-               grade = 'A+';
-               description = 'Outstanding! Your connection is excellent for all online activities.';
-            } else if (score >= 80) {
-               grade = 'A';
-               description = 'Excellent! Your connection performs very well across all metrics.';
-            } else if (score >= 70) {
-               grade = 'B';
-               description = 'Good! Your connection handles most activities without issues.';
-            } else if (score >= 60) {
-               grade = 'C';
-               description = 'Fair. Your connection works for basic tasks but may struggle with demanding activities.';
-            } else if (score >= 50) {
-               grade = 'D';
-               description = 'Below average. You may experience issues with video calls and streaming.';
-            } else {
-               grade = 'F';
-               description = 'Poor connection. Consider contacting your ISP or upgrading your plan.';
-            }
-            
-            document.getElementById('overall-grade').textContent = grade;
-            document.getElementById('score-description').textContent = description;
-         }
-         
-         function generateComprehensiveAnalysis(download, upload, ping, jitter) {
-            // Download Analysis
-            let downloadHTML = '<h4>⬇️ Download Speed</h4>';
-            if (download >= 100) {
-               downloadHTML += '<p><strong>Excellent</strong> - Perfect for 4K/8K streaming, large file downloads, and multiple simultaneous users.</p>';
-            } else if (download >= 50) {
-               downloadHTML += '<p><strong>Very Good</strong> - Suitable for HD/4K streaming, gaming, and working from home.</p>';
-            } else if (download >= 25) {
-               downloadHTML += '<p><strong>Good</strong> - Adequate for HD streaming, video calls, and web browsing.</p>';
-            } else if (download >= 10) {
-               downloadHTML += '<p><strong>Fair</strong> - Works for SD streaming and basic browsing. HD streaming may buffer.</p>';
-            } else {
-               downloadHTML += '<p><strong>Poor</strong> - Limited to basic web browsing. Streaming and downloads will be slow.</p>';
-            }
-            
-            // Upload Analysis
-            let uploadHTML = '<h4>⬆️ Upload Speed</h4>';
-            if (upload >= 35) {
-               uploadHTML += '<p><strong>Excellent</strong> - Perfect for content creators, live streaming, and video conferencing.</p>';
-            } else if (upload >= 10) {
-               uploadHTML += '<p><strong>Very Good</strong> - Suitable for HD video calls, cloud backups, and file sharing.</p>';
-            } else if (upload >= 5) {
-               uploadHTML += '<p><strong>Good</strong> - Adequate for standard video calls and uploading photos.</p>';
-            } else if (upload >= 2) {
-               uploadHTML += '<p><strong>Fair</strong> - Limited for video calls. Cloud uploads will be slow.</p>';
-            } else {
-               uploadHTML += '<p><strong>Poor</strong> - Very limited upload capability. Video calls may not work well.</p>';
-            }
-            
-            // Latency Analysis
-            let latencyHTML = '<h4>📡 Latency (Ping)</h4>';
-            if (ping < 20) {
-               latencyHTML += '<p><strong>Excellent</strong> - Ideal for competitive gaming and real-time applications. Virtually no delay.</p>';
-            } else if (ping < 50) {
-               latencyHTML += '<p><strong>Good</strong> - Great for gaming and video conferencing with minimal delay.</p>';
-            } else if (ping < 100) {
-               latencyHTML += '<p><strong>Fair</strong> - Acceptable for most activities. Slight delay in online games.</p>';
-            } else if (ping < 150) {
-               latencyHTML += '<p><strong>Poor</strong> - Noticeable delay in games and video calls.</p>';
-            } else {
-               latencyHTML += '<p><strong>Very Poor</strong> - Significant lag. Real-time activities will be difficult.</p>';
-            }
-            
-            // Stability Analysis
-            let stabilityHTML = '<h4>📊 Stability (Jitter)</h4>';
-            if (jitter < 5) {
-               stabilityHTML += '<p><strong>Excellent</strong> - Very stable connection. Consistent performance for all activities.</p>';
-            } else if (jitter < 10) {
-               stabilityHTML += '<p><strong>Good</strong> - Stable connection with minimal variation.</p>';
-            } else if (jitter < 20) {
-               stabilityHTML += '<p><strong>Fair</strong> - Moderate stability. Occasional quality drops in video/audio.</p>';
-            } else if (jitter < 30) {
-               stabilityHTML += '<p><strong>Poor</strong> - Unstable connection. Frequent interruptions likely.</p>';
-            } else {
-               stabilityHTML += '<p><strong>Very Poor</strong> - Highly unstable. Quality issues will be common.</p>';
-            }
-            
-            document.getElementById('download-analysis').innerHTML = downloadHTML;
-            document.getElementById('upload-analysis').innerHTML = uploadHTML;
-            document.getElementById('latency-analysis').innerHTML = latencyHTML;
-            document.getElementById('stability-analysis').innerHTML = stabilityHTML;
-         }
-         
-         function displaySupportedActivities(download, upload, ping, jitter) {
-            const activities = [
-               { name: 'Web Browsing', icon: '🌐', minDown: 5, minUp: 1, maxPing: 150, maxJitter: 50 },
-               { name: 'Email', icon: '📧', minDown: 1, minUp: 1, maxPing: 200, maxJitter: 50 },
-               { name: 'Social Media', icon: '📱', minDown: 5, minUp: 3, maxPing: 150, maxJitter: 40 },
-               { name: 'Music Streaming', icon: '🎵', minDown: 2, minUp: 0.5, maxPing: 150, maxJitter: 30 },
-               { name: 'SD Video (480p)', icon: '📺', minDown: 3, minUp: 1, maxPing: 150, maxJitter: 30 },
-               { name: 'HD Video (720p)', icon: '🎬', minDown: 5, minUp: 1, maxPing: 100, maxJitter: 25 },
-               { name: 'Full HD (1080p)', icon: '📽️', minDown: 10, minUp: 3, maxPing: 100, maxJitter: 25 },
-               { name: '4K Streaming', icon: '🖥️', minDown: 25, minUp: 5, maxPing: 100, maxJitter: 20 },
-               { name: 'Video Calling', icon: '📹', minDown: 3, minUp: 3, maxPing: 100, maxJitter: 30 },
-               { name: 'HD Video Calls', icon: '💻', minDown: 10, minUp: 5, maxPing: 80, maxJitter: 20 },
-               { name: 'Online Gaming', icon: '🎮', minDown: 15, minUp: 5, maxPing: 50, maxJitter: 20 },
-               { name: 'Cloud Gaming', icon: '☁️', minDown: 35, minUp: 10, maxPing: 40, maxJitter: 15 },
-               { name: 'Large File Downloads', icon: '⬇️', minDown: 50, minUp: 5, maxPing: 150, maxJitter: 40 },
-               { name: 'Cloud Backup', icon: '💾', minDown: 5, minUp: 20, maxPing: 150, maxJitter: 30 },
-            ];
-            
-            let html = '';
-            activities.forEach(activity => {
-               const supportsDownload = download >= activity.minDown;
-               const supportsUpload = upload >= activity.minUp;
-               const supportsPing = ping <= activity.maxPing;
-               const supportsJitter = jitter <= activity.maxJitter;
-               
-               const supported = supportsDownload && supportsUpload && supportsPing && supportsJitter;
-               const marginal = (download >= activity.minDown * 0.7) && (upload >= activity.minUp * 0.7) && 
-                              (ping <= activity.maxPing * 1.3) && (jitter <= activity.maxJitter * 1.3);
-               
-               let status, statusClass, statusText;
-               if (supported) {
-                  status = '✅';
-                  statusClass = 'status-excellent';
-                  statusText = 'Fully Supported';
-               } else if (marginal) {
-                  status = '⚠️';
-                  statusClass = 'status-fair';
-                  statusText = 'May Work';
-               } else {
-                  status = '❌';
-                  statusClass = 'status-poor';
-                  statusText = 'Not Supported';
-               }
-               
-               html += `
-                  <div class="activity-item">
-                     <div class="activity-icon">${activity.icon}</div>
-                     <div class="activity-info">
-                        <div class="activity-name">${activity.name}</div>
-                        <div class="activity-status ${statusClass}">
-                           <span class="status-emoji">${status}</span>
-                           <span class="status-text">${statusText}</span>
-                        </div>
-                     </div>
-                  </div>
-               `;
-            });
-            
-            document.getElementById('activities-list').innerHTML = html;
-         }
-         
-         function generateRecommendations(download, upload, ping, jitter) {
-            const recommendations = [];
-            
-            // Download recommendations
-            if (download < 25) {
-               recommendations.push('Consider upgrading your internet plan for better download speeds. Current speed may struggle with HD streaming.');
-            } else if (download < 100 && download >= 50) {
-               recommendations.push('Your download speed is good for most needs. Consider upgrading if you frequently stream 4K content or have multiple users.');
-            }
-            
-            // Upload recommendations
-            if (upload < 5) {
-               recommendations.push('Your upload speed is limited. Video calls and cloud uploads may be slow. Consider upgrading if you work from home.');
-            } else if (upload < 10) {
-               recommendations.push('Upload speed is adequate for basic needs. Upgrade if you frequently share large files or stream content.');
-            }
-            
-            // Ping recommendations
-            if (ping > 100) {
-               recommendations.push('High latency detected. Contact your ISP if this persists. Close background applications that may be using bandwidth.');
-            } else if (ping > 50) {
-               recommendations.push('Latency is moderate. Online gaming experience may be affected. Try using a wired connection for better performance.');
-            } else {
-               recommendations.push('Excellent latency! Your connection is great for real-time applications and gaming.');
-            }
-            
-            // Jitter recommendations
-            if (jitter > 20) {
-               recommendations.push('High jitter indicates an unstable connection. Run the test at different times to identify patterns. Consider contacting your ISP.');
-            } else if (jitter > 10) {
-               recommendations.push('Moderate jitter detected. Video call quality may vary. Reduce the number of connected devices if possible.');
-            } else {
-               recommendations.push('Connection stability is excellent! Your internet performs consistently.');
-            }
-            
-            // General recommendations
-            const overallScore = calculateOverallScore(download, upload, ping, jitter);
-            if (overallScore < 60) {
-               recommendations.push('Your overall connection quality is below average. Consider switching ISPs or upgrading your plan.');
-            }
-            
-            if (ping > 50 || jitter > 15) {
-               recommendations.push('For better performance, use a wired Ethernet connection instead of WiFi when possible.');
-            }
-            
-            recommendations.push('Run multiple tests at different times of the day to get a complete picture of your internet performance.');
-            
-            let html = '';
-            recommendations.forEach(rec => {
-               html += `<li>${rec}</li>`;
-            });
-            
-            document.getElementById('recommendations-list').innerHTML = html;
-         }
-         
-         
-         // Handle form submission
-         document.getElementById('manualInputForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const download = parseFloat(document.getElementById('downloadSpeed').value) || 0;
-            const upload = parseFloat(document.getElementById('uploadSpeed').value) || 0;
-            const ping = parseFloat(document.getElementById('pingLatency').value) || 0;
-            const jitter = parseFloat(document.getElementById('jitterValue').value) || 0;
-            
-            showResults(download, upload, ping, jitter);
-            
-            // Hide inline form and reset
-            document.getElementById('inlineInputForm').style.display = 'none';
-            document.getElementById('manualInputForm').reset();
-         });
-      </script>
-      <script>
-         const langButtons = document.querySelectorAll('.lang-btn');
-         const translatableElements = document.querySelectorAll('[data-i18n]');
-         const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
+      submitBtn.textContent = i18n[lang]['f.submit'] || 'Show Results';
+      submitBtn.disabled = false;
 
-         const translations = {
-            en: {
-               'nav.back': 'Back to Home',
-               'nav.title': 'SpeedTestGo',
-               'nav.manualInput': 'Enter Results',
-               'modal.title': 'Enter Speed Test Results',
-               'modal.subtitle': 'Input your test results from SpeedTestGo',
-               'form.downloadLabel': 'Download (Mbps) *',
-               'form.downloadPlaceholder': 'e.g., 100.50',
-               'form.downloadHelp': 'Your download speed in megabits per second',
-               'form.uploadLabel': 'Upload (Mbps) *',
-               'form.uploadPlaceholder': 'e.g., 20.00',
-               'form.uploadHelp': 'Your upload speed in megabits per second',
-               'form.pingLabel': 'Ping (ms) *',
-               'form.pingPlaceholder': 'e.g., 25',
-               'form.pingHelp': 'Response time - Typical range: 10-100 ms',
-               'form.jitterLabel': 'Jitter (ms) *',
-               'form.jitterPlaceholder': 'e.g., 5',
-               'form.jitterHelp': 'Ping variation - Lower is better (< 10 ms is good)',
-               'form.cancel': 'Cancel',
-               'form.analyze': 'Show Results',
-               'results.download': 'Download',
-               'results.upload': 'Upload',
-               'results.ping': 'Ping',
-               'results.jitter': 'Jitter',
-               'results.summaryTitle': 'Connection Analysis',
-               'results.overallScore': 'Overall Connection Score',
-               'results.performanceTitle': 'Performance Analysis',
-               'results.activitiesTitle': 'What You Can Do',
-               'results.recommendationsTitle': 'Recommendations',
-               'results.testAgain': 'Test Again',
-               'results.newInput': 'New Input'
-            },
-            tl: {
-               'nav.back': 'Bumalik sa Home',
-               'nav.title': 'SpeedTestGo',
-               'nav.manualInput': 'Ilagay ang Resulta',
-               'modal.title': 'Ilagay ang Resulta ng Speed Test',
-               'modal.subtitle': 'Ilagay ang resulta ng test mula sa SpeedTestGo',
-               'form.downloadLabel': 'Download (Mbps) *',
-               'form.downloadPlaceholder': 'hal., 100.50',
-               'form.downloadHelp': 'Bilis ng download sa megabits kada segundo',
-               'form.uploadLabel': 'Upload (Mbps) *',
-               'form.uploadPlaceholder': 'hal., 20.00',
-               'form.uploadHelp': 'Bilis ng upload sa megabits kada segundo',
-               'form.pingLabel': 'Ping (ms) *',
-               'form.pingPlaceholder': 'hal., 25',
-               'form.pingHelp': 'Oras ng tugon - karaniwang saklaw: 10-100 ms',
-               'form.jitterLabel': 'Jitter (ms) *',
-               'form.jitterPlaceholder': 'hal., 5',
-               'form.jitterHelp': 'Pagbabago ng ping - Mas mababa ay mas mabuti (< 10 ms ay mabuti)',
-               'form.cancel': 'Kanselahin',
-               'form.analyze': 'Ipakita ang Resulta',
-               'results.download': 'Download',
-               'results.upload': 'Upload',
-               'results.ping': 'Ping',
-               'results.jitter': 'Jitter',
-               'results.summaryTitle': 'Pagsusuri ng Koneksyon',
-               'results.overallScore': 'Kabuuang Puntos ng Koneksyon',
-               'results.performanceTitle': 'Pagsusuri ng Pagganap',
-               'results.activitiesTitle': 'Ano ang Maaari Mong Gawin',
-               'results.recommendationsTitle': 'Mga Rekomendasyon',
-               'results.testAgain': 'Subukan Muli',
-               'results.newInput': 'Bagong Input'
-            }
-         };
+      document.getElementById('mDl').textContent=`${dl.toFixed(2)} Mbps`;
+      document.getElementById('mUl').textContent=`${ul.toFixed(2)} Mbps`;
+      document.getElementById('mPing').textContent=`${ping.toFixed(2)} ms`;
+      document.getElementById('mJitter').textContent=`${jitter.toFixed(2)} ms`;
+      document.getElementById('bDl').textContent=rateDl(dl).lbl;
+      document.getElementById('bUl').textContent=rateUl(ul).lbl;
+      document.getElementById('bPing').textContent=ratePing(ping).lbl;
+      document.getElementById('bJitter').textContent=rateJitter(jitter).lbl;
 
-         let currentLang = 'en';
+      const score=overallScore(dl,ul,ping,jitter); const meta=gradeMeta(score);
+      document.getElementById('scoreNum').textContent=score;
+      document.getElementById('scoreGrade').textContent=meta.grade;
+      document.getElementById('scoreDesc').textContent=meta.desc;
 
-         const t = (key) => {
-            const dictionary = translations[currentLang] || translations.en;
-            return dictionary[key] || translations.en[key] || key;
-         };
+      document.getElementById('aDl').innerHTML=`<h4>Download</h4><p>${analyzeDesc(dl,'dl')}</p>`;
+      document.getElementById('aUl').innerHTML=`<h4>Upload</h4><p>${analyzeDesc(ul,'ul')}</p>`;
+      document.getElementById('aPing').innerHTML=`<h4>Latency</h4><p>${analyzeDesc(ping,'ping')}</p>`;
+      document.getElementById('aJitter').innerHTML=`<h4>Stability</h4><p>${analyzeDesc(jitter,'jitter')}</p>`;
 
-         const applyTranslations = () => {
-            translatableElements.forEach((el) => {
-               const key = el.getAttribute('data-i18n');
-               if (key) {
-                  el.textContent = t(key);
-               }
-            });
-            placeholderElements.forEach((el) => {
-               const key = el.getAttribute('data-i18n-placeholder');
-               if (key) {
-                  el.setAttribute('placeholder', t(key));
-               }
-            });
-            document.documentElement.lang = currentLang;
-         };
+      const cmpDesc=document.getElementById('cmpDesc');
+      const cmpCharts=document.getElementById('cmpCharts');
+      const mobileNote=document.getElementById('mobileNote');
+      cmpCharts.style.display='none'; mobileNote.style.display='none';
+      document.getElementById('resultsPanel').classList.add('visible');
 
-         const setLanguage = (lang) => {
-            currentLang = translations[lang] ? lang : 'en';
-            applyTranslations();
-            langButtons.forEach((btn) => {
-               const isActive = btn.getAttribute('data-lang') === currentLang;
-               btn.classList.toggle('active', isActive);
-               btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-            });
-            try {
-               localStorage.setItem('preferredLang', currentLang);
-            } catch (e) {
-               // ignore storage errors
-            }
-         };
+      if(benchmarks[isp]){
+        const b=benchmarks[isp];
+        cmpDesc.textContent=`Benchmark: ${isp} study average from Celina Plains research.`;
+        cmpCharts.style.display='grid';
+        try {
+          makeChart('ccDl',dl,b.dl,'Mbps',false);
+          makeChart('ccUl',ul,b.ul,'Mbps',false);
+          makeChart('ccPing',ping,b.ping,'ms',true);
+          makeChart('ccJitter',jitter,b.jitter,'ms',true);
+        } catch (error) {
+          cmpCharts.style.display='none';
+        }
+      } else if(mobileISPs.has(isp)){
+        cmpDesc.textContent='No fixed benchmark available for this mobile provider.';
+        mobileNote.style.display='block';
+        mobileNote.textContent='Mobile data benchmarks vary widely — your result reflects real-world conditions in Celina Plains.';
+      } else {
+        cmpDesc.textContent='No fixed benchmark available for this provider yet.';
+      }
 
-         const savedLang = localStorage.getItem('preferredLang') || 'en';
-         setLanguage(savedLang);
+      const recs=['Retest at different times to confirm consistency.'];
+      if(dl<25)recs.push('Consider upgrading to a higher-speed plan for better download performance.');
+      if(ul<8)recs.push('Low upload speed may affect video calls and cloud backups.');
+      if(ping>70)recs.push('High latency detected. Try using a wired Ethernet connection.');
+      if(jitter>15)recs.push('High jitter may affect call quality. Limit background traffic during calls.');
+      document.getElementById('recsList').innerHTML=recs.map(r=>`<li>${r}</li>`).join('');
+      document.getElementById('countBadge').textContent=`${count} submission${count!==1?'s':''} saved`;
+      document.getElementById('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});
+    });
 
-         langButtons.forEach((btn) => {
-            btn.addEventListener('click', () => {
-               const lang = btn.getAttribute('data-lang');
-               if (lang) setLanguage(lang);
-            });
-         });
-      </script>
-      <script>
-         const savedTheme = localStorage.getItem('theme');
-         const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-         const initialTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-         document.body.classList.toggle('dark', initialTheme === 'dark');
-         document.body.classList.toggle('light', initialTheme === 'light');
-         
-         // Update theme icon based on current theme
-         function updateThemeIcon() {
-            const isDark = document.body.classList.contains('dark');
-            document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙';
-         }
-         
-         // Toggle theme function
-         function toggleTheme() {
-            const isDark = document.body.classList.contains('dark');
-            const newTheme = isDark ? 'light' : 'dark';
-            
-            document.body.classList.remove('dark', 'light');
-            document.body.classList.add(newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon();
-         }
-         
-         // Initialize icon
-         updateThemeIcon();
-      </script>
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('speedForm').reset();
+      document.getElementById('resultsPanel').classList.remove('visible');
+      detectTime();
+    });
 
-   </body>
+    const i18n = {
+      en:{'nav.home':'Home','nav.study':'Study','nav.results':'Community','page.label':'Speed Test Tool','page.title':'Run Your Speed Test','page.subtitle':'Test on SpeedTestGo, enter your values below, and get instant analysis against our Celina Plains study benchmarks.','form.title':'Result Input Form','f.isp':'ISP / Provider','f.conn':'Connection Type','f.time':'Time of Day','f.dl':'Download (Mbps)','f.ul':'Upload (Mbps)','f.ping':'Ping (ms)','f.jitter':'Jitter (ms)','f.submit':'Show Results','f.clear':'Clear','m.dl':'Download','m.ul':'Upload','m.ping':'Ping','m.jitter':'Jitter','score.title':'Overall Score','analysis.title':'Performance Analysis','cmp.title':'How You Compare','recs.title':'Recommendations','cta.community':'📊 See Community Results','iframe.title':'SpeedTestGo Panel','iframe.hint':'Run your test here, then copy the Download, Upload, Ping, and Jitter values into the form.'},
+      tl:{'nav.home':'Bahay','nav.study':'Pag-aaral','nav.results':'Komunidad','page.label':'Speed Test Tool','page.title':'Patakbuhin ang Speed Test','page.subtitle':'Mag-test sa SpeedTestGo, ilagay ang iyong mga values, at makakuha ng agarang pagsusuri laban sa aming mga benchmark.','form.title':'Form ng Resulta','f.isp':'ISP / Provider','f.conn':'Uri ng Koneksyon','f.time':'Oras ng Araw','f.dl':'Download (Mbps)','f.ul':'Upload (Mbps)','f.ping':'Ping (ms)','f.jitter':'Jitter (ms)','f.submit':'Ipakita ang Resulta','f.clear':'I-clear','m.dl':'Download','m.ul':'Upload','m.ping':'Ping','m.jitter':'Jitter','score.title':'Kabuuang Score','analysis.title':'Pagsusuri ng Performance','cmp.title':'Paano Ka Kumpara','recs.title':'Mga Rekomendasyon','cta.community':'📊 Tingnan ang Community Results','iframe.title':'SpeedTestGo Panel','iframe.hint':'Patakbuhin ang test dito, tapos ilagay ang Download, Upload, Ping, at Jitter sa form.'}
+    };
+    let lang=localStorage.getItem('lang')||'en';
+    const applyLang=l=>{lang=l;localStorage.setItem('lang',l);document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(i18n[l]?.[k])el.textContent=i18n[l][k];});document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));};
+    applyLang(lang);
+    document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>applyLang(b.dataset.lang)));
+  </script>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, getDocs, query, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    // ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
+    // Get this from: Firebase Console → Project Settings → General → Your apps → Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBg8pY1KD-K5r447A_Enq0de1c1TWScQnE",
+      authDomain: "celina-isp-study.firebaseapp.com",
+      projectId: "celina-isp-study",
+      storageBucket: "celina-isp-study.firebasestorage.app",
+      messagingSenderId: "601030738633",
+      appId: "1:601030738633:web:d861e03b3490c4aa7a8318",
+      measurementId: "G-F8RXD1H2QZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.firestoreDB = db;
+    window.firestoreReady = true;
+  </script>
+</body>
 </html>
-
-
-

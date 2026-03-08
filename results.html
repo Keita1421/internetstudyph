@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community Results — Celina Plains ISP Study</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #07090f; --bg2: #0c1018;
+      --surface: rgba(255,255,255,0.04); --surface2: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+      --text: #f0f4ff; --muted: #7a8aaa;
+      --accent: #4fffb0; --accent2: #38c8ff; --accent3: #7c6fff;
+      --danger: #ff6b6b; --input: rgba(255,255,255,0.05);
+      --isp-pldt: #3b82f6; --isp-globe: #ef4444; --isp-converge: #10b981;
+      --isp-meridian: #f59e0b; --isp-cablelink: #8b5cf6;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; line-height: 1.6; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 70% 50% at 20% -5%, rgba(79,255,176,0.07) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 105%, rgba(56,200,255,0.06) 0%, transparent 55%); pointer-events: none; z-index: 0; }
+    body::after { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: rgba(7,9,15,0.85); backdrop-filter: blur(16px); }
+    .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-logo .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 6px 12px; border-radius: 8px; transition: color 0.2s, background 0.2s; }
+    .nav-links a:hover { color: var(--text); background: var(--surface2); }
+    .nav-cta { background: var(--accent) !important; color: #07090f !important; font-weight: 700 !important; }
+    .nav-controls { display: flex; align-items: center; gap: 8px; }
+    .lang-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 2px; }
+    .lang-btn { border: none; background: none; color: var(--muted); font: 500 0.8rem 'DM Sans', sans-serif; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .lang-btn.active { background: var(--accent); color: #07090f; font-weight: 700; }
+    .theme-btn { border: 1px solid var(--border); background: var(--surface); color: var(--muted); font: 500 0.8rem 'DM Sans', sans-serif; padding: 7px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .theme-btn:hover { border-color: var(--border2); color: var(--text); }
+    .clear-btn { border: 1px solid rgba(255,107,107,0.3); background: rgba(255,107,107,0.08); color: #ff6b6b; font: 500 0.8rem 'DM Sans', sans-serif; padding: 7px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .export-btn { border: 1px solid rgba(56,200,255,0.35); background: rgba(56,200,255,0.1); color: var(--accent2); font: 500 0.8rem 'DM Sans', sans-serif; padding: 7px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .export-btn:hover { border-color: rgba(56,200,255,0.6); background: rgba(56,200,255,0.16); }
+    .clear-btn:hover { border-color: rgba(255,107,107,0.6); background: rgba(255,107,107,0.14); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; border: none; background: none; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
+    .mobile-menu { display: none; position: fixed; top: 64px; left: 0; right: 0; background: rgba(7,9,15,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 16px 24px; z-index: 99; flex-direction: column; gap: 4px; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--muted); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1rem; font-weight: 500; }
+
+    main { position: relative; z-index: 1; padding: 80px 24px 60px; max-width: 1300px; margin: 0 auto; }
+
+    .page-header { padding: 32px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 28px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .page-header-left {}
+    .section-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .page-header p { color: var(--muted); font-size: 0.95rem; max-width: 520px; }
+    .count-badge { background: rgba(79,255,176,0.1); border: 1px solid rgba(79,255,176,0.25); color: var(--accent); font-size: 0.82rem; font-weight: 700; padding: 6px 14px; border-radius: 999px; white-space: nowrap; }
+
+    /* Stat strip */
+    .stat-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 28px; }
+    .stat-box { background: var(--bg2); padding: 20px; transition: background 0.2s; }
+    .stat-box:hover { background: var(--surface2); }
+    .stat-lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 4px; }
+    .stat-val { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+
+    /* Charts grid */
+    .charts-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 28px; }
+    .chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+    .chart-card h3 { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 14px; }
+    .chart-card canvas { display: block; }
+    .full-width { grid-column: 1 / -1; }
+
+    /* Filters */
+    .filters { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 0.78rem; color: var(--muted); font-weight: 600; letter-spacing: 0.03em; }
+    .field select, .field input { background: var(--input); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font: 400 0.9rem 'DM Sans', sans-serif; padding: 10px 12px; width: 100%; transition: border-color 0.2s; }
+    .field select:focus, .field input:focus { outline: none; border-color: var(--accent); }
+    .field select option { background: #0c1018; }
+
+    /* Table */
+    .table-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; overflow: auto; max-height: 520px; }
+    table { width: 100%; min-width: 900px; border-collapse: collapse; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 0.88rem; text-align: left; }
+    th { position: sticky; top: 0; background: var(--bg2); color: var(--muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; z-index: 1; cursor: pointer; user-select: none; transition: color 0.2s; }
+    th:hover { color: var(--text); }
+    tbody tr:hover { background: rgba(79,255,176,0.04); }
+    .empty-row { text-align: center; color: var(--muted); font-style: italic; padding: 40px; }
+
+    /* ISP color dots */
+    .isp-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+    /* Light mode */
+    body.light { --bg: #f5f7ff; --bg2: #eef1fb; --surface: rgba(0,0,0,0.03); --surface2: rgba(0,0,0,0.06); --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.14); --text: #0d1117; --muted: #5a6480; --accent: #00a86b; --accent2: #0077cc; --accent3: #5c4dcc; --input: rgba(0,0,0,0.03); }
+    body.light::before { background: radial-gradient(ellipse 70% 50% at 20% -5%, rgba(0,168,107,0.05) 0%, transparent 60%); }
+    body.light::after { background-image: linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px); background-size: 60px 60px; }
+    body.light nav { background: rgba(245,247,255,0.9); }
+    body.light .stat-box, body.light .chart-card, body.light .filters, body.light .table-wrap { background: #fff; }
+    body.light .mobile-menu { background: rgba(245,247,255,0.97); }
+    body.light .field select, body.light .field input { background: #fff; color: #0d1117; }
+    body.light .field select option { background: #fff; }
+    body.light th { background: #fff; }
+
+    footer { border-top: 1px solid var(--border); background: var(--bg2); padding: 32px 24px; position: relative; z-index: 1; }
+    .footer-inner { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .footer-brand { font-family: 'Syne', sans-serif; font-weight: 800; color: var(--text); }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy { color: var(--muted); font-size: 0.8rem; }
+
+    @media (max-width: 1100px) { .stat-strip { grid-template-columns: repeat(2,1fr); } .charts-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-links { display: none; }
+      .nav-controls { display: flex; margin-left: auto; }
+      .nav-controls .export-btn, .nav-controls .lang-toggle, .nav-controls .theme-btn { display: none; }
+      .filters { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 480px) { .filters { grid-template-columns: 1fr; } .stat-strip { grid-template-columns: 1fr; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo"><span class="logo-dot"></span>CelinaISP</a>
+    <ul class="nav-links">
+      <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="study.html" data-i18n="nav.study">Study</a></li>
+      <li><a href="hosted.html" class="nav-cta" data-i18n="nav.test">Run Test</a></li>
+    </ul>
+    <div class="nav-controls">
+      <button class="export-btn" id="exportBtn">Export JSON</button>
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="tl">TL</button>
+      </div>
+      <button class="theme-btn" id="themeBtn">☀ Light</button>
+      <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" data-i18n="nav.home">Home</a>
+    <a href="study.html" data-i18n="nav.study">Study Details</a>
+    <a href="hosted.html" data-i18n="nav.test">Run Speed Test →</a>
+  </div>
+
+  <main>
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="section-label" data-i18n="page.label">Community Data</div>
+        <h1 data-i18n="page.title">Community ISP Results</h1>
+        <p data-i18n="page.subtitle">Crowdsourced speed test data from Celina Plains residents, visualized with live charts and sortable records.</p>
+      </div>
+      <span class="count-badge" id="countBadge">0 submissions</span>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat-box"><div class="stat-lbl" data-i18n="s.total">Total Submissions</div><div class="stat-val" id="sTotal">0</div></div>
+      <div class="stat-box"><div class="stat-lbl" data-i18n="s.avgDl">Avg Download</div><div class="stat-val" id="sAvgDl">— Mbps</div></div>
+      <div class="stat-box"><div class="stat-lbl" data-i18n="s.fastest">Fastest Result</div><div class="stat-val" id="sFastest">— Mbps</div></div>
+      <div class="stat-box"><div class="stat-lbl" data-i18n="s.top">Most Common ISP</div><div class="stat-val" id="sTop">—</div></div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card"><h3 data-i18n="ch.dl">Avg Download per ISP (Mbps)</h3><canvas id="chDl" height="220"></canvas></div>
+      <div class="chart-card"><h3 data-i18n="ch.ul">Avg Upload per ISP (Mbps)</h3><canvas id="chUl" height="220"></canvas></div>
+      <div class="chart-card"><h3 data-i18n="ch.ping">Avg Ping per ISP (ms)</h3><canvas id="chPing" height="220"></canvas></div>
+      <div class="chart-card"><h3 data-i18n="ch.jitter">Avg Jitter per ISP (ms)</h3><canvas id="chJitter" height="220"></canvas></div>
+      <div class="chart-card full-width"><h3 data-i18n="ch.peak">Peak vs Off-Peak Download (Mbps)</h3><canvas id="chPeak" height="160"></canvas></div>
+    </div>
+
+    <div class="filters">
+      <div class="field"><label data-i18n="fi.isp">Filter ISP</label><select id="fIsp"></select></div>
+      <div class="field"><label data-i18n="fi.conn">Filter Connection</label><select id="fConn"></select></div>
+      <div class="field"><label data-i18n="fi.time">Filter Time</label><select id="fTime"></select></div>
+      <div class="field"><label data-i18n="fi.search">Search ISP</label><input id="fSearch" type="text" placeholder="Type to search..." /></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="isp" data-i18n="th.isp">ISP</th>
+            <th data-sort="connectionTypeLabel" data-i18n="th.conn">Connection</th>
+            <th data-sort="downloadSpeed" data-i18n="th.dl">Download</th>
+            <th data-sort="uploadSpeed" data-i18n="th.ul">Upload</th>
+            <th data-sort="ping" data-i18n="th.ping">Ping</th>
+            <th data-sort="jitter" data-i18n="th.jitter">Jitter</th>
+            <th data-sort="timeOfDayLabel" data-i18n="th.time">Time</th>
+            <th data-sort="timestamp" data-i18n="th.when">Submitted</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">CelinaISP Study</div>
+      <div class="footer-links">
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="study.html" data-i18n="nav.study">Study</a>
+        <a href="hosted.html" data-i18n="nav.test">Run Test</a>
+      </div>
+      <div class="footer-copy">© 2026 Celina Plains ISP Study</div>
+    </div>
+  </footer>
+
+  <script>
+    // Firestore data loading
+    let cachedRecords = [];
+    let dataLoaded = false;
+    const ISP_COLORS = { PLDT:'#3b82f6', Globe:'#ef4444', Converge:'#10b981', Meridian:'#f59e0b', Cablelink:'#8b5cf6', Smart:'#06b6d4', TNT:'#f97316', Dito:'#ec4899', 'TM (Touch Mobile)':'#84cc16', 'Sky Broadband':'#14b8a6', Other:'#6b7280' };
+
+    let sortField = 'timestamp', sortDir = 'desc';
+    const charts = {};
+
+    // Theme
+    const themeBtn = document.getElementById('themeBtn');
+    const applyTheme = t => { document.body.classList.toggle('light', t==='light'); themeBtn.textContent=t==='light'?'🌙 Dark':'☀ Light'; localStorage.setItem('theme',t); };
+    applyTheme(localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+    themeBtn.addEventListener('click', () => { applyTheme(document.body.classList.contains('light')?'dark':'light'); refresh(); });
+
+    // Mobile
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    document.addEventListener('click', e => { if(!e.target.closest('nav')&&!e.target.closest('.mobile-menu')) mobileMenu.classList.remove('open'); });
+
+    const getRecords = () => cachedRecords;
+
+    const loadRecords = async () => {
+      try {
+        while (!window.firestoreReady) await new Promise(resolve => setTimeout(resolve, 50));
+        
+        const { collection, getDocs, query, orderBy } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        const db = window.firestoreDB;
+        
+        const q = query(collection(db, 'submissions'), orderBy('timestamp', 'desc'));
+        const snapshot = await getDocs(q);
+        
+        const records = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          records.push({
+            isp: data.isp || 'Other',
+            connectionType: data.connectionType || 'unknown',
+            connectionTypeLabel: data.connectionTypeLabel || data.connectionType || 'Unknown',
+            timeOfDay: data.timeOfDay || 'offpeak',
+            timeOfDayLabel: data.timeOfDayLabel || (data.timeOfDay === 'peak' ? 'Peak Hours' : 'Off-Peak'),
+            downloadSpeed: parseFloat(data.downloadSpeed) || 0,
+            uploadSpeed: parseFloat(data.uploadSpeed) || 0,
+            ping: parseFloat(data.ping) || 0,
+            jitter: parseFloat(data.jitter) || 0,
+            timestamp: data.timestamp || Date.now(),
+          });
+        });
+        
+        cachedRecords = records;
+        dataLoaded = true;
+        return records;
+      } catch (error) {
+        console.error('Firebase load error:', error);
+        return [];
+      }
+    };
+
+    const avg = (arr, key) => arr.length ? arr.reduce((s,r)=>s+r[key],0)/arr.length : 0;
+    const getCss = v => getComputedStyle(document.body).getPropertyValue(v).trim();
+
+    const ispColor = isp => ISP_COLORS[isp] || '#6b7280';
+
+    const makeBar = (id, labels, data, unit, colors) => {
+      if (typeof Chart === 'undefined') return;
+      const canvas = document.getElementById(id);
+      if(charts[id]){ charts[id].destroy(); delete charts[id]; }
+      if(!labels.length){ canvas.style.display='none'; return; }
+      canvas.style.display='block';
+      const isDark = !document.body.classList.contains('light');
+      const muted = isDark?'#7a8aaa':'#5a6480';
+      const grid = isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+      charts[id] = new Chart(canvas.getContext('2d'), {
+        type:'bar',
+        data:{ labels, datasets:[{data, backgroundColor: colors||labels.map(l=>ispColor(l)), borderRadius:8, borderWidth:0}]},
+        options:{ responsive:true, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:muted,font:{size:11}},grid:{color:grid}}, y:{beginAtZero:true,ticks:{color:muted,font:{size:10},callback:v=>`${v}`},grid:{color:grid}} } }
+      });
+    };
+
+    const makePeakChart = (peak, offpeak) => {
+      if (typeof Chart === 'undefined') return;
+      const canvas = document.getElementById('chPeak');
+      if(charts['chPeak']){ charts['chPeak'].destroy(); delete charts['chPeak']; }
+      const isDark = !document.body.classList.contains('light');
+      const muted = isDark?'#7a8aaa':'#5a6480';
+      const grid = isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+      charts['chPeak'] = new Chart(canvas.getContext('2d'), {
+        type:'bar',
+        data:{ labels:['Peak (7PM–10PM)','Off-Peak'], datasets:[{label:'Download Mbps',data:[peak,offpeak],backgroundColor:['#38c8ff','#4fffb0'],borderRadius:8,borderWidth:0}]},
+        options:{ responsive:true, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:muted},grid:{color:grid}}, y:{beginAtZero:true,ticks:{color:muted,callback:v=>`${v} Mbps`},grid:{color:grid}} } }
+      });
+    };
+
+    const populateFilters = records => {
+      const selIsp=document.getElementById('fIsp'), selConn=document.getElementById('fConn'), selTime=document.getElementById('fTime');
+      const prevIsp=selIsp.value, prevConn=selConn.value, prevTime=selTime.value;
+      const isps=[...new Set(records.map(r=>r.isp))].sort();
+      const conns=[...new Set(records.map(r=>r.connectionType))].sort();
+      selIsp.innerHTML=`<option value="">All ISPs</option>`+isps.map(v=>`<option value="${v}">${v}</option>`).join('');
+      selConn.innerHTML=`<option value="">All Connections</option>`+conns.map(v=>`<option value="${v}">${v}</option>`).join('');
+      selTime.innerHTML=`<option value="">All Times</option><option value="peak">Peak 7PM–10PM</option><option value="offpeak">Off-Peak</option>`;
+      if(prevIsp) selIsp.value=prevIsp;
+      if(prevConn) selConn.value=prevConn;
+      if(prevTime) selTime.value=prevTime;
+    };
+
+    const getFiltered = records => {
+      const isp=document.getElementById('fIsp').value;
+      const conn=document.getElementById('fConn').value;
+      const time=document.getElementById('fTime').value;
+      const search=document.getElementById('fSearch').value.trim().toLowerCase();
+      return records.filter(r=>(!isp||r.isp===isp)&&(!conn||r.connectionType===conn)&&(!time||r.timeOfDay===time)&&(!search||r.isp.toLowerCase().includes(search)));
+    };
+
+    const updateStats = records => {
+      document.getElementById('sTotal').textContent = records.length;
+      document.getElementById('sAvgDl').textContent = records.length?`${avg(records,'downloadSpeed').toFixed(1)} Mbps`:'— Mbps';
+      document.getElementById('sFastest').textContent = records.length?`${Math.max(...records.map(r=>r.downloadSpeed)).toFixed(1)} Mbps`:'— Mbps';
+      const counts = records.reduce((acc,r)=>{acc[r.isp]=(acc[r.isp]||0)+1;return acc;},{});
+      const top = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+      document.getElementById('sTop').textContent = top?top[0]:'—';
+      document.getElementById('countBadge').textContent = `${records.length} submission${records.length!==1?'s':''}`;
+    };
+
+    const renderCharts = records => {
+      if (typeof Chart === 'undefined') return;
+      const isps=[...new Set(records.map(r=>r.isp))].sort();
+      const byIsp = isp => records.filter(r=>r.isp===isp);
+      makeBar('chDl', isps, isps.map(i=>parseFloat(avg(byIsp(i),'downloadSpeed').toFixed(2))), 'Mbps');
+      makeBar('chUl', isps, isps.map(i=>parseFloat(avg(byIsp(i),'uploadSpeed').toFixed(2))), 'Mbps');
+      makeBar('chPing', isps, isps.map(i=>parseFloat(avg(byIsp(i),'ping').toFixed(2))), 'ms');
+      makeBar('chJitter', isps, isps.map(i=>parseFloat(avg(byIsp(i),'jitter').toFixed(2))), 'ms');
+      const peakRec=records.filter(r=>r.timeOfDay==='peak'), offRec=records.filter(r=>r.timeOfDay==='offpeak');
+      makePeakChart(parseFloat(avg(peakRec,'downloadSpeed').toFixed(2)), parseFloat(avg(offRec,'downloadSpeed').toFixed(2)));
+    };
+
+    const renderTable = records => {
+      const sorted=[...records].sort((a,b)=>{
+        const av=a[sortField], bv=b[sortField];
+        if(typeof av==='number'&&typeof bv==='number') return sortDir==='asc'?av-bv:bv-av;
+        return sortDir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
+      });
+      const body=document.getElementById('tableBody');
+      if(!sorted.length){ body.innerHTML=`<tr><td colspan="8" class="empty-row">No submissions yet. <a href="hosted.html" style="color:var(--accent)">Run a test to add data.</a></td></tr>`; return; }
+      body.innerHTML=sorted.map(r=>{
+        const color=ispColor(r.isp);
+        const date=new Intl.DateTimeFormat('en-PH',{month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(r.timestamp));
+        return `<tr>
+          <td><span class="isp-dot" style="background:${color}"></span>${r.isp}</td>
+          <td>${r.connectionTypeLabel||r.connectionType||'—'}</td>
+          <td>${r.downloadSpeed.toFixed(2)} Mbps</td>
+          <td>${r.uploadSpeed.toFixed(2)} Mbps</td>
+          <td>${r.ping.toFixed(2)} ms</td>
+          <td>${r.jitter.toFixed(2)} ms</td>
+          <td>${r.timeOfDay==='peak'?'Peak':'Off-Peak'}</td>
+          <td>${date}</td>
+        </tr>`;
+      }).join('');
+    };
+
+    const refresh = async () => {
+      if (!dataLoaded) {
+        document.getElementById('sTotal').textContent = 'Loading...';
+        await loadRecords();
+      }
+      const all=getRecords();
+      populateFilters(all);
+      updateStats(all);
+      try {
+        renderCharts(all);
+      } catch (error) {
+        // Keep stats and table visible even if chart rendering fails.
+      }
+      renderTable(getFiltered(all));
+    };
+
+    document.querySelectorAll('th[data-sort]').forEach(th=>th.addEventListener('click',()=>{
+      const f=th.dataset.sort;
+      if(sortField===f) sortDir=sortDir==='asc'?'desc':'asc'; else{sortField=f;sortDir='asc';}
+      renderTable(getFiltered(getRecords()));
+    }));
+
+    ['fIsp','fConn','fTime'].forEach(id=>document.getElementById(id).addEventListener('change',()=>renderTable(getFiltered(getRecords()))));
+    document.getElementById('fSearch').addEventListener('input',()=>renderTable(getFiltered(getRecords())));
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const records = getRecords();
+      const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const now = new Date();
+      const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      a.href = url;
+      a.download = `celina-plains-results-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // Refresh every 30 seconds to check for new submissions
+    setInterval(() => loadRecords().then(() => refresh()), 30000);
+
+    // Language
+    const i18n = {
+      en:{'nav.home':'Home','nav.study':'Study','nav.test':'Run Test','btn.clear':'Clear Data','page.label':'Community Data','page.title':'Community ISP Results','page.subtitle':'Crowdsourced speed test data from Celina Plains residents, visualized with live charts and sortable records.','s.total':'Total Submissions','s.avgDl':'Avg Download','s.fastest':'Fastest Result','s.top':'Most Common ISP','ch.dl':'Avg Download per ISP (Mbps)','ch.ul':'Avg Upload per ISP (Mbps)','ch.ping':'Avg Ping per ISP (ms)','ch.jitter':'Avg Jitter per ISP (ms)','ch.peak':'Peak vs Off-Peak Download (Mbps)','fi.isp':'Filter ISP','fi.conn':'Filter Connection','fi.time':'Filter Time','fi.search':'Search ISP','th.isp':'ISP','th.conn':'Connection','th.dl':'Download','th.ul':'Upload','th.ping':'Ping','th.jitter':'Jitter','th.time':'Time','th.when':'Submitted'},
+      tl:{'nav.home':'Bahay','nav.study':'Pag-aaral','nav.test':'Mag-test','btn.clear':'Burahin ang Data','page.label':'Community Data','page.title':'Community ISP Results','page.subtitle':'Crowdsourced speed test data mula sa mga residente ng Celina Plains, visualized gamit ang live charts at sortable records.','s.total':'Kabuuang Submissions','s.avgDl':'Avg Download','s.fastest':'Pinakamabilis','s.top':'Pinaka-Madalas na ISP','ch.dl':'Avg Download kada ISP (Mbps)','ch.ul':'Avg Upload kada ISP (Mbps)','ch.ping':'Avg Ping kada ISP (ms)','ch.jitter':'Avg Jitter kada ISP (ms)','ch.peak':'Peak vs Off-Peak Download (Mbps)','fi.isp':'I-filter ang ISP','fi.conn':'I-filter ang Koneksyon','fi.time':'I-filter ang Oras','fi.search':'Maghanap ng ISP','th.isp':'ISP','th.conn':'Koneksyon','th.dl':'Download','th.ul':'Upload','th.ping':'Ping','th.jitter':'Jitter','th.time':'Oras','th.when':'Pagsumite'}
+    };
+    let lang=localStorage.getItem('lang')||'en';
+    const applyLang=l=>{lang=l;localStorage.setItem('lang',l);document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(i18n[l]?.[k])el.textContent=i18n[l][k];});document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));};
+    applyLang(lang);
+    document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>applyLang(b.dataset.lang)));
+
+    refresh();
+  </script>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    // ⚠️ REPLACE WITH YOUR FIREBASE CONFIG (same as hosted.html)
+    // Get this from: Firebase Console → Project Settings → General → Your apps → Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBg8pY1KD-K5r447A_Enq0de1c1TWScQnE",
+      authDomain: "celina-isp-study.firebaseapp.com",
+      projectId: "celina-isp-study",
+      storageBucket: "celina-isp-study.firebasestorage.app",
+      messagingSenderId: "601030738633",
+      appId: "1:601030738633:web:d861e03b3490c4aa7a8318",
+      measurementId: "G-F8RXD1H2QZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.firestoreDB = db;
+    window.firestoreReady = true;
+  </script>
+</body>
+</html>
