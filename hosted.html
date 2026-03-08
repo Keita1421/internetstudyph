@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -146,9 +148,48 @@
       .span2 { grid-column: auto; }
     }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* GPS permission banner */
+    #gpsBanner { display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:200; background:#0c1018; border:1px solid rgba(79,255,176,0.3); border-radius:16px; padding:16px 20px; max-width:480px; width:calc(100% - 48px); box-shadow:0 8px 32px rgba(0,0,0,0.6); animation:fadeUp 0.3s ease; }
+    #gpsBanner .gps-top { display:flex; align-items:flex-start; gap:12px; }
+    #gpsBanner .gps-icon { font-size:1.5rem; flex-shrink:0; margin-top:2px; }
+    #gpsBanner .gps-body h4 { font-family:'Syne',sans-serif; font-size:0.92rem; font-weight:700; margin-bottom:4px; }
+    #gpsBanner .gps-body p { font-size:0.8rem; color:var(--muted); line-height:1.5; }
+    #gpsBanner .gps-actions { display:flex; gap:8px; margin-top:12px; justify-content:flex-end; }
+    #gpsBanner .gps-allow { background:var(--accent); color:#07090f; font:700 0.82rem 'DM Sans',sans-serif; border:none; border-radius:8px; padding:8px 16px; cursor:pointer; transition:all 0.2s; }
+    #gpsBanner .gps-allow:hover { filter:brightness(1.08); }
+    #gpsBanner .gps-deny { background:transparent; color:var(--muted); font:500 0.82rem 'DM Sans',sans-serif; border:1px solid var(--border); border-radius:8px; padding:8px 14px; cursor:pointer; transition:all 0.2s; }
+    #gpsBanner .gps-deny:hover { color:var(--text); border-color:var(--border2); }
+    body.light #gpsBanner { background:#fff; box-shadow:0 8px 32px rgba(0,0,0,0.15); }
+
+    /* Location map in results */
+    .loc-map-block { background:var(--bg); border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:14px; }
+    .loc-map-block .loc-map-head { padding:14px 16px 10px; display:flex; align-items:center; gap:8px; }
+    .loc-map-block .loc-map-head h4 { font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); }
+    .loc-map-block .loc-status { font-size:0.78rem; color:var(--muted); padding:0 16px 12px; }
+    #userLocMap { height:200px; width:100%; }
+    .leaflet-popup-content-wrapper { background:#0c1018; border:1px solid rgba(255,255,255,0.12); color:#f0f4ff; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.82rem; }
+    .leaflet-popup-tip { background:#0c1018; }
+    body.light .leaflet-popup-content-wrapper { background:#fff; color:#0d1117; }
+    body.light .leaflet-popup-tip { background:#fff; }
   </style>
 </head>
 <body>
+  <!-- GPS permission banner -->
+  <div id="gpsBanner">
+    <div class="gps-top">
+      <div class="gps-icon">📍</div>
+      <div class="gps-body">
+        <h4>Allow location access?</h4>
+        <p>We use your approximate location to map speed test results across Celina Plains. This helps the study show which areas have the best or worst internet — your exact address is never stored, only GPS coordinates.</p>
+      </div>
+    </div>
+    <div class="gps-actions">
+      <button class="gps-deny" id="gpsDeny">Not now</button>
+      <button class="gps-allow" id="gpsAllow">Allow location</button>
+    </div>
+  </div>
+
   <nav>
     <a href="index.html" class="nav-logo"><span class="logo-dot"></span>CelinaISP</a>
     <ul class="nav-links">
@@ -261,6 +302,14 @@
               <div class="block-title" data-i18n="recs.title">Recommendations</div>
               <ul class="recs-list" id="recsList"></ul>
             </div>
+            <div class="loc-map-block" id="locMapBlock" style="display:none">
+              <div class="loc-map-head">
+                <h4>📍 Your Test Location</h4>
+              </div>
+              <div class="loc-status" id="locStatus">Locating...</div>
+              <div id="userLocMap"></div>
+            </div>
+
             <div class="cta-row">
               <span class="count-badge" id="countBadge"></span>
               <a href="results.html" class="community-btn" data-i18n="cta.community">📊 See Community Results</a>
@@ -379,7 +428,14 @@
       submitBtn.disabled = true;
       
       const connLabels={fiber:'Fiber',dsl:'DSL',cable:'Cable',mobile4g:'Mobile Data (4G)',mobile5g:'Mobile Data (5G)',fixedWireless:'Fixed Wireless'};
-      const count = await saveRecord({isp,connectionType:connType,connectionTypeLabel:connLabels[connType]||connType,timeOfDay,timeOfDayLabel:timeOfDay==='peak'?'Peak Hours 7PM–10PM':'Off-Peak',downloadSpeed:dl,uploadSpeed:ul,ping,jitter,timestamp:Date.now()});
+
+      // Use already-captured GPS coords (from banner prompt on load)
+      const count = await saveRecord({isp,connectionType:connType,connectionTypeLabel:connLabels[connType]||connType,timeOfDay,timeOfDayLabel:timeOfDay==='peak'?'Peak Hours 7PM–10PM':'Off-Peak',downloadSpeed:dl,uploadSpeed:ul,ping,jitter,timestamp:Date.now(),...(window._userLocation ? {lat:window._userLocation.lat,lng:window._userLocation.lng,accuracy:window._userLocation.accuracy} : {})});
+
+      // Show location map in results if we have coords
+      if (window._userLocation) {
+        showUserLocMap(window._userLocation, isp);
+      }
       
       submitBtn.textContent = i18n[lang]['f.submit'] || 'Show Results';
       submitBtn.disabled = false;
@@ -456,6 +512,84 @@
   </script>
 
   <!-- Firebase SDK -->
+    <script>
+    // ── GPS permission banner ────────────────────────
+    window._userLocation = null;
+    let _userLocMap = null;
+    const ISP_COLORS_H = { PLDT:'#3b82f6', Globe:'#ef4444', Converge:'#10b981', Meridian:'#f59e0b', Cablelink:'#8b5cf6', Smart:'#06b6d4', TNT:'#f97316', Dito:'#ec4899', 'TM (Touch Mobile)':'#84cc16', 'Sky Broadband':'#14b8a6', Other:'#6b7280' };
+
+    const requestGPS = () => {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          window._userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: Math.round(pos.coords.accuracy) };
+          document.getElementById('gpsBanner').style.display = 'none';
+        },
+        err => {
+          console.warn('GPS denied:', err.message);
+          document.getElementById('gpsBanner').style.display = 'none';
+        },
+        { timeout: 10000, maximumAge: 60000 }
+      );
+    };
+
+    document.getElementById('gpsAllow').addEventListener('click', () => {
+      document.getElementById('gpsBanner').style.display = 'none';
+      requestGPS();
+    });
+    document.getElementById('gpsDeny').addEventListener('click', () => {
+      document.getElementById('gpsBanner').style.display = 'none';
+    });
+
+    // Show banner on load if permission not yet granted
+    window.addEventListener('load', () => {
+      if (!navigator.geolocation) return;
+      navigator.permissions.query({ name: 'geolocation' }).then(result => {
+        if (result.state === 'granted') {
+          // Already allowed — silently grab coords
+          requestGPS();
+        } else if (result.state === 'prompt') {
+          // Show our custom explanation banner
+          setTimeout(() => { document.getElementById('gpsBanner').style.display = 'block'; }, 800);
+        }
+        // If 'denied', do nothing
+      }).catch(() => {
+        // permissions API not supported — show banner anyway
+        setTimeout(() => { document.getElementById('gpsBanner').style.display = 'block'; }, 800);
+      });
+    });
+
+    // Show the user's pin on the mini map in results panel
+    window.showUserLocMap = (loc, isp) => {
+      const block = document.getElementById('locMapBlock');
+      const statusEl = document.getElementById('locStatus');
+      block.style.display = 'block';
+      statusEl.textContent = `Coordinates captured (±${loc.accuracy}m accuracy). Your pin is shown below.`;
+
+      if (!_userLocMap) {
+        _userLocMap = L.map('userLocMap', { zoomControl: true, scrollWheelZoom: false }).setView([loc.lat, loc.lng], 17);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap', maxZoom: 19
+        }).addTo(_userLocMap);
+      } else {
+        _userLocMap.setView([loc.lat, loc.lng], 17);
+      }
+
+      const color = ISP_COLORS_H[isp] || '#4fffb0';
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="width:16px;height:16px;border-radius:50%;background:${color};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.5)"></div>`,
+        iconSize: [16, 16], iconAnchor: [8, 8], popupAnchor: [0, -12]
+      });
+      L.marker([loc.lat, loc.lng], { icon })
+        .bindPopup(`<strong>${isp}</strong><br>Your test location<br><small style="color:#7a8aaa">±${loc.accuracy}m accuracy</small>`)
+        .addTo(_userLocMap)
+        .openPopup();
+
+      // Invalidate size in case map rendered while hidden
+      setTimeout(() => _userLocMap.invalidateSize(), 100);
+    };
+  </script>
+
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
     import { getFirestore, collection, addDoc, getDocs, query, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
@@ -623,40 +757,16 @@ document.addEventListener('DOMContentLoaded', function() {
   var hideTyping = function() { var el = document.getElementById('typing-ind'); if(el) el.remove(); };
 
   var callHF = async function(userMsg) {
-    var submitRes = await fetch(SPACE + '/gradio_api/call/chat', {
+    var res = await fetch(SPACE + '/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        data: [userMsg, history, SYS, 200, 0.4, 0.9]
+        messages: [{ role: 'user', content: userMsg }]
       })
     });
-    if (!submitRes.ok) throw new Error('Submit failed: ' + submitRes.status);
-    var json = await submitRes.json();
-    var event_id = json.event_id;
-    if (!event_id) throw new Error('No event_id returned');
-
-    var streamRes = await fetch(SPACE + '/gradio_api/call/chat/' + event_id);
-    if (!streamRes.ok) throw new Error('Stream failed: ' + streamRes.status);
-
-    var raw = await streamRes.text();
-    var reply = '';
-    var lines = raw.split('\n');
-    for (var i = 0; i < lines.length; i++) {
-      if (lines[i].startsWith('event: complete')) {
-        for (var j = i + 1; j < lines.length; j++) {
-          if (lines[j].startsWith('data:')) {
-            try {
-              var parsed = JSON.parse(lines[j].slice(5).trim());
-              if (Array.isArray(parsed) && typeof parsed[0] === 'string') {
-                reply = parsed[0];
-              }
-            } catch(e) {}
-            break;
-          }
-        }
-        break;
-      }
-    }
+    if (!res.ok) throw new Error('Submit failed: ' + res.status);
+    var data = await res.json();
+    var reply = data.choices[0].message.content;
     if (!reply) throw new Error('Empty response');
     return reply;
   };

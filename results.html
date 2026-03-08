@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -119,6 +121,16 @@
       .filters { grid-template-columns: repeat(2,1fr); }
     }
     @media (max-width: 480px) { .filters { grid-template-columns: 1fr; } .stat-strip { grid-template-columns: 1fr; } }
+
+    /* Map section */
+    .map-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+    .map-card h3 { padding: 16px 20px 0; font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
+    .map-card .map-sub { padding: 4px 20px 12px; font-size: 0.8rem; color: var(--muted); }
+    #ispMap { height: 420px; width: 100%; }
+    .leaflet-popup-content-wrapper { background: #0c1018; border: 1px solid rgba(255,255,255,0.12); color: #f0f4ff; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; }
+    .leaflet-popup-tip { background: #0c1018; }
+    body.light .leaflet-popup-content-wrapper { background: #fff; color: #0d1117; border-color: rgba(0,0,0,0.1); }
+    body.light .leaflet-popup-tip { background: #fff; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
@@ -169,6 +181,12 @@
       <div class="chart-card"><h3 data-i18n="ch.ping">Avg Ping per ISP (ms)</h3><canvas id="chPing" height="220"></canvas></div>
       <div class="chart-card"><h3 data-i18n="ch.jitter">Avg Jitter per ISP (ms)</h3><canvas id="chJitter" height="220"></canvas></div>
       <div class="chart-card full-width"><h3 data-i18n="ch.peak">Peak vs Off-Peak Download (Mbps)</h3><canvas id="chPeak" height="160"></canvas></div>
+    </div>
+
+    <div class="map-card">
+      <h3>📍 Submission Map</h3>
+      <p class="map-sub">Showing locations of speed test submissions. Only submissions with GPS data are plotted.</p>
+      <div id="ispMap"></div>
     </div>
 
     <div class="filters">
@@ -256,6 +274,8 @@
             ping: parseFloat(data.ping) || 0,
             jitter: parseFloat(data.jitter) || 0,
             timestamp: data.timestamp || Date.now(),
+            lat: data.lat || null,
+            lng: data.lng || null,
           });
         });
         
@@ -370,6 +390,67 @@
       }).join('');
     };
 
+    // ── Map ──────────────────────────────────────────
+    let leafletMap = null;
+    let markerLayer = null;
+
+    const renderMap = (records) => {
+      const withLocation = records.filter(r => r.lat && r.lng);
+
+      // Init map once
+      if (!leafletMap) {
+        // Center on Celina Plains, General Trias, Cavite
+        leafletMap = L.map('ispMap').setView([14.3870, 120.8800], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors',
+          maxZoom: 19
+        }).addTo(leafletMap);
+        markerLayer = L.layerGroup().addTo(leafletMap);
+      }
+
+      markerLayer.clearLayers();
+
+      if (!withLocation.length) return;
+
+      withLocation.forEach(r => {
+        const color = ISP_COLORS[r.isp] || '#6b7280';
+        const dlRating = r.downloadSpeed >= 100 ? 'Excellent' : r.downloadSpeed >= 25 ? 'Good' : r.downloadSpeed >= 10 ? 'Fair' : 'Poor';
+        const icon = L.divIcon({
+          className: '',
+          html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.5)"></div>`,
+          iconSize: [14, 14],
+          iconAnchor: [7, 7],
+          popupAnchor: [0, -10]
+        });
+        const date = new Intl.DateTimeFormat('en-PH', {month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(r.timestamp));
+        L.marker([r.lat, r.lng], { icon })
+          .bindPopup(`
+            <div style="min-width:160px">
+              <div style="font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color}"></span>
+                ${r.isp}
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;font-size:0.78rem">
+                <span style="color:#7a8aaa">Download</span><span>${r.downloadSpeed.toFixed(1)} Mbps <span style="color:${color}">(${dlRating})</span></span>
+                <span style="color:#7a8aaa">Upload</span><span>${r.uploadSpeed.toFixed(1)} Mbps</span>
+                <span style="color:#7a8aaa">Ping</span><span>${r.ping.toFixed(1)} ms</span>
+                <span style="color:#7a8aaa">Jitter</span><span>${r.jitter.toFixed(1)} ms</span>
+                <span style="color:#7a8aaa">Time</span><span>${r.timeOfDay === 'peak' ? 'Peak' : 'Off-Peak'}</span>
+                <span style="color:#7a8aaa">Submitted</span><span>${date}</span>
+              </div>
+            </div>
+          `)
+          .addTo(markerLayer);
+      });
+
+      // Fit map to markers if we have some
+      if (withLocation.length > 0) {
+        const group = L.featureGroup(markerLayer.getLayers());
+        leafletMap.fitBounds(group.getBounds().pad(0.2));
+      }
+    };
+    // ─────────────────────────────────────────────────
+
     const refresh = async () => {
       if (!dataLoaded) {
         document.getElementById('sTotal').textContent = 'Loading...';
@@ -380,6 +461,7 @@
       updateStats(all);
       try {
         renderCharts(all);
+        renderMap(all);
       } catch (error) {
         // Keep stats and table visible even if chart rendering fails.
       }
@@ -594,40 +676,16 @@ document.addEventListener('DOMContentLoaded', function() {
   var hideTyping = function() { var el = document.getElementById('typing-ind'); if(el) el.remove(); };
 
   var callHF = async function(userMsg) {
-    var submitRes = await fetch(SPACE + '/gradio_api/call/chat', {
+    var res = await fetch(SPACE + '/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        data: [userMsg, history, SYS, 200, 0.4, 0.9]
+        messages: [{ role: 'user', content: userMsg }]
       })
     });
-    if (!submitRes.ok) throw new Error('Submit failed: ' + submitRes.status);
-    var json = await submitRes.json();
-    var event_id = json.event_id;
-    if (!event_id) throw new Error('No event_id returned');
-
-    var streamRes = await fetch(SPACE + '/gradio_api/call/chat/' + event_id);
-    if (!streamRes.ok) throw new Error('Stream failed: ' + streamRes.status);
-
-    var raw = await streamRes.text();
-    var reply = '';
-    var lines = raw.split('\n');
-    for (var i = 0; i < lines.length; i++) {
-      if (lines[i].startsWith('event: complete')) {
-        for (var j = i + 1; j < lines.length; j++) {
-          if (lines[j].startsWith('data:')) {
-            try {
-              var parsed = JSON.parse(lines[j].slice(5).trim());
-              if (Array.isArray(parsed) && typeof parsed[0] === 'string') {
-                reply = parsed[0];
-              }
-            } catch(e) {}
-            break;
-          }
-        }
-        break;
-      }
-    }
+    if (!res.ok) throw new Error('Submit failed: ' + res.status);
+    var data = await res.json();
+    var reply = data.choices[0].message.content;
     if (!reply) throw new Error('Empty response');
     return reply;
   };
