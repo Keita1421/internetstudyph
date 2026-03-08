@@ -400,7 +400,7 @@
       // Init map once
       if (!leafletMap) {
         // Center on Celina Plains, General Trias, Cavite
-        leafletMap = L.map('ispMap').setView([14.3870, 120.8800], 15);
+        leafletMap = L.map('ispMap').setView([14.3919073, 120.9267400], 17);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors',
           maxZoom: 19
@@ -676,16 +676,40 @@ document.addEventListener('DOMContentLoaded', function() {
   var hideTyping = function() { var el = document.getElementById('typing-ind'); if(el) el.remove(); };
 
   var callHF = async function(userMsg) {
-    var res = await fetch(SPACE + '/api/chat', {
+    var submitRes = await fetch(SPACE + '/gradio_api/call/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        messages: [{ role: 'user', content: userMsg }]
+        data: [userMsg, history, SYS, 200, 0.4, 0.9]
       })
     });
-    if (!res.ok) throw new Error('Submit failed: ' + res.status);
-    var data = await res.json();
-    var reply = data.choices[0].message.content;
+    if (!submitRes.ok) throw new Error('Submit failed: ' + submitRes.status);
+    var json = await submitRes.json();
+    var event_id = json.event_id;
+    if (!event_id) throw new Error('No event_id returned');
+
+    var streamRes = await fetch(SPACE + '/gradio_api/call/chat/' + event_id);
+    if (!streamRes.ok) throw new Error('Stream failed: ' + streamRes.status);
+
+    var raw = await streamRes.text();
+    var reply = '';
+    var lines = raw.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith('event: complete')) {
+        for (var j = i + 1; j < lines.length; j++) {
+          if (lines[j].startsWith('data:')) {
+            try {
+              var parsed = JSON.parse(lines[j].slice(5).trim());
+              if (Array.isArray(parsed) && typeof parsed[0] === 'string') {
+                reply = parsed[0];
+              }
+            } catch(e) {}
+            break;
+          }
+        }
+        break;
+      }
+    }
     if (!reply) throw new Error('Empty response');
     return reply;
   };
