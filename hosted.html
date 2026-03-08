@@ -477,79 +477,73 @@
     window.firestoreDB = db;
     window.firestoreReady = true;
   </script>
-<!-- ======= ISP ASSISTANT CHATBOT ======= -->
+<!-- ISP ASSISTANT CHATBOT -->
 <style>
-#chat-fab{position:fixed;bottom:28px;right:28px;z-index:9999;width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent,#4fffb0),var(--accent2,#38c8ff));color:#07090f;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(79,255,176,0.4),0 2px 8px rgba(0,0,0,0.35);transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s;font-size:1.25rem}
-#chat-fab:hover{transform:scale(1.12);box-shadow:0 12px 36px rgba(79,255,176,0.55),0 2px 8px rgba(0,0,0,0.35)}
-#chat-fab .fab-badge{position:absolute;top:2px;right:2px;background:#ff6b6b;color:#fff;font-size:.6rem;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg,#07090f);animation:badgePop .35s cubic-bezier(.34,1.56,.64,1)}
+#chat-fab{position:fixed;bottom:28px;right:28px;z-index:9999;width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(79,255,176,0.4);font-size:1.3rem;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+#chat-fab:hover{transform:scale(1.12)}
+#chat-fab .fab-badge{position:absolute;top:2px;right:2px;background:#ff6b6b;color:#fff;font-size:.6rem;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #07090f}
 #chat-fab .fab-badge.hide{display:none}
-@keyframes badgePop{from{transform:scale(0)}to{transform:scale(1)}}
-#chat-win{position:fixed;bottom:96px;right:28px;z-index:9998;width:360px;max-height:580px;display:flex;flex-direction:column;background:var(--bg2,#0c1018);border:1px solid var(--border2,rgba(255,255,255,.14));border-radius:20px;overflow:hidden;box-shadow:0 32px 64px rgba(0,0,0,.55),0 0 0 1px rgba(79,255,176,.07);transform:scale(.92) translateY(16px);opacity:0;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .25s;font-family:'DM Sans',sans-serif}
+#chat-win{position:fixed;bottom:96px;right:28px;z-index:9998;width:360px;max-height:580px;display:flex;flex-direction:column;background:#0c1018;border:1px solid rgba(255,255,255,.14);border-radius:20px;overflow:hidden;box-shadow:0 32px 64px rgba(0,0,0,.55);transform:scale(.92) translateY(16px);opacity:0;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .25s;font-family:'DM Sans',sans-serif}
 #chat-win.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
-#chat-head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:linear-gradient(135deg,rgba(79,255,176,.1),rgba(56,200,255,.07));border-bottom:1px solid var(--border,rgba(255,255,255,.08));flex-shrink:0}
+#chat-head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:linear-gradient(135deg,rgba(79,255,176,.1),rgba(56,200,255,.07));border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
 .ch-left{display:flex;align-items:center;gap:10px}
-.ch-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--accent,#4fffb0),var(--accent2,#38c8ff));display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-.ch-name{font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;color:var(--text,#f0f4ff)}
-.ch-status{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--muted,#7a8aaa);margin-top:1px}
-.ch-dot{width:7px;height:7px;border-radius:50%;background:var(--accent,#4fffb0);box-shadow:0 0 6px var(--accent,#4fffb0);animation:pulse 2s infinite}
-#chat-close-btn{border:1px solid var(--border,rgba(255,255,255,.08));background:var(--surface,rgba(255,255,255,.04));color:var(--muted,#7a8aaa);border-radius:8px;padding:6px;cursor:pointer;display:flex;align-items:center;transition:all .2s}
-#chat-close-btn:hover{color:var(--text,#f0f4ff);border-color:var(--border2,rgba(255,255,255,.14))}
+.ch-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#4fffb0,#38c8ff);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.ch-name{font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;color:#f0f4ff}
+.ch-status{display:flex;align-items:center;gap:5px;font-size:.72rem;color:#7a8aaa;margin-top:1px}
+.ch-dot{width:7px;height:7px;border-radius:50%;background:#4fffb0;box-shadow:0 0 6px #4fffb0;display:inline-block;animation:pulse 2s infinite}
+#chat-close-btn{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#7a8aaa;border-radius:8px;padding:6px;cursor:pointer;display:flex;align-items:center;transition:all .2s}
+#chat-close-btn:hover{color:#f0f4ff}
 #chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:11px;min-height:220px;scroll-behavior:smooth}
 #chat-msgs::-webkit-scrollbar{width:3px}
-#chat-msgs::-webkit-scrollbar-thumb{background:var(--border2,rgba(255,255,255,.14));border-radius:4px}
+#chat-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:4px}
 .cmsg{display:flex;flex-direction:column;max-width:84%;animation:msgIn .22s ease}
 @keyframes msgIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .cmsg.bot{align-self:flex-start}.cmsg.user{align-self:flex-end}
 .cbubble{padding:10px 13px;border-radius:14px;font-size:.875rem;line-height:1.55}
-.cmsg.bot .cbubble{background:var(--surface2,rgba(255,255,255,.07));border:1px solid var(--border,rgba(255,255,255,.08));color:var(--text,#f0f4ff);border-bottom-left-radius:4px}
-.cmsg.user .cbubble{background:linear-gradient(135deg,var(--accent,#4fffb0),var(--accent2,#38c8ff));color:#07090f;font-weight:500;border-bottom-right-radius:4px}
-.ctime{font-size:.67rem;color:var(--muted,#7a8aaa);margin-top:3px;padding:0 3px}
+.cmsg.bot .cbubble{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);color:#f0f4ff;border-bottom-left-radius:4px}
+.cmsg.user .cbubble{background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;font-weight:500;border-bottom-right-radius:4px}
+.ctime{font-size:.67rem;color:#7a8aaa;margin-top:3px;padding:0 3px}
 .cmsg.user .ctime{text-align:right}
-#typing-ind{background:var(--surface2,rgba(255,255,255,.07));border:1px solid var(--border,rgba(255,255,255,.08));border-radius:14px;border-bottom-left-radius:4px;padding:11px 15px;display:flex;gap:5px;align-items:center;align-self:flex-start}
-.tdot{width:7px;height:7px;border-radius:50%;background:var(--muted,#7a8aaa);animation:tdot 1.2s infinite ease}
+#typing-ind{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:14px;border-bottom-left-radius:4px;padding:11px 15px;display:flex;gap:5px;align-items:center;align-self:flex-start}
+.tdot{width:7px;height:7px;border-radius:50%;background:#7a8aaa;animation:tdot 1.2s infinite ease}
 .tdot:nth-child(2){animation-delay:.18s}.tdot:nth-child(3){animation-delay:.36s}
 @keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
 #chat-sugg{display:flex;gap:6px;padding:0 12px 10px;overflow-x:auto;flex-shrink:0}
 #chat-sugg::-webkit-scrollbar{display:none}
-.sugg-btn{border:1px solid var(--border2,rgba(255,255,255,.14));background:var(--surface,rgba(255,255,255,.04));color:var(--muted,#7a8aaa);font:500 .73rem 'DM Sans',sans-serif;padding:5px 11px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
-.sugg-btn:hover{border-color:var(--accent,#4fffb0);color:var(--accent,#4fffb0);background:rgba(79,255,176,.06)}
-#chat-inp-row{display:flex;gap:8px;padding:11px 13px;border-top:1px solid var(--border,rgba(255,255,255,.08));flex-shrink:0;background:var(--bg2,#0c1018)}
-#chat-inp{flex:1;background:var(--surface,rgba(255,255,255,.04));border:1px solid var(--border,rgba(255,255,255,.08));border-radius:10px;color:var(--text,#f0f4ff);font:400 .88rem 'DM Sans',sans-serif;padding:9px 12px;outline:none;transition:border-color .2s,box-shadow .2s}
-#chat-inp:focus{border-color:var(--accent,#4fffb0);box-shadow:0 0 0 3px rgba(79,255,176,.1)}
-#chat-inp::placeholder{color:var(--muted,#7a8aaa)}
-#chat-send{width:38px;height:38px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--accent,#4fffb0),var(--accent2,#38c8ff));color:#07090f;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
-#chat-send:hover{filter:brightness(1.1);transform:scale(1.05)}
-#chat-send:disabled{opacity:.4;cursor:not-allowed;transform:none}
-/* light mode */
-body.light #chat-win{background:#fff;border-color:rgba(0,0,0,.1);box-shadow:0 32px 64px rgba(0,0,0,.15)}
-body.light #chat-fab{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff;box-shadow:0 8px 28px rgba(0,168,107,.3)}
-body.light #chat-head{background:linear-gradient(135deg,rgba(0,168,107,.08),rgba(0,119,204,.06))}
+.sugg-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#7a8aaa;font:500 .73rem 'DM Sans',sans-serif;padding:5px 11px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.sugg-btn:hover{border-color:#4fffb0;color:#4fffb0}
+#chat-inp-row{display:flex;gap:8px;padding:11px 13px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0;background:#0c1018}
+#chat-inp{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#f0f4ff;font:400 .88rem 'DM Sans',sans-serif;padding:9px 12px;outline:none;transition:border-color .2s}
+#chat-inp:focus{border-color:#4fffb0;box-shadow:0 0 0 3px rgba(79,255,176,.1)}
+#chat-inp::placeholder{color:#7a8aaa}
+#chat-send{width:38px;height:38px;border:none;border-radius:10px;background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+#chat-send:hover{filter:brightness(1.1)}
+#chat-send:disabled{opacity:.4;cursor:not-allowed}
+body.light #chat-win{background:#fff;border-color:rgba(0,0,0,.1)}
+body.light #chat-fab{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
 body.light .cmsg.bot .cbubble{background:#f0f4ff;border-color:rgba(0,0,0,.08);color:#0d1117}
 body.light .cmsg.user .cbubble{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
-body.light #typing-ind{background:#f0f4ff;border-color:rgba(0,0,0,.08)}
 body.light #chat-inp-row{background:#fff;border-color:rgba(0,0,0,.08)}
 body.light #chat-inp{background:#f5f7ff;border-color:rgba(0,0,0,.1);color:#0d1117}
 body.light #chat-send{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
 body.light .sugg-btn{background:#f5f7ff;border-color:rgba(0,0,0,.1);color:#5a6480}
 body.light #chat-close-btn{background:#f5f7ff;border-color:rgba(0,0,0,.1)}
-body.light .fab-badge{border-color:#f5f7ff}
+body.light .fab-badge{border-color:#fff}
 @media(max-width:480px){#chat-win{width:calc(100vw - 24px);right:12px;bottom:84px}#chat-fab{right:16px;bottom:20px}}
 </style>
 
-<!-- FAB toggle -->
 <button id="chat-fab" aria-label="Open ISP Assistant">
   <span id="fab-icon">💬</span>
   <span class="fab-badge" id="fab-badge">1</span>
 </button>
 
-<!-- Chat window -->
 <div id="chat-win" role="dialog" aria-label="ISP Assistant">
   <div id="chat-head">
     <div class="ch-left">
       <div class="ch-avatar">⚡</div>
       <div>
         <div class="ch-name">ISP Assistant</div>
-        <div class="ch-status"><span class="ch-dot"></span><span>Online · Celina Plains Study</span></div>
+        <div class="ch-status"><span class="ch-dot"></span><span>Online · Celina Plains</span></div>
       </div>
     </div>
     <button id="chat-close-btn" aria-label="Close">
@@ -559,10 +553,9 @@ body.light .fab-badge{border-color:#f5f7ff}
   <div id="chat-msgs" role="log" aria-live="polite"></div>
   <div id="chat-sugg">
     <button class="sugg-btn" data-q="Which ISP is best in Celina Plains?">Best ISP?</button>
-    <button class="sugg-btn" data-q="What are peak hours and how do they affect speed?">Peak hours?</button>
+    <button class="sugg-btn" data-q="What are peak hours?">Peak hours?</button>
     <button class="sugg-btn" data-q="How do I improve my internet speed?">Improve speed?</button>
-    <button class="sugg-btn" data-q="What is jitter and why does it matter?">What is jitter?</button>
-    <button class="sugg-btn" data-q="What is the study about?">About the study?</button>
+    <button class="sugg-btn" data-q="What is jitter?">What is jitter?</button>
   </div>
   <div id="chat-inp-row">
     <input id="chat-inp" type="text" placeholder="Ask about ISPs in Celina Plains…" autocomplete="off" maxlength="280"/>
@@ -573,113 +566,103 @@ body.light .fab-badge{border-color:#f5f7ff}
 </div>
 
 <script>
-(function(){
-  /* ── Hugging Face Space endpoint ──
-     Uses the free Inference API with Llama-3.2-3B-Instruct.
-     Falls back to local answers if the API is unavailable / rate-limited. */
-  const HF_API = 'https://keita1421-celinaisp.hf.space/api/chat';
+document.addEventListener('DOMContentLoaded', function() {
+  var SPACE = 'https://keita1421-celinaisp.hf.space';
 
-  const SYS = `You are a friendly customer-service assistant for the Celina Plains ISP Study website (Celina Plains Subdivision, Philippines).
-You help residents understand ISP performance results from the study and answer general internet questions.
+  var SYS = 'You are a friendly assistant for the Celina Plains ISP Study. Benchmarks: PLDT 85Mbps/40up/18ms | Globe 62/28/24ms | Converge 110/55/15ms | Meridian 45/20/30ms | Cablelink 38/15/35ms. Peak hours 7PM-10PM. Be concise, max 3 sentences. Reply in English or Filipino.';
 
-STUDY FACTS:
-- Wired ISPs studied: PLDT (Fiber/DSL), Globe, Converge (Fiber), Meridian (Cable), Cablelink (Cable)
-- Mobile ISPs covered: Smart, TNT, Dito, TM (Touch Mobile), Sky Broadband
-- Study benchmarks (avg): PLDT 85↓/40↑/18ms ping/4ms jitter | Globe 62↓/28↑/24ms/7ms | Converge 110↓/55↑/15ms/3ms | Meridian 45↓/20↑/30ms/9ms | Cablelink 38↓/15↑/35ms/11ms
-- Converge has the highest download speed. PLDT is the most balanced.
-- Peak hours: 7 PM – 10 PM (expect lower speeds due to congestion)
-- Rating thresholds: Download Excellent≥100, Good≥25, Fair≥10, Poor<10 Mbps | Ping Excellent≤20, Good≤50, Fair≤100, Poor>100 ms | Jitter Excellent≤5, Good≤20, Fair≤50, Poor>50 ms
-- Research uses DeLone & McLean IS Success Model + SERVQUAL (Reliability, Responsiveness, Assurance, Empathy, Tangibles)
-- 100 resident respondents; comparative correlational design; Ookla / Fast.com used
-- Users can run a speed test at hosted.html and view community results at results.html
-
-RULES: Be concise (≤3 sentences), friendly, and accurate. Reply in the same language the user writes in (English or Filipino/Tagalog). If unsure, suggest contacting the researchers.`;
-
-  /* Local fallback answers — used when HF API is unavailable */
-  const LOCAL = [
-    [/converge/i,'Converge has the highest average download speed in our study at 110 Mbps with the best ping (15 ms). It is the top performer in Celina Plains among wired ISPs.'],
-    [/pldt/i,'PLDT averages 85 Mbps download / 40 Mbps upload with an 18 ms ping. It offers both Fiber and DSL options and is considered the most balanced ISP in the study.'],
-    [/globe/i,'Globe averages 62 Mbps download and 28 Mbps upload in our Celina Plains study. It is a competitive option for residential use.'],
-    [/meridian/i,'Meridian averages 45 Mbps download and 20 Mbps upload. It is suitable for basic internet needs in Celina Plains.'],
-    [/cablelink/i,'Cablelink averages 38 Mbps download with a 35 ms ping — the highest average ping among wired ISPs in the study.'],
-    [/smart|tnt|dito|tm\b|touch mobile|sky/i,'Mobile data speeds vary widely by signal and location. No fixed benchmark was set for mobile ISPs in our study, but they are covered in the community dashboard.'],
-    [/peak|7pm|10pm|evening|congestion/i,'Peak hours are 7 PM – 10 PM when network congestion is highest. Test during off-peak hours for a more accurate measure of your ISP\'s true performance.'],
-    [/jitter/i,'Jitter is the variation in ping over time. Excellent is ≤5 ms, Good ≤20 ms, Fair ≤50 ms, Poor >50 ms. High jitter causes choppy video calls and lag.'],
-    [/ping|latency/i,'Ping is the round-trip response time. Excellent is ≤20 ms, Good ≤50 ms, Fair ≤100 ms, Poor >100 ms. Lower ping means faster real-time responses.'],
-    [/download/i,'Download speed is how fast data comes from the internet to your device. Excellent is ≥100 Mbps, Good ≥25 Mbps, Fair ≥10 Mbps, Poor <10 Mbps.'],
-    [/upload/i,'Upload speed is how fast data goes from your device to the internet. It matters most for video calls, live streaming, and sending files.'],
-    [/improve|slow|better|boost|fix/i,'To improve your speed: use a wired Ethernet connection, retest during off-peak hours (before 7 PM), restart your router, and ensure no devices are hogging bandwidth. If speeds are consistently low, consider upgrading your plan.'],
-    [/best|recommend|which isp|top isp/i,'Based on our Celina Plains study, Converge leads in download speed (110 Mbps) and Converge/PLDT have the best overall scores. The right choice depends on fiber availability in your exact street.'],
-    [/servqual|service quality/i,'SERVQUAL measures 5 service dimensions: Reliability (consistent service), Responsiveness (quick support), Assurance (trust), Empathy (understanding needs), and Tangibles (physical equipment quality).'],
-    [/study|research|about|celina/i,'This is the Celina Plains ISP Study — a comparative correlational research using the DeLone & McLean IS Success Model and SERVQUAL to evaluate ISP performance and user satisfaction in Celina Plains Subdivision, Philippines.'],
-    [/speed test|how to test|run test/i,'You can run a speed test using the SpeedTestGo widget on our hosted.html page. After testing, enter your Download, Upload, Ping, and Jitter values to get a personalized benchmark comparison.'],
-    [/contact|researcher|email|phone/i,'You can reach the researchers via the contact info on the study.html page. The team leader is Adrian Divinagracia (DivinagraceAdrian@gmail.com).'],
+  var LOCAL = [
+    [/converge/i,'Converge has the highest average download speed at 110 Mbps with the best ping (15ms). It is the top performer among wired ISPs in Celina Plains.'],
+    [/pldt/i,'PLDT averages 85 Mbps download and 40 Mbps upload with an 18ms ping. It is the most balanced ISP in the study.'],
+    [/globe/i,'Globe averages 62 Mbps download and 28 Mbps upload in Celina Plains.'],
+    [/meridian/i,'Meridian averages 45 Mbps download and 20 Mbps upload. Good for basic internet needs.'],
+    [/cablelink/i,'Cablelink averages 38 Mbps download with a 35ms ping — the highest among wired ISPs.'],
+    [/peak|7pm|evening/i,'Peak hours are 7PM–10PM when congestion is highest. Test off-peak for accurate results.'],
+    [/jitter/i,'Jitter is variation in ping over time. Excellent is ≤5ms, Good ≤20ms, Fair ≤50ms, Poor >50ms.'],
+    [/ping|latency/i,'Ping is round-trip response time. Excellent ≤20ms, Good ≤50ms, Fair ≤100ms, Poor >100ms.'],
+    [/improve|slow|fix|boost/i,'Try a wired Ethernet connection, test during off-peak hours, and restart your router. If speeds are still low, consider upgrading your plan.'],
+    [/best|fastest|top/i,'Converge leads in speed (110 Mbps). PLDT is the most balanced overall. The best ISP depends on coverage in your street.'],
   ];
 
-  const fallback = q => {
-    for (const [re, ans] of LOCAL) if (re.test(q)) return ans;
-    return 'I can help with questions about ISPs in Celina Plains — like which provider is fastest, what peak hours mean, or how to improve your speed. What would you like to know?';
+  var fallback = function(q) {
+    for (var i = 0; i < LOCAL.length; i++) {
+      if (LOCAL[i][0].test(q)) return LOCAL[i][1];
+    }
+    return 'I can help with ISP questions about Celina Plains! Ask me about providers, speed ratings, peak hours, or how to improve your connection.';
   };
 
-  /* State */
-  let open = false, busy = false;
-  const history = [];
+  var isOpen = false, busy = false, history = [];
 
-  const fab    = document.getElementById('chat-fab');
-  const win    = document.getElementById('chat-win');
-  const msgs   = document.getElementById('chat-msgs');
-  const inp    = document.getElementById('chat-inp');
-  const sndBtn = document.getElementById('chat-send');
-  const closeB = document.getElementById('chat-close-btn');
-  const badge  = document.getElementById('fab-badge');
-  const fabIco = document.getElementById('fab-icon');
-  const suggBox= document.getElementById('chat-sugg');
+  var fab    = document.getElementById('chat-fab');
+  var win    = document.getElementById('chat-win');
+  var msgs   = document.getElementById('chat-msgs');
+  var inp    = document.getElementById('chat-inp');
+  var sndBtn = document.getElementById('chat-send');
+  var closeB = document.getElementById('chat-close-btn');
+  var badge  = document.getElementById('fab-badge');
+  var fabIco = document.getElementById('fab-icon');
+  var suggBox= document.getElementById('chat-sugg');
 
-  const ts = () => new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
+  if (!fab || !win) { console.error('Chatbot elements not found'); return; }
 
-  const addMsg = (text, role) => {
-    const w = document.createElement('div'); w.className = `cmsg ${role}`;
-    const b = document.createElement('div'); b.className = 'cbubble'; b.textContent = text;
-    const t = document.createElement('div'); t.className = 'ctime'; t.textContent = ts();
-    w.append(b, t); msgs.append(w);
+  var ts = function() { return new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}); };
+
+  var addMsg = function(text, role) {
+    var w = document.createElement('div'); w.className = 'cmsg ' + role;
+    var b = document.createElement('div'); b.className = 'cbubble'; b.textContent = text;
+    var t = document.createElement('div'); t.className = 'ctime'; t.textContent = ts();
+    w.appendChild(b); w.appendChild(t); msgs.appendChild(w);
     msgs.scrollTop = msgs.scrollHeight;
   };
 
-  const showTyping = () => {
-    const el = document.createElement('div'); el.id = 'typing-ind';
+  var showTyping = function() {
+    var el = document.createElement('div'); el.id = 'typing-ind';
     el.innerHTML = '<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
-    msgs.append(el); msgs.scrollTop = msgs.scrollHeight;
+    msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight;
   };
-  const hideTyping = () => { const el = document.getElementById('typing-ind'); if(el) el.remove(); };
+  var hideTyping = function() { var el = document.getElementById('typing-ind'); if(el) el.remove(); };
 
-  const callHF = async (userMsg) => {
-    const recent = history.slice(-6);
-    const messages = [
-      {role: 'system', content: SYS},
-      ...recent,
-      {role: 'user', content: userMsg}
-    ];
-
-    const res = await fetch(HF_API, {
+  var callHF = async function(userMsg) {
+    var submitRes = await fetch(SPACE + '/gradio_api/call/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        model: 'meta-llama/Llama-3.2-3B-Instruct',
-        messages: messages,
-        max_tokens: 200,
-        temperature: 0.4
+        data: [userMsg, history, SYS, 200, 0.4, 0.9]
       })
     });
-    if (!res.ok) throw new Error(res.status);
-    const data = await res.json();
-    let reply = data?.choices?.[0]?.message?.content || '';
-    reply = reply.trim();
-    if (!reply) throw new Error('empty');
+    if (!submitRes.ok) throw new Error('Submit failed: ' + submitRes.status);
+    var json = await submitRes.json();
+    var event_id = json.event_id;
+    if (!event_id) throw new Error('No event_id returned');
+
+    var streamRes = await fetch(SPACE + '/gradio_api/call/chat/' + event_id);
+    if (!streamRes.ok) throw new Error('Stream failed: ' + streamRes.status);
+
+    var raw = await streamRes.text();
+    var reply = '';
+    var lines = raw.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith('event: complete')) {
+        for (var j = i + 1; j < lines.length; j++) {
+          if (lines[j].startsWith('data:')) {
+            try {
+              var parsed = JSON.parse(lines[j].slice(5).trim());
+              if (Array.isArray(parsed) && typeof parsed[0] === 'string') {
+                reply = parsed[0];
+              }
+            } catch(e) {}
+            break;
+          }
+        }
+        break;
+      }
+    }
+    if (!reply) throw new Error('Empty response');
     return reply;
   };
 
-  const send = async () => {
-    const text = inp.value.trim();
+  var send = async function() {
+    var text = inp.value.trim();
     if (!text || busy) return;
     suggBox.style.display = 'none';
     addMsg(text, 'user');
@@ -687,39 +670,42 @@ RULES: Be concise (≤3 sentences), friendly, and accurate. Reply in the same la
     inp.value = ''; sndBtn.disabled = true; busy = true;
     showTyping();
     try {
-      const reply = await callHF(text);
+      var reply = await callHF(text);
       hideTyping(); addMsg(reply, 'bot');
       history.push({role:'assistant', content:reply});
-    } catch {
+    } catch(e) {
+      console.error('Chat error:', e);
       hideTyping();
-      const fb = fallback(text);
-      addMsg(fb, 'bot');
-      history.push({role:'assistant', content:fb});
+      addMsg(fallback(text), 'bot');
     }
     sndBtn.disabled = false; busy = false;
   };
 
-  const openChat = () => {
-    open = true; win.classList.add('open');
-    fabIco.textContent = '✕'; badge.classList.add('hide');
+  var openChat = function() {
+    isOpen = true;
+    win.classList.add('open');
+    fabIco.textContent = '✕';
+    badge.classList.add('hide');
     inp.focus();
   };
-  const closeChat = () => {
-    open = false; win.classList.remove('open'); fabIco.textContent = '💬';
+  var closeChat = function() {
+    isOpen = false;
+    win.classList.remove('open');
+    fabIco.textContent = '💬';
   };
 
-  fab.addEventListener('click', () => open ? closeChat() : openChat());
+  fab.addEventListener('click', function() { isOpen ? closeChat() : openChat(); });
   closeB.addEventListener('click', closeChat);
   sndBtn.addEventListener('click', send);
-  inp.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
-  document.querySelectorAll('.sugg-btn').forEach(b => b.addEventListener('click', () => { inp.value = b.dataset.q; send(); }));
+  inp.addEventListener('keydown', function(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
+  document.querySelectorAll('.sugg-btn').forEach(function(b) {
+    b.addEventListener('click', function() { inp.value = b.dataset.q; send(); });
+  });
 
-  /* Welcome message */
-  setTimeout(() => {
-    addMsg('👋 Hi! I\'m the ISP Assistant for Celina Plains. Ask me anything about providers, speed benchmarks, or our research findings!', 'bot');
-  }, 700);
-})();
+  setTimeout(function() {
+    addMsg("👋 Hi! I'm the ISP Assistant for Celina Plains. Ask me anything about providers, speed benchmarks, or our research findings!", 'bot');
+  }, 800);
+});
 </script>
-
 </body>
 </html>
