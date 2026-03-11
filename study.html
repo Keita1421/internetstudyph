@@ -88,6 +88,7 @@
     .mobile-menu.open { display: flex; }
     .mobile-menu a { color: var(--muted); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1rem; font-weight: 500; }
     .mobile-menu a:last-child { border: none; }
+    .mobile-theme-btn { width: 100%; margin-top: 10px; justify-content: center; }
 
     main { position: relative; z-index: 1; padding-top: 64px; max-width: 1100px; margin: 0 auto; padding-left: 24px; padding-right: 24px; padding-bottom: 80px; }
 
@@ -226,6 +227,7 @@
     <a href="#contact" data-i18n="nav.contact">Contact</a>
     <a href="results.html" data-i18n="nav.results">Community Results</a>
     <a href="hosted.html" data-i18n="nav.test">Run Speed Test →</a>
+    <button class="theme-btn mobile-theme-btn" id="mobileThemeBtn" type="button">☀ Light</button>
   </div>
 
   <main>
@@ -529,13 +531,22 @@
   <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // Theme
     const themeBtn = document.getElementById('themeBtn');
+    const mobileThemeBtn = document.getElementById('mobileThemeBtn');
+    const setThemeButtonLabel = (t) => {
+      const label = t === 'light' ? '🌙 Dark' : '☀ Light';
+      themeBtn.textContent = label;
+      if (mobileThemeBtn) mobileThemeBtn.textContent = label;
+    };
     const applyTheme = (t) => {
       document.body.classList.toggle('light', t === 'light');
-      themeBtn.textContent = t === 'light' ? '🌙 Dark' : '☀ Light';
+      setThemeButtonLabel(t);
       localStorage.setItem('theme', t);
     };
     applyTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
     themeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light') ? 'dark' : 'light'));
+    if (mobileThemeBtn) {
+      mobileThemeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light') ? 'dark' : 'light'));
+    }
 
     // Mobile
     const hamburger = document.getElementById('hamburger');

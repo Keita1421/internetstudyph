@@ -42,6 +42,7 @@
     .mobile-menu { display: none; position: fixed; top: 64px; left: 0; right: 0; background: rgba(7,9,15,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 16px 24px; z-index: 99; flex-direction: column; gap: 4px; }
     .mobile-menu.open { display: flex; }
     .mobile-menu a { color: var(--muted); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1rem; font-weight: 500; }
+    .mobile-theme-btn { width: 100%; margin-top: 10px; justify-content: center; }
 
     main { position: relative; z-index: 1; padding: 80px 24px 60px; max-width: 1200px; margin: 0 auto; }
     .page-header { padding: 32px 0 36px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
@@ -210,6 +211,7 @@
     <a href="index.html" data-i18n="nav.home">Home</a>
     <a href="study.html" data-i18n="nav.study">Study Details</a>
     <a href="results.html" data-i18n="nav.results">Community Results</a>
+    <button class="theme-btn mobile-theme-btn" id="mobileThemeBtn" type="button">☀ Light</button>
   </div>
 
   <main>
@@ -346,9 +348,18 @@
     const mobileISPs = new Set(['Others']);
 
     const themeBtn = document.getElementById('themeBtn');
-    const applyTheme = t => { document.body.classList.toggle('light', t==='light'); themeBtn.textContent = t==='light'?'🌙 Dark':'☀ Light'; localStorage.setItem('theme',t); };
+    const mobileThemeBtn = document.getElementById('mobileThemeBtn');
+    const setThemeButtonLabel = t => {
+      const label = t==='light'?'🌙 Dark':'☀ Light';
+      themeBtn.textContent = label;
+      if (mobileThemeBtn) mobileThemeBtn.textContent = label;
+    };
+    const applyTheme = t => { document.body.classList.toggle('light', t==='light'); setThemeButtonLabel(t); localStorage.setItem('theme',t); };
     applyTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
     themeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light')?'dark':'light'));
+    if (mobileThemeBtn) {
+      mobileThemeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light')?'dark':'light'));
+    }
 
     const hamburger = document.getElementById('hamburger');
     const mobileMenu = document.getElementById('mobileMenu');
