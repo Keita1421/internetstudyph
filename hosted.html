@@ -230,18 +230,16 @@
                 <select id="isp" required>
                   <option value="PLDT">PLDT</option><option value="Globe">Globe</option>
                   <option value="Converge">Converge</option><option value="Meridian">Meridian</option>
-                  <option value="Cablelink">Cablelink</option><option value="Smart">Smart</option>
-                  <option value="TNT">TNT</option><option value="Dito">Dito</option>
-                  <option value="TM (Touch Mobile)">TM (Touch Mobile)</option>
-                  <option value="Sky Broadband">Sky Broadband</option><option value="Other">Other</option>
+                  <option value="Cablelink">Cablelink</option><option value="Others">Others</option>
+                  <option value="Sky Broadband">Sky Broadband</option>
                 </select>
               </div>
               <div class="field">
                 <label data-i18n="f.conn">Connection Type</label>
                 <select id="connType" required>
                   <option value="fiber">Fiber</option><option value="dsl">DSL</option>
-                  <option value="cable">Cable</option><option value="mobile4g">Mobile Data (4G)</option>
-                  <option value="mobile5g">Mobile Data (5G)</option><option value="fixedWireless">Fixed Wireless</option>
+                  <option value="cable">Cable</option><option value="others">Others</option>
+                  <option value="fixedWireless">Fixed Wireless</option>
                 </select>
               </div>
               <div class="field">
@@ -345,7 +343,7 @@
 
   <script>
     const benchmarks = { PLDT:{dl:85,ul:40,ping:18,jitter:4}, Globe:{dl:62,ul:28,ping:24,jitter:7}, Converge:{dl:110,ul:55,ping:15,jitter:3}, Meridian:{dl:45,ul:20,ping:30,jitter:9}, Cablelink:{dl:38,ul:15,ping:35,jitter:11} };
-    const mobileISPs = new Set(['Smart','TNT','Dito','TM (Touch Mobile)']);
+    const mobileISPs = new Set(['Others']);
 
     const themeBtn = document.getElementById('themeBtn');
     const applyTheme = t => { document.body.classList.toggle('light', t==='light'); themeBtn.textContent = t==='light'?'🌙 Dark':'☀ Light'; localStorage.setItem('theme',t); };
@@ -427,7 +425,7 @@
       submitBtn.textContent = 'Saving...';
       submitBtn.disabled = true;
       
-      const connLabels={fiber:'Fiber',dsl:'DSL',cable:'Cable',mobile4g:'Mobile Data (4G)',mobile5g:'Mobile Data (5G)',fixedWireless:'Fixed Wireless'};
+      const connLabels={fiber:'Fiber',dsl:'DSL',cable:'Cable',others:'Others',fixedWireless:'Fixed Wireless'};
 
       // Use already-captured GPS coords (from banner prompt on load)
       const count = await saveRecord({isp,connectionType:connType,connectionTypeLabel:connLabels[connType]||connType,timeOfDay,timeOfDayLabel:timeOfDay==='peak'?'Peak Hours 7PM–10PM':'Off-Peak',downloadSpeed:dl,uploadSpeed:ul,ping,jitter,timestamp:Date.now(),...(window._userLocation ? {lat:window._userLocation.lat,lng:window._userLocation.lng,accuracy:window._userLocation.accuracy} : {})});
@@ -516,7 +514,7 @@
     // ── GPS permission banner ────────────────────────
     window._userLocation = null;
     let _userLocMap = null;
-    const ISP_COLORS_H = { PLDT:'#3b82f6', Globe:'#ef4444', Converge:'#10b981', Meridian:'#f59e0b', Cablelink:'#8b5cf6', Smart:'#06b6d4', TNT:'#f97316', Dito:'#ec4899', 'TM (Touch Mobile)':'#84cc16', 'Sky Broadband':'#14b8a6', Other:'#6b7280' };
+    const ISP_COLORS_H = { PLDT:'#3b82f6', Globe:'#ef4444', Converge:'#10b981', Meridian:'#f59e0b', Cablelink:'#8b5cf6', Others:'#06b6d4', 'Sky Broadband':'#14b8a6' };
 
     const requestGPS = () => {
       navigator.geolocation.getCurrentPosition(

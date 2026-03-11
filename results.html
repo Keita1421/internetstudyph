@@ -231,7 +231,9 @@
     // Firestore data loading
     let cachedRecords = [];
     let dataLoaded = false;
-    const ISP_COLORS = { PLDT:'#3b82f6', Globe:'#ef4444', Converge:'#10b981', Meridian:'#f59e0b', Cablelink:'#8b5cf6', Smart:'#06b6d4', TNT:'#f97316', Dito:'#ec4899', 'TM (Touch Mobile)':'#84cc16', 'Sky Broadband':'#14b8a6', Other:'#6b7280' };
+    const ISP_COLORS = { PLDT:'#3b82f6', Globe:'#ef4444', Converge:'#10b981', Meridian:'#f59e0b', Cablelink:'#8b5cf6', Others:'#06b6d4', 'Sky Broadband':'#14b8a6' };
+    const MOBILE_ISPS = new Set(['Smart', 'TNT', 'Dito', 'TM (Touch Mobile)', 'Others Type', 'Others', 'Other']);
+    const MOBILE_CONNECTIONS = new Set(['mobile4g', 'mobile5g']);
 
     let sortField = 'timestamp', sortDir = 'desc';
     const charts = {};
@@ -249,6 +251,28 @@
     document.addEventListener('click', e => { if(!e.target.closest('nav')&&!e.target.closest('.mobile-menu')) mobileMenu.classList.remove('open'); });
 
     const getRecords = () => cachedRecords;
+    const normalizeRecord = (data) => {
+      const normalizedIsp = MOBILE_ISPS.has(data.isp) ? 'Others' : (data.isp || 'Others');
+      const normalizedConnType = MOBILE_CONNECTIONS.has(data.connectionType) ? 'others' : (data.connectionType || 'unknown');
+      const normalizedConnLabel = MOBILE_CONNECTIONS.has(data.connectionType)
+        ? 'Others'
+        : (normalizedConnType === 'others' ? 'Others' : (data.connectionTypeLabel || data.connectionType || 'Unknown'));
+
+      return {
+        isp: normalizedIsp,
+        connectionType: normalizedConnType,
+        connectionTypeLabel: normalizedConnLabel,
+        timeOfDay: data.timeOfDay || 'offpeak',
+        timeOfDayLabel: data.timeOfDayLabel || (data.timeOfDay === 'peak' ? 'Peak Hours' : 'Off-Peak'),
+        downloadSpeed: parseFloat(data.downloadSpeed) || 0,
+        uploadSpeed: parseFloat(data.uploadSpeed) || 0,
+        ping: parseFloat(data.ping) || 0,
+        jitter: parseFloat(data.jitter) || 0,
+        timestamp: data.timestamp || Date.now(),
+        lat: data.lat || null,
+        lng: data.lng || null,
+      };
+    };
 
     const loadRecords = async () => {
       try {
@@ -263,20 +287,7 @@
         const records = [];
         snapshot.forEach(doc => {
           const data = doc.data();
-          records.push({
-            isp: data.isp || 'Other',
-            connectionType: data.connectionType || 'unknown',
-            connectionTypeLabel: data.connectionTypeLabel || data.connectionType || 'Unknown',
-            timeOfDay: data.timeOfDay || 'offpeak',
-            timeOfDayLabel: data.timeOfDayLabel || (data.timeOfDay === 'peak' ? 'Peak Hours' : 'Off-Peak'),
-            downloadSpeed: parseFloat(data.downloadSpeed) || 0,
-            uploadSpeed: parseFloat(data.uploadSpeed) || 0,
-            ping: parseFloat(data.ping) || 0,
-            jitter: parseFloat(data.jitter) || 0,
-            timestamp: data.timestamp || Date.now(),
-            lat: data.lat || null,
-            lng: data.lng || null,
-          });
+          records.push(normalizeRecord(data));
         });
         
         cachedRecords = records;
@@ -329,7 +340,7 @@
       const isps=[...new Set(records.map(r=>r.isp))].sort();
       const conns=[...new Set(records.map(r=>r.connectionType))].sort();
       selIsp.innerHTML=`<option value="">All ISPs</option>`+isps.map(v=>`<option value="${v}">${v}</option>`).join('');
-      selConn.innerHTML=`<option value="">All Connections</option>`+conns.map(v=>`<option value="${v}">${v}</option>`).join('');
+      selConn.innerHTML=`<option value="">All Connections</option>`+conns.map(v=>`<option value="${v}">${v==='others'?'Others':v}</option>`).join('');
       selTime.innerHTML=`<option value="">All Times</option><option value="peak">Peak 7PM–10PM</option><option value="offpeak">Off-Peak</option>`;
       if(prevIsp) selIsp.value=prevIsp;
       if(prevConn) selConn.value=prevConn;
