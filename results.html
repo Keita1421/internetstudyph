@@ -134,48 +134,56 @@
     body.light .leaflet-popup-tip { background: #fff; }
 
     /* --- NEW CODE START --- Location summary section */
-    /* Location section wrapper card */
-    .loc-section-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 28px;
-    }
-    body.light .loc-section-card { background: #fff; }
-    .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; margin-top: 16px; }
-    .loc-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
-    .loc-card-low { border-color: rgba(245,158,11,0.45); }
-    .loc-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
-    .loc-city { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
-    .loc-badge { display: inline-block; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
-    .loc-count-badge { background: rgba(79,255,176,0.1); border: 1px solid rgba(79,255,176,0.25); color: var(--accent); font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
-    .loc-subtitle { font-size: 0.78rem; color: var(--muted); }
-    .loc-low-data-warn { font-size: 0.78rem; color: rgba(245,158,11,0.9); background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 8px; padding: 6px 10px; }
-    .loc-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
-    .loc-stat { display: flex; flex-direction: column; align-items: center; text-align: center; }
-    .loc-stat-val { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--accent); }
-    .loc-stat-isp { font-size: 0.82rem !important; }
-    .loc-stat-lbl { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
-    .loc-stat-unit { font-size: 0.7rem; color: var(--muted); }
-    .loc-breakdown { margin-top: 4px; }
-    .loc-breakdown summary { font-size: 0.82rem; color: var(--muted); cursor: pointer; user-select: none; padding: 4px 0; list-style: none; }
-    .loc-breakdown summary::-webkit-details-marker { display: none; }
-    .loc-breakdown summary::before { content: '▶ '; font-size: 0.7rem; }
-    .loc-breakdown[open] summary::before { content: '▼ '; }
-    .loc-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 8px; }
-    .loc-table th { color: var(--muted); font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 6px; border-bottom: 1px solid var(--border); text-align: left; position: static; background: none; cursor: default; white-space: nowrap; }
-    .loc-table td { padding: 5px 6px; border-bottom: 1px solid var(--border); color: var(--text); white-space: nowrap; }
-    .loc-breakdown-inner { overflow-x: auto; width: 100%; }
-    .loc-table tr:last-child td { border-bottom: none; }
-    .loc-top-isp td { color: var(--accent); font-weight: 600; }
-    .loc-search-input { background: var(--input); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font: 400 0.9rem 'DM Sans', sans-serif; padding: 10px 14px; width: 100%; max-width: 360px; transition: border-color 0.2s; }
+    .loc-section-hd { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+    .loc-section-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .loc-meta-line { font-size: 0.8rem; color: var(--muted); }
+    .loc-showing-count { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+    .loc-search-input { background: var(--input); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font: 400 0.88rem 'DM Sans', sans-serif; padding: 9px 14px; width: 100%; max-width: 340px; transition: border-color 0.2s; }
     .loc-search-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,255,176,0.1); }
     .loc-search-input::placeholder { color: var(--muted); }
-    .loc-meta-line { color: var(--muted); font-size: 0.82rem; margin-top: 6px; }
-    .loc-showing-count { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+
+    .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; margin-top: 14px; }
+
+    .loc-card { background: var(--bg2); border: 0.5px solid var(--border2); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.15s; }
+    .loc-card:hover { border-color: rgba(79,255,176,0.3); }
+    .loc-card-low { border-left: 3px solid rgba(245,158,11,0.8); }
+
+    .loc-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding: 13px 14px 10px; }
+    .loc-card-name { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .loc-card-sub { font-size: 0.75rem; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .loc-count-pill { flex-shrink: 0; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(79,255,176,0.1); border: 1px solid rgba(79,255,176,0.25); color: var(--accent); white-space: nowrap; }
+    .loc-count-pill-low { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: rgba(245,158,11,0.9); }
+
+    .loc-low-warn { font-size: 0.75rem; color: rgba(245,158,11,0.85); padding: 0 14px 8px; }
+
+    .loc-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .loc-stat { padding: 10px 0; display: flex; flex-direction: column; align-items: center; text-align: center; border-right: 1px solid var(--border); }
+    .loc-stat:last-child { border-right: none; }
+    .loc-stat-val { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 800; color: var(--accent); line-height: 1.2; }
+    .loc-stat-val-isp { font-size: 0.72rem !important; font-family: 'DM Sans', sans-serif !important; font-weight: 600 !important; }
+    .loc-stat-lbl { font-size: 0.65rem; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .loc-isp-pills { display: flex; flex-wrap: wrap; gap: 5px; padding: 9px 14px; }
+    .loc-isp-pill { font-size: 0.72rem; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--border2); color: var(--muted); display: flex; align-items: center; gap: 5px; }
+    .loc-isp-pill-top { border-color: rgba(79,255,176,0.35); color: var(--accent); background: rgba(79,255,176,0.07); }
+    .loc-isp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    .loc-expand-btn { width: 100%; text-align: left; padding: 8px 14px; font-size: 0.78rem; color: var(--muted); background: rgba(255,255,255,0.03); border: none; border-top: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-family: 'DM Sans', sans-serif; transition: color 0.15s, background 0.15s; }
+    .loc-expand-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+    .loc-expand-arrow { font-size: 0.65rem; transition: transform 0.2s; display: inline-block; }
+    .loc-expand-arrow.open { transform: rotate(180deg); }
+
+    .loc-breakdown-inner { overflow-x: auto; width: 100%; }
+    .loc-table { width: 100%; min-width: 220px; border-collapse: collapse; font-size: 0.78rem; }
+    .loc-table th { color: var(--muted); font-weight: 700; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 14px; border-bottom: 1px solid var(--border); text-align: left; background: none; cursor: default; white-space: nowrap; }
+    .loc-table td { padding: 6px 14px; border-bottom: 1px solid var(--border); color: var(--text); white-space: nowrap; }
+    .loc-table tr:last-child td { border-bottom: none; }
+    .loc-top-row td { color: var(--accent); font-weight: 600; }
+
     body.light .loc-card { background: #fff; }
-    body.light .loc-stats { background: #f5f7ff; }
+    body.light .loc-expand-btn { background: rgba(0,0,0,0.02); }
+    body.light .loc-expand-btn:hover { background: rgba(0,0,0,0.05); }
+    body.light .loc-isp-pill { border-color: rgba(0,0,0,0.12); }
     /* --- NEW CODE END --- */
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
@@ -238,7 +246,7 @@
     </div>
 
     <!-- NEW CODE START: Location Summary Section -->
-    <div class="loc-section-card">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px 24px;margin-bottom:28px;">
       <div id="location-summary-root"></div>
     </div>
     <!-- NEW CODE END -->
@@ -732,110 +740,128 @@
 
       const currentLang = localStorage.getItem('lang') || 'en';
       const isTl = currentLang === 'tl';
-      const sub_word    = isTl ? 'mga submission' : 'submissions';
-      const nogps_word  = isTl ? 'walang GPS'     : 'without GPS';
-      const sectionTitle    = isTl ? '🌏 Mga Resulta ayon sa Lokasyon' : '🌏 Results by Location';
-      const searchPH        = isTl ? 'Hanapin ang lungsod, barangay, probinsya...' : 'Search city, barangay, province...';
+      const sectionTitle  = isTl ? '🌏 Mga Resulta ayon sa Lokasyon' : '🌏 Results by Location';
+      const searchPH      = isTl ? 'Hanapin ang lungsod, barangay, probinsya...' : 'Search city, barangay, province...';
+      const sub_word      = isTl ? 'mga submission' : 'submissions';
+      const nogps_word    = isTl ? 'walang GPS' : 'without GPS';
 
       const withLocation = submissions.filter(s => s.city || s.municipality || s.barangay || s.province);
       const withoutGps   = submissions.filter(s => !s.lat && !s.lng).length;
 
       root.innerHTML = `
         <section id="loc-section">
-          <div style="margin-bottom:16px">
-            <div class="section-label" style="margin-bottom:6px">${sectionTitle}</div>
-            <p id="loc-meta" class="loc-meta-line">${withLocation.length} of ${submissions.length} ${sub_word} have location data &middot; ${withoutGps} ${nogps_word} (not shown here)</p>
-            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px">
-              <input id="loc-search" type="text" class="loc-search-input" placeholder="${escapeHtml(searchPH)}" autocomplete="off" />
-              <span id="loc-showing" class="loc-showing-count"></span>
+          <div class="loc-section-hd">
+            <div>
+              <div class="loc-section-title">${sectionTitle}</div>
+              <div class="loc-meta-line">${withLocation.length} of ${submissions.length} ${sub_word} have location data &middot; ${withoutGps} ${nogps_word}</div>
             </div>
+            <span class="loc-showing-count" id="loc-showing"></span>
           </div>
+          <input id="loc-search" type="text" class="loc-search-input" placeholder="${escapeHtml(searchPH)}" autocomplete="off" />
           <div id="loc-grid" class="loc-grid"></div>
         </section>
       `;
 
-      const groups   = buildLocationGroups(submissions);
-      const grid     = document.getElementById('loc-grid');
+      const groups    = buildLocationGroups(submissions);
+      const grid      = document.getElementById('loc-grid');
       const showingEl = document.getElementById('loc-showing');
 
-      function buildCard(g) {
-        const isLowData = g.count < 5;
+      // Track which cards have their breakdown table open
+      const openCards = new Set();
+
+      function buildCard(g, idx) {
+        const id        = 'loc-card-' + idx;
+        const isLow     = g.count < 5;
+        const isOpen    = openCards.has(id);
+        const topIsps   = g.ispStats.slice(0, 4);
+        const breakdownLabel = isTl ? 'ISP Breakdown' : 'ISP breakdown';
         const lowWarn   = isTl
-          ? '⚠️ Mababang datos \u2014 maaaring hindi kinatawan ang mga resulta'
-          : '⚠️ Low data \u2014 results may not be representative';
-        const breakdownLabel = isTl ? 'Breakdown ng ISP' : 'ISP Breakdown';
-        const ispRows = g.ispStats.map((isp, idx) => `
-          <tr class="${idx === 0 ? 'loc-top-isp' : ''}">
-            <td>${idx === 0 ? '🏆 ' : ''}${escapeHtml(isp.isp)}</td>
+          ? '⚠ Mababang datos — maaaring hindi kinatawan'
+          : '⚠ Low data — results may not be representative';
+
+        const subLine = [g.municipality !== g.label ? g.municipality : '', g.province]
+          .filter(Boolean).join(', ');
+
+        const ispPills = topIsps.map((isp, i) => `
+          <span class="loc-isp-pill${i === 0 ? ' loc-isp-pill-top' : ''}">
+            <span class="loc-isp-dot" style="background:${ispColor(isp.isp)}"></span>
+            ${escapeHtml(isp.isp)}
+          </span>`).join('');
+
+        const tblRows = g.ispStats.map((isp, i) => `
+          <tr class="${i === 0 ? 'loc-top-row' : ''}">
+            <td><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${ispColor(isp.isp)};margin-right:6px;vertical-align:middle"></span>${escapeHtml(isp.isp)}</td>
             <td>${isp.count}</td>
             <td>${isp.avgDl.toFixed(1)}</td>
-            <td>${isp.avgUl.toFixed(1)}</td>
-            <td>${isp.avgPing.toFixed(0)}ms</td>
+            <td>${isp.avgPing.toFixed(0)} ms</td>
           </tr>`).join('');
-        const muniLine = (g.municipality && g.municipality !== g.label)
-          ? `<div class="loc-subtitle">Municipality: ${escapeHtml(g.municipality)}</div>` : '';
-        const brgyLine = g.barangay
-          ? `<div class="loc-subtitle">Barangay: ${escapeHtml(g.barangay)}</div>` : '';
-        const regionLine = g.region
-          ? `<div class="loc-subtitle">Region: ${escapeHtml(g.region)}</div>` : '';
+
         return `
-          <div class="loc-card${isLowData ? ' loc-card-low' : ''}">
-            <div class="loc-card-head">
-              <div>
-                <span>📍</span>
-                <strong class="loc-city">${escapeHtml(g.label)}</strong>
-                ${g.province ? `<span class="loc-badge">${escapeHtml(g.province)}</span>` : ''}
+          <div class="loc-card${isLow ? ' loc-card-low' : ''}" id="${id}">
+            <div class="loc-card-top">
+              <div style="min-width:0">
+                <div class="loc-card-name">📍 ${escapeHtml(g.label)}</div>
+                ${subLine ? `<div class="loc-card-sub">${escapeHtml(subLine)}</div>` : ''}
               </div>
-              <span class="loc-count-badge">${g.count} tests</span>
+              <span class="loc-count-pill${isLow ? ' loc-count-pill-low' : ''}">${g.count} tests</span>
             </div>
-            ${muniLine}${brgyLine}${regionLine}
-            ${isLowData ? `<div class="loc-low-data-warn">${lowWarn}</div>` : ''}
-            <div class="loc-stats">
+            ${isLow ? `<div class="loc-low-warn">${lowWarn}</div>` : ''}
+            <div class="loc-stats-row">
               <div class="loc-stat">
                 <div class="loc-stat-val">${g.avgDl.toFixed(1)}</div>
-                <div class="loc-stat-lbl">Avg Download</div>
-                <div class="loc-stat-unit">Mbps</div>
+                <div class="loc-stat-lbl">Avg DL (Mbps)</div>
               </div>
               <div class="loc-stat">
                 <div class="loc-stat-val">${g.avgPing.toFixed(0)}</div>
-                <div class="loc-stat-lbl">Avg Ping</div>
-                <div class="loc-stat-unit">ms</div>
+                <div class="loc-stat-lbl">Avg ping (ms)</div>
               </div>
               <div class="loc-stat">
-                <div class="loc-stat-val loc-stat-isp">${escapeHtml(g.topIsp)}</div>
+                <div class="loc-stat-val loc-stat-val-isp">${escapeHtml(g.topIsp)}</div>
                 <div class="loc-stat-lbl">Top ISP</div>
               </div>
             </div>
-            <details class="loc-breakdown">
-              <summary>${escapeHtml(breakdownLabel)} (${g.ispStats.length} provider${g.ispStats.length !== 1 ? 's' : ''})</summary>
-              <div class="loc-breakdown-inner">
-                <table class="loc-table">
-                  <thead><tr><th>ISP</th><th>Tests</th><th>&#8595;Mbps</th><th>&#8593;Mbps</th><th>Ping</th></tr></thead>
-                  <tbody>${ispRows}</tbody>
-                </table>
-              </div>
-            </details>
+            <div class="loc-isp-pills">${ispPills}</div>
+            <button class="loc-expand-btn" onclick="locToggle('${id}')">
+              <span>${escapeHtml(breakdownLabel)} (${g.ispStats.length} provider${g.ispStats.length !== 1 ? 's' : ''})</span>
+              <span class="loc-expand-arrow${isOpen ? ' open' : ''}">&#9660;</span>
+            </button>
+            ${isOpen ? `
+            <div class="loc-breakdown-inner">
+              <table class="loc-table">
+                <thead><tr><th>ISP</th><th>Tests</th><th>&#8595; Mbps</th><th>Ping</th></tr></thead>
+                <tbody>${tblRows}</tbody>
+              </table>
+            </div>` : ''}
           </div>`;
       }
 
-      function renderCards(filteredGroups) {
-        showingEl.textContent = `${filteredGroups.length} location${filteredGroups.length !== 1 ? 's' : ''}`;
-        if (!filteredGroups.length) {
-          grid.innerHTML = `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0">No locations match your search.</p>`;
+      // Expose toggle function globally so onclick can reach it
+      window.locToggle = function(id) {
+        if (openCards.has(id)) openCards.delete(id);
+        else openCards.add(id);
+        renderCards(currentFiltered);
+      };
+
+      let currentFiltered = groups;
+
+      function renderCards(data) {
+        currentFiltered = data;
+        showingEl.textContent = `${data.length} location${data.length !== 1 ? 's' : ''}`;
+        if (!data.length) {
+          grid.innerHTML = `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0;font-size:0.88rem">No locations match your search.</p>`;
           return;
         }
-        grid.innerHTML = filteredGroups.map(buildCard).join('');
+        grid.innerHTML = data.map((g, i) => buildCard(g, i)).join('');
       }
 
       renderCards(groups);
 
-      document.getElementById('loc-search').addEventListener('input', function() {
+      document.getElementById('loc-search').addEventListener('input', function () {
         const q = this.value.trim().toLowerCase();
-        if (!q) { renderCards(groups); return; }
-        renderCards(groups.filter(g =>
+        renderCards(q ? groups.filter(g =>
           [g.city, g.municipality, g.barangay, g.province, g.region, g.label]
             .some(v => v && v.toLowerCase().includes(q))
-        ));
+        ) : groups);
       });
     }
     // --- NEW CODE END ---
