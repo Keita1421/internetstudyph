@@ -1,0 +1,43 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main   # change to 'master' if that's your default branch
+
+permissions:
+  contents: write  # needed to push to gh-pages branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out your repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Copy all files to a staging folder
+      - name: Prepare staging folder
+        run: |
+          mkdir -p _staging
+          cp -r . _staging/
+          # Remove the staging folder itself from the copy to avoid recursion
+          rm -rf _staging/_staging
+
+      # 3. Inject the OpenCage API key — replaces __OPENCAGE_KEY__ in all HTML/JS files
+      - name: Inject OpenCage API key
+        env:
+          OPENCAGE_API_KEY: ${{ secrets.OPENCAGE_API_KEY }}
+        run: |
+          find _staging -type f \( -name "*.html" -o -name "*.js" \) | while read file; do
+            sed -i "s|__OPENCAGE_KEY__|${OPENCAGE_API_KEY}|g" "$file"
+          done
+
+      # 4. Deploy the staging folder to the gh-pages branch
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_staging
+          publish_branch: gh-pages
