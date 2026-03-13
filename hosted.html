@@ -344,40 +344,23 @@
   </footer>
 
   <script>
-    // --- NEW CODE START ---
-    const OPENCAGE_API_KEY = '71ec28d2d6f34a4ab658b6ee9ecd0ed6';
-
-    /**
-     * reverseGeocode — converts GPS coordinates to human-readable location fields
-     * using the OpenCage Geocoding API.
-     * @param {number} latitude - GPS latitude
-     * @param {number} longitude - GPS longitude
-     * @returns {Promise<{city:string, municipality:string, barangay:string, province:string, region:string}>}
-     *   Returns location fields, or all empty strings if geocoding fails or coords unavailable.
-     */
-    async function reverseGeocode(latitude, longitude) {
-      const empty = { city: '', municipality: '', barangay: '', province: '', region: '' };
-      if (!latitude || !longitude) return empty;
+    async function getLocationFields(lat, lng) {
       try {
-        const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${OPENCAGE_API_KEY}&language=en&no_annotations=1&countrycode=ph`;
-        const res = await fetch(url);
-        if (!res.ok) return empty;
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
+          { headers: { "Accept-Language": "en" } }
+        );
         const data = await res.json();
-        if (!data.results || !data.results.length) return empty;
-        const c = data.results[0].components;
+        const addr = data.address || {};
         return {
-          city:         c.city         || c.town         || c.village      || '',
-          municipality: c.municipality || c.city_district || c.county       || '',
-          barangay:     c.suburb       || c.neighbourhood || c.quarter      || '',
-          province:     c.state        || c.province      || '',
-          region:       c.region       || c.state_district || '',
+          barangay: addr.suburb || addr.neighbourhood || addr.village || "",
+          city:     addr.city || addr.town || addr.municipality || "",
+          province: addr.province || addr.state || "",
         };
-      } catch (err) {
-        console.warn('Reverse geocode failed:', err);
-        return empty;
+      } catch {
+        return { barangay: "", city: "", province: "" };
       }
     }
-    // --- NEW CODE END ---
 
     const benchmarks = { PLDT:{dl:85,ul:40,ping:18,jitter:4}, Globe:{dl:62,ul:28,ping:24,jitter:7}, Converge:{dl:110,ul:55,ping:15,jitter:3}, Meridian:{dl:45,ul:20,ping:30,jitter:9}, Cablelink:{dl:38,ul:15,ping:35,jitter:11} };
     const mobileISPs = new Set(['Others']);
@@ -473,13 +456,10 @@
       
       const connLabels={fiber:'Fiber',dsl:'DSL',cable:'Cable',others:'Others',fixedWireless:'Fixed Wireless'};
 
-      // --- NEW CODE START ---
-      // Reverse geocode GPS coordinates before saving to Firestore
-      let geoFields = { city: '', municipality: '', barangay: '', province: '', region: '' };
+      let geoFields = { barangay: '', city: '', province: '' };
       if (window._userLocation && window._userLocation.lat && window._userLocation.lng) {
-        geoFields = await reverseGeocode(window._userLocation.lat, window._userLocation.lng);
+        geoFields = await getLocationFields(window._userLocation.lat, window._userLocation.lng);
       }
-      // --- NEW CODE END ---
 
       // Use already-captured GPS coords (from banner prompt on load)
       const count = await saveRecord({isp,connectionType:connType,connectionTypeLabel:connLabels[connType]||connType,timeOfDay,timeOfDayLabel:timeOfDay==='peak'?'Peak Hours 7PM–10PM':'Off-Peak',downloadSpeed:dl,uploadSpeed:ul,ping,jitter,timestamp:Date.now(),...(window._userLocation ? {lat:window._userLocation.lat,lng:window._userLocation.lng,accuracy:window._userLocation.accuracy} : {}),...geoFields});
