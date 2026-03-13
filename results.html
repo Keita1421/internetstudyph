@@ -134,6 +134,15 @@
     body.light .leaflet-popup-tip { background: #fff; }
 
     /* --- NEW CODE START --- Location summary section */
+    /* Location section wrapper card */
+    .loc-section-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+    body.light .loc-section-card { background: #fff; }
     .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; margin-top: 16px; }
     .loc-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
     .loc-card-low { border-color: rgba(245,158,11,0.45); }
@@ -228,7 +237,9 @@
     </div>
 
     <!-- NEW CODE START: Location Summary Section -->
-    <div id="location-summary-root"></div>
+    <div class="loc-section-card">
+      <div id="location-summary-root"></div>
+    </div>
     <!-- NEW CODE END -->
 
     <div class="filters">
@@ -270,11 +281,13 @@
   </footer>
 
   <script>
-    // Firestore data loading
     let cachedRecords = [];
     let dataLoaded = false;
     // --- NEW CODE START ---
     let geocodeEnriched = false;
+    // Persistent store of geocoded location fields keyed by rounded lat_lng
+    // Survives loadRecords() re-fetches so cards don't disappear on 30s refresh
+    const geocodePersistCache = {};
     // --- NEW CODE END ---
     const ISP_COLORS = { PLDT:'#3b82f6', Globe:'#ef4444', Converge:'#10b981', Meridian:'#f59e0b', Cablelink:'#8b5cf6', Others:'#06b6d4', 'Sky Broadband':'#14b8a6' };
     const MOBILE_ISPS = new Set(['Smart', 'TNT', 'Dito', 'TM (Touch Mobile)', 'Others Type', 'Others', 'Other']);
@@ -610,6 +623,22 @@
      * @returns {Promise<void>}
      */
     async function enrichOldSubmissionsWithGeocode(records) {
+      // First: re-apply any previously geocoded results from the persist cache
+      // This restores location data after loadRecords() replaces cachedRecords
+      for (const r of records) {
+        if (!r.lat || !r.lng) continue;
+        const key = `${parseFloat(r.lat).toFixed(3)}_${parseFloat(r.lng).toFixed(3)}`;
+        if (geocodePersistCache[key]) {
+          const cached = geocodePersistCache[key];
+          r.city         = r.city         || cached.city;
+          r.municipality = r.municipality || cached.municipality;
+          r.barangay     = r.barangay     || cached.barangay;
+          r.province     = r.province     || cached.province;
+          r.region       = r.region       || cached.region;
+        }
+      }
+
+      // Then: geocode any records that still have no location fields
       const needsGeocode = records.filter(r =>
         r.lat && r.lng &&
         !r.city && !r.municipality && !r.barangay && !r.province
@@ -622,6 +651,11 @@
         r.barangay     = geo.barangay;
         r.province     = geo.province;
         r.region       = geo.region;
+        // Persist so the next 30s refresh re-applies without another API call
+        if (geo.city || geo.municipality || geo.barangay || geo.province) {
+          const key = `${parseFloat(r.lat).toFixed(3)}_${parseFloat(r.lng).toFixed(3)}`;
+          geocodePersistCache[key] = geo;
+        }
       }
     }
 
@@ -710,7 +744,7 @@
       const withoutGps   = submissions.filter(s => !s.lat && !s.lng).length;
 
       root.innerHTML = `
-        <section id="loc-section" style="margin-bottom:28px">
+        <section id="loc-section">
           <div style="margin-bottom:16px">
             <div class="section-label" style="margin-bottom:6px">${sectionTitle}</div>
             <p id="loc-meta" class="loc-meta-line">${withLocation.length} of ${submissions.length} ${sub_word} have location data &middot; ${withoutGps} ${nogps_word} (not shown here)</p>
@@ -812,10 +846,8 @@
         document.getElementById('sTotal').textContent = 'Loading...';
         await loadRecords();
         // --- NEW CODE START ---
-        if (!geocodeEnriched) {
-          geocodeEnriched = true;
-          await enrichOldSubmissionsWithGeocode(cachedRecords);
-        }
+        await enrichOldSubmissionsWithGeocode(cachedRecords);
+        geocodeEnriched = true;
         // --- NEW CODE END ---
       }
       const all=getRecords();
@@ -858,7 +890,11 @@
     });
 
     // Refresh every 30 seconds to check for new submissions
-    setInterval(() => loadRecords().then(() => refresh()), 30000);
+    // dataLoaded must be reset so refresh() re-runs geocode enrichment
+    setInterval(() => {
+      dataLoaded = false;
+      loadRecords().then(() => refresh());
+    }, 30000);
 
     // Language
     const i18n = {
