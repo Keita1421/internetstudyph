@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community Results — Celina Plains ISP Study</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #07090f; --bg2: #0c1018;
+      --surface: rgba(255,255,255,0.04); --surface2: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+      --text: #f0f4ff; --muted: #7a8aaa;
+      --accent: #4fffb0; --accent2: #38c8ff; --accent3: #7c6fff;
+      --danger: #ff6b6b; --input: rgba(255,255,255,0.05);
+      --isp-pldt: #3b82f6; --isp-globe: #ef4444; --isp-converge: #10b981;
+      --isp-meridian: #f59e0b; --isp-cablelink: #8b5cf6;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; line-height: 1.6; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 70% 50% at 20% -5%, rgba(79,255,176,0.07) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 105%, rgba(56,200,255,0.06) 0%, transparent 55%); pointer-events: none; z-index: 0; }
+    body::after { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: rgba(7,9,15,0.85); backdrop-filter: blur(16px); }
+    .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-logo .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 6px 12px; border-radius: 8px; transition: color 0.2s, background 0.2s; }
+    .nav-links a:hover { color: var(--text); background: var(--surface2); }
+    .nav-cta { background: var(--accent) !important; color: #07090f !important; font-weight: 700 !important; }
+    .nav-controls { display: flex; align-items: center; gap: 8px; }
+    .lang-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 2px; }
+    .lang-btn { border: none; background: none; color: var(--muted); font: 500 0.8rem 'DM Sans', sans-serif; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .lang-btn.active { background: var(--accent); color: #07090f; font-weight: 700; }
+    .theme-btn { border: 1px solid var(--border); background: var(--surface); color: var(--muted); font: 500 0.8rem 'DM Sans', sans-serif; padding: 7px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .theme-btn:hover { border-color: var(--border2); color: var(--text); }
+    .clear-btn { border: 1px solid rgba(255,107,107,0.3); background: rgba(255,107,107,0.08); color: #ff6b6b; font: 500 0.8rem 'DM Sans', sans-serif; padding: 7px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .export-btn { border: 1px solid rgba(56,200,255,0.35); background: rgba(56,200,255,0.1); color: var(--accent2); font: 500 0.8rem 'DM Sans', sans-serif; padding: 7px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .export-btn:hover { border-color: rgba(56,200,255,0.6); background: rgba(56,200,255,0.16); }
+    .clear-btn:hover { border-color: rgba(255,107,107,0.6); background: rgba(255,107,107,0.14); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; border: none; background: none; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
+    .mobile-menu { display: none; position: fixed; top: 64px; left: 0; right: 0; background: rgba(7,9,15,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 16px 24px; z-index: 99; flex-direction: column; gap: 4px; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--muted); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1rem; font-weight: 500; }
+    .mobile-theme-btn { width: 100%; margin-top: 10px; justify-content: center; }
+
+    main { position: relative; z-index: 1; padding: 80px 24px 60px; max-width: 1300px; margin: 0 auto; }
+
+    .page-header { padding: 32px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 28px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .page-header-left {}
+    .section-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .page-header p { color: var(--muted); font-size: 0.95rem; max-width: 520px; }
+    .count-badge { background: rgba(79,255,176,0.1); border: 1px solid rgba(79,255,176,0.25); color: var(--accent); font-size: 0.82rem; font-weight: 700; padding: 6px 14px; border-radius: 999px; white-space: nowrap; }
+
+    /* Stat strip */
+    .stat-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 2px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 28px; }
+    .stat-box { background: var(--bg2); padding: 20px; transition: background 0.2s; }
+    .stat-box:hover { background: var(--surface2); }
+    .stat-lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 4px; }
+    .stat-val { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+
+    /* Charts grid */
+    .charts-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-bottom: 28px; }
+    .chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+    .chart-card h3 { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 14px; }
+    .chart-card canvas { display: block; }
+    .full-width { grid-column: 1 / -1; }
+
+    /* Filters */
+    .filters { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 0.78rem; color: var(--muted); font-weight: 600; letter-spacing: 0.03em; }
+    .field select, .field input { background: var(--input); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font: 400 0.9rem 'DM Sans', sans-serif; padding: 10px 12px; width: 100%; transition: border-color 0.2s; }
+    .field select:focus, .field input:focus { outline: none; border-color: var(--accent); }
+    .field select option { background: #0c1018; }
+
+    /* Table */
+    .table-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; overflow: auto; max-height: 520px; }
+    table { width: 100%; min-width: 900px; border-collapse: collapse; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 0.88rem; text-align: left; }
+    th { position: sticky; top: 0; background: var(--bg2); color: var(--muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; z-index: 1; cursor: pointer; user-select: none; transition: color 0.2s; }
+    th:hover { color: var(--text); }
+    tbody tr:hover { background: rgba(79,255,176,0.04); }
+    .empty-row { text-align: center; color: var(--muted); font-style: italic; padding: 40px; }
+
+    /* ISP color dots */
+    .isp-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+    /* Light mode */
+    body.light { --bg: #f5f7ff; --bg2: #eef1fb; --surface: rgba(0,0,0,0.03); --surface2: rgba(0,0,0,0.06); --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.14); --text: #0d1117; --muted: #5a6480; --accent: #00a86b; --accent2: #0077cc; --accent3: #5c4dcc; --input: rgba(0,0,0,0.03); }
+    body.light::before { background: radial-gradient(ellipse 70% 50% at 20% -5%, rgba(0,168,107,0.05) 0%, transparent 60%); }
+    body.light::after { background-image: linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px); background-size: 60px 60px; }
+    body.light nav { background: rgba(245,247,255,0.9); }
+    body.light .stat-box, body.light .chart-card, body.light .filters, body.light .table-wrap { background: #fff; }
+    body.light .mobile-menu { background: rgba(245,247,255,0.97); }
+    body.light .field select, body.light .field input { background: #fff; color: #0d1117; }
+    body.light .field select option { background: #fff; }
+    body.light th { background: #fff; }
+
+    footer { border-top: 1px solid var(--border); background: var(--bg2); padding: 32px 24px; position: relative; z-index: 1; }
+    .footer-inner { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .footer-brand { font-family: 'Syne', sans-serif; font-weight: 800; color: var(--text); }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy { color: var(--muted); font-size: 0.8rem; }
+
+    @media (max-width: 1100px) { .stat-strip { grid-template-columns: repeat(2,1fr); } .charts-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-links { display: none; }
+      .nav-controls { display: flex; margin-left: auto; }
+      .nav-controls .export-btn, .nav-controls .lang-toggle, .nav-controls .theme-btn { display: none; }
+      .filters { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 480px) { .filters { grid-template-columns: 1fr; } .stat-strip { grid-template-columns: 1fr; } }
+
+    /* Map section */
+    .map-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+    .map-card h3 { padding: 16px 20px 0; font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
+    .map-card .map-sub { padding: 4px 20px 12px; font-size: 0.8rem; color: var(--muted); }
+    #ispMap { height: 420px; width: 100%; }
+    .leaflet-popup-content-wrapper { background: #0c1018; border: 1px solid rgba(255,255,255,0.12); color: #f0f4ff; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; }
+    .leaflet-popup-tip { background: #0c1018; }
+    body.light .leaflet-popup-content-wrapper { background: #fff; color: #0d1117; border-color: rgba(0,0,0,0.1); }
+    body.light .leaflet-popup-tip { background: #fff; }
+
+    /* --- NEW CODE START --- Location summary section */
+    .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; margin-top: 16px; }
+    .loc-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+    .loc-card-low { border-color: rgba(245,158,11,0.45); }
+    .loc-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .loc-city { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
+    .loc-badge { display: inline-block; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-size: 0.72rem; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
+    .loc-count-badge { background: rgba(79,255,176,0.1); border: 1px solid rgba(79,255,176,0.25); color: var(--accent); font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+    .loc-subtitle { font-size: 0.78rem; color: var(--muted); }
+    .loc-low-data-warn { font-size: 0.78rem; color: rgba(245,158,11,0.9); background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 8px; padding: 6px 10px; }
+    .loc-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .loc-stat { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .loc-stat-val { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+    .loc-stat-isp { font-size: 0.82rem !important; }
+    .loc-stat-lbl { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+    .loc-stat-unit { font-size: 0.7rem; color: var(--muted); }
+    .loc-breakdown { margin-top: 4px; }
+    .loc-breakdown summary { font-size: 0.82rem; color: var(--muted); cursor: pointer; user-select: none; padding: 4px 0; list-style: none; }
+    .loc-breakdown summary::-webkit-details-marker { display: none; }
+    .loc-breakdown summary::before { content: '▶ '; font-size: 0.7rem; }
+    .loc-breakdown[open] summary::before { content: '▼ '; }
+    .loc-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 8px; }
+    .loc-table th { color: var(--muted); font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 6px; border-bottom: 1px solid var(--border); text-align: left; position: static; background: none; cursor: default; }
+    .loc-table td { padding: 5px 6px; border-bottom: 1px solid var(--border); color: var(--text); }
+    .loc-table tr:last-child td { border-bottom: none; }
+    .loc-top-isp td { color: var(--accent); font-weight: 600; }
+    .loc-search-input { background: var(--input); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font: 400 0.9rem 'DM Sans', sans-serif; padding: 10px 14px; width: 100%; max-width: 360px; transition: border-color 0.2s; }
+    .loc-search-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,255,176,0.1); }
+    .loc-search-input::placeholder { color: var(--muted); }
+    .loc-meta-line { color: var(--muted); font-size: 0.82rem; margin-top: 6px; }
+    .loc-showing-count { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+    body.light .loc-card { background: #fff; }
+    body.light .loc-stats { background: #f5f7ff; }
+    /* --- NEW CODE END --- */
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo"><span class="logo-dot"></span>CelinaISP</a>
+    <ul class="nav-links">
+      <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="study.html" data-i18n="nav.study">Study</a></li>
+      <li><a href="hosted.html" class="nav-cta" data-i18n="nav.test">Run Test</a></li>
+    </ul>
+    <div class="nav-controls">
+      <button class="export-btn" id="exportBtn">Export JSON</button>
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="tl">TL</button>
+      </div>
+      <button class="theme-btn" id="themeBtn">☀ Light</button>
+      <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" data-i18n="nav.home">Home</a>
+    <a href="study.html" data-i18n="nav.study">Study Details</a>
+    <a href="hosted.html" data-i18n="nav.test">Run Speed Test →</a>
+    <button class="theme-btn mobile-theme-btn" id="mobileThemeBtn" type="button">☀ Light</button>
+  </div>
+
+  <main>
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="section-label" data-i18n="page.label">Community Data</div>
+        <h1 data-i18n="page.title">Community ISP Results</h1>
+        <p data-i18n="page.subtitle">Crowdsourced speed test data from Celina Plains residents, visualized with live charts and sortable records.</p>
+      </div>
+      <span class="count-badge" id="countBadge">0 submissions</span>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat-box"><div class="stat-lbl" data-i18n="s.total">Total Submissions</div><div class="stat-val" id="sTotal">0</div></div>
+      <div class="stat-box"><div class="stat-lbl" data-i18n="s.avgDl">Avg Download</div><div class="stat-val" id="sAvgDl">— Mbps</div></div>
+      <div class="stat-box"><div class="stat-lbl" data-i18n="s.fastest">Fastest Result</div><div class="stat-val" id="sFastest">— Mbps</div></div>
+      <div class="stat-box"><div class="stat-lbl" data-i18n="s.top">Most Common ISP</div><div class="stat-val" id="sTop">—</div></div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card"><h3 data-i18n="ch.dl">Avg Download per ISP (Mbps)</h3><canvas id="chDl" height="220"></canvas></div>
+      <div class="chart-card"><h3 data-i18n="ch.ul">Avg Upload per ISP (Mbps)</h3><canvas id="chUl" height="220"></canvas></div>
+      <div class="chart-card"><h3 data-i18n="ch.ping">Avg Ping per ISP (ms)</h3><canvas id="chPing" height="220"></canvas></div>
+      <div class="chart-card"><h3 data-i18n="ch.jitter">Avg Jitter per ISP (ms)</h3><canvas id="chJitter" height="220"></canvas></div>
+      <div class="chart-card full-width"><h3 data-i18n="ch.peak">Peak vs Off-Peak Download (Mbps)</h3><canvas id="chPeak" height="160"></canvas></div>
+    </div>
+
+    <div class="map-card">
+      <h3>📍 Submission Map</h3>
+      <p class="map-sub">Showing locations of speed test submissions. Only submissions with GPS data are plotted.</p>
+      <div id="ispMap"></div>
+    </div>
+
+    <!-- NEW CODE START: Location Summary Section -->
+    <div id="location-summary-root"></div>
+    <!-- NEW CODE END -->
+
+    <div class="filters">
+      <div class="field"><label data-i18n="fi.isp">Filter ISP</label><select id="fIsp"></select></div>
+      <div class="field"><label data-i18n="fi.conn">Filter Connection</label><select id="fConn"></select></div>
+      <div class="field"><label data-i18n="fi.time">Filter Time</label><select id="fTime"></select></div>
+      <div class="field"><label data-i18n="fi.search">Search ISP</label><input id="fSearch" type="text" placeholder="Type to search..." /></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-sort="isp" data-i18n="th.isp">ISP</th>
+            <th data-sort="connectionTypeLabel" data-i18n="th.conn">Connection</th>
+            <th data-sort="downloadSpeed" data-i18n="th.dl">Download</th>
+            <th data-sort="uploadSpeed" data-i18n="th.ul">Upload</th>
+            <th data-sort="ping" data-i18n="th.ping">Ping</th>
+            <th data-sort="jitter" data-i18n="th.jitter">Jitter</th>
+            <th data-sort="timeOfDayLabel" data-i18n="th.time">Time</th>
+            <th data-sort="timestamp" data-i18n="th.when">Submitted</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">CelinaISP Study</div>
+      <div class="footer-links">
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="study.html" data-i18n="nav.study">Study</a>
+        <a href="hosted.html" data-i18n="nav.test">Run Test</a>
+      </div>
+      <div class="footer-copy">© 2026 Celina Plains ISP Study</div>
+    </div>
+  </footer>
+
+  <script>
+    // Firestore data loading
+    let cachedRecords = [];
+    let dataLoaded = false;
+    // --- NEW CODE START ---
+    let geocodeEnriched = false;
+    // --- NEW CODE END ---
+    const ISP_COLORS = { PLDT:'#3b82f6', Globe:'#ef4444', Converge:'#10b981', Meridian:'#f59e0b', Cablelink:'#8b5cf6', Others:'#06b6d4', 'Sky Broadband':'#14b8a6' };
+    const MOBILE_ISPS = new Set(['Smart', 'TNT', 'Dito', 'TM (Touch Mobile)', 'Others Type', 'Others', 'Other']);
+    const MOBILE_CONNECTIONS = new Set(['mobile4g', 'mobile5g']);
+
+    let sortField = 'timestamp', sortDir = 'desc';
+    const charts = {};
+
+    // Theme
+    const themeBtn = document.getElementById('themeBtn');
+    const mobileThemeBtn = document.getElementById('mobileThemeBtn');
+    const setThemeButtonLabel = t => {
+      const label = t==='light'?'🌙 Dark':'☀ Light';
+      themeBtn.textContent = label;
+      if (mobileThemeBtn) mobileThemeBtn.textContent = label;
+    };
+    const applyTheme = t => { document.body.classList.toggle('light', t==='light'); setThemeButtonLabel(t); localStorage.setItem('theme',t); };
+    applyTheme(localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+    themeBtn.addEventListener('click', () => { applyTheme(document.body.classList.contains('light')?'dark':'light'); refresh(); });
+    if (mobileThemeBtn) {
+      mobileThemeBtn.addEventListener('click', () => { applyTheme(document.body.classList.contains('light')?'dark':'light'); refresh(); });
+    }
+
+    // Mobile
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    document.addEventListener('click', e => { if(!e.target.closest('nav')&&!e.target.closest('.mobile-menu')) mobileMenu.classList.remove('open'); });
+
+    const getRecords = () => cachedRecords;
+    const normalizeRecord = (data) => {
+      const normalizedIsp = MOBILE_ISPS.has(data.isp) ? 'Others' : (data.isp || 'Others');
+      const normalizedConnType = MOBILE_CONNECTIONS.has(data.connectionType) ? 'others' : (data.connectionType || 'unknown');
+      const normalizedConnLabel = MOBILE_CONNECTIONS.has(data.connectionType)
+        ? 'Others'
+        : (normalizedConnType === 'others' ? 'Others' : (data.connectionTypeLabel || data.connectionType || 'Unknown'));
+
+      return {
+        isp: normalizedIsp,
+        connectionType: normalizedConnType,
+        connectionTypeLabel: normalizedConnLabel,
+        timeOfDay: data.timeOfDay || 'offpeak',
+        timeOfDayLabel: data.timeOfDayLabel || (data.timeOfDay === 'peak' ? 'Peak Hours' : 'Off-Peak'),
+        downloadSpeed: parseFloat(data.downloadSpeed) || 0,
+        uploadSpeed: parseFloat(data.uploadSpeed) || 0,
+        ping: parseFloat(data.ping) || 0,
+        jitter: parseFloat(data.jitter) || 0,
+        timestamp: data.timestamp || Date.now(),
+        lat: data.lat || null,
+        lng: data.lng || null,
+        // --- NEW CODE START ---
+        city:         data.city         || '',
+        municipality: data.municipality || '',
+        barangay:     data.barangay     || '',
+        province:     data.province     || '',
+        region:       data.region       || '',
+        // --- NEW CODE END ---
+      };
+    };
+
+    const loadRecords = async () => {
+      try {
+        while (!window.firestoreReady) await new Promise(resolve => setTimeout(resolve, 50));
+        
+        const { collection, getDocs, query, orderBy } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        const db = window.firestoreDB;
+        
+        const q = query(collection(db, 'submissions'), orderBy('timestamp', 'desc'));
+        const snapshot = await getDocs(q);
+        
+        const records = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          records.push(normalizeRecord(data));
+        });
+        
+        cachedRecords = records;
+        dataLoaded = true;
+        return records;
+      } catch (error) {
+        console.error('Firebase load error:', error);
+        return [];
+      }
+    };
+
+    const avg = (arr, key) => arr.length ? arr.reduce((s,r)=>s+r[key],0)/arr.length : 0;
+    const getCss = v => getComputedStyle(document.body).getPropertyValue(v).trim();
+
+    const ispColor = isp => ISP_COLORS[isp] || '#6b7280';
+
+    const makeBar = (id, labels, data, unit, colors) => {
+      if (typeof Chart === 'undefined') return;
+      const canvas = document.getElementById(id);
+      if(charts[id]){ charts[id].destroy(); delete charts[id]; }
+      if(!labels.length){ canvas.style.display='none'; return; }
+      canvas.style.display='block';
+      const isDark = !document.body.classList.contains('light');
+      const muted = isDark?'#7a8aaa':'#5a6480';
+      const grid = isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+      charts[id] = new Chart(canvas.getContext('2d'), {
+        type:'bar',
+        data:{ labels, datasets:[{data, backgroundColor: colors||labels.map(l=>ispColor(l)), borderRadius:8, borderWidth:0}]},
+        options:{ responsive:true, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:muted,font:{size:11}},grid:{color:grid}}, y:{beginAtZero:true,ticks:{color:muted,font:{size:10},callback:v=>`${v}`},grid:{color:grid}} } }
+      });
+    };
+
+    const makePeakChart = (peak, offpeak) => {
+      if (typeof Chart === 'undefined') return;
+      const canvas = document.getElementById('chPeak');
+      if(charts['chPeak']){ charts['chPeak'].destroy(); delete charts['chPeak']; }
+      const isDark = !document.body.classList.contains('light');
+      const muted = isDark?'#7a8aaa':'#5a6480';
+      const grid = isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+      charts['chPeak'] = new Chart(canvas.getContext('2d'), {
+        type:'bar',
+        data:{ labels:['Peak (7PM–10PM)','Off-Peak'], datasets:[{label:'Download Mbps',data:[peak,offpeak],backgroundColor:['#38c8ff','#4fffb0'],borderRadius:8,borderWidth:0}]},
+        options:{ responsive:true, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:muted},grid:{color:grid}}, y:{beginAtZero:true,ticks:{color:muted,callback:v=>`${v} Mbps`},grid:{color:grid}} } }
+      });
+    };
+
+    const populateFilters = records => {
+      const selIsp=document.getElementById('fIsp'), selConn=document.getElementById('fConn'), selTime=document.getElementById('fTime');
+      const prevIsp=selIsp.value, prevConn=selConn.value, prevTime=selTime.value;
+      const isps=[...new Set(records.map(r=>r.isp))].sort();
+      const conns=[...new Set(records.map(r=>r.connectionType))].sort();
+      selIsp.innerHTML=`<option value="">All ISPs</option>`+isps.map(v=>`<option value="${v}">${v}</option>`).join('');
+      selConn.innerHTML=`<option value="">All Connections</option>`+conns.map(v=>`<option value="${v}">${v==='others'?'Others':v}</option>`).join('');
+      selTime.innerHTML=`<option value="">All Times</option><option value="peak">Peak 7PM–10PM</option><option value="offpeak">Off-Peak</option>`;
+      if(prevIsp) selIsp.value=prevIsp;
+      if(prevConn) selConn.value=prevConn;
+      if(prevTime) selTime.value=prevTime;
+    };
+
+    const getFiltered = records => {
+      const isp=document.getElementById('fIsp').value;
+      const conn=document.getElementById('fConn').value;
+      const time=document.getElementById('fTime').value;
+      const search=document.getElementById('fSearch').value.trim().toLowerCase();
+      return records.filter(r=>(!isp||r.isp===isp)&&(!conn||r.connectionType===conn)&&(!time||r.timeOfDay===time)&&(!search||r.isp.toLowerCase().includes(search)));
+    };
+
+    const updateStats = records => {
+      document.getElementById('sTotal').textContent = records.length;
+      document.getElementById('sAvgDl').textContent = records.length?`${avg(records,'downloadSpeed').toFixed(1)} Mbps`:'— Mbps';
+      document.getElementById('sFastest').textContent = records.length?`${Math.max(...records.map(r=>r.downloadSpeed)).toFixed(1)} Mbps`:'— Mbps';
+      const counts = records.reduce((acc,r)=>{acc[r.isp]=(acc[r.isp]||0)+1;return acc;},{});
+      const top = Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+      document.getElementById('sTop').textContent = top?top[0]:'—';
+      document.getElementById('countBadge').textContent = `${records.length} submission${records.length!==1?'s':''}`;
+    };
+
+    const renderCharts = records => {
+      if (typeof Chart === 'undefined') return;
+      const isps=[...new Set(records.map(r=>r.isp))].sort();
+      const byIsp = isp => records.filter(r=>r.isp===isp);
+      makeBar('chDl', isps, isps.map(i=>parseFloat(avg(byIsp(i),'downloadSpeed').toFixed(2))), 'Mbps');
+      makeBar('chUl', isps, isps.map(i=>parseFloat(avg(byIsp(i),'uploadSpeed').toFixed(2))), 'Mbps');
+      makeBar('chPing', isps, isps.map(i=>parseFloat(avg(byIsp(i),'ping').toFixed(2))), 'ms');
+      makeBar('chJitter', isps, isps.map(i=>parseFloat(avg(byIsp(i),'jitter').toFixed(2))), 'ms');
+      const peakRec=records.filter(r=>r.timeOfDay==='peak'), offRec=records.filter(r=>r.timeOfDay==='offpeak');
+      makePeakChart(parseFloat(avg(peakRec,'downloadSpeed').toFixed(2)), parseFloat(avg(offRec,'downloadSpeed').toFixed(2)));
+    };
+
+    const renderTable = records => {
+      const sorted=[...records].sort((a,b)=>{
+        const av=a[sortField], bv=b[sortField];
+        if(typeof av==='number'&&typeof bv==='number') return sortDir==='asc'?av-bv:bv-av;
+        return sortDir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
+      });
+      const body=document.getElementById('tableBody');
+      if(!sorted.length){ body.innerHTML=`<tr><td colspan="8" class="empty-row">No submissions yet. <a href="hosted.html" style="color:var(--accent)">Run a test to add data.</a></td></tr>`; return; }
+      body.innerHTML=sorted.map(r=>{
+        const color=ispColor(r.isp);
+        const date=new Intl.DateTimeFormat('en-PH',{month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(r.timestamp));
+        return `<tr>
+          <td><span class="isp-dot" style="background:${color}"></span>${r.isp}</td>
+          <td>${r.connectionTypeLabel||r.connectionType||'—'}</td>
+          <td>${r.downloadSpeed.toFixed(2)} Mbps</td>
+          <td>${r.uploadSpeed.toFixed(2)} Mbps</td>
+          <td>${r.ping.toFixed(2)} ms</td>
+          <td>${r.jitter.toFixed(2)} ms</td>
+          <td>${r.timeOfDay==='peak'?'Peak':'Off-Peak'}</td>
+          <td>${date}</td>
+        </tr>`;
+      }).join('');
+    };
+
+    // ── Map ──────────────────────────────────────────
+    let leafletMap = null;
+    let markerLayer = null;
+
+    // The 7-point study polygon (Celina Plains target area)
+    const STUDY_POLYGON = [
+      [14.39213646011687,  120.92771037534898],
+      [14.391935469701682, 120.9267630821814 ],
+      [14.390974208692445, 120.92668188562419],
+      [14.39135871359272,  120.9244264257014 ],
+      [14.392721952903868, 120.92384000612147],
+      [14.392866141190439, 120.9257481252161 ],
+      [14.392944789307501, 120.92708786841024],
+    ];
+    const POLYGON_CENTER = [14.39213396, 120.92603683];
+    const POLYGON_ZOOM   = 17;
+
+    // Bounding box with small buffer to filter local-only markers
+    const polyLats = STUDY_POLYGON.map(p => p[0]);
+    const polyLngs = STUDY_POLYGON.map(p => p[1]);
+    const POLY_BOUNDS = {
+      minLat: Math.min(...polyLats) - 0.002,
+      maxLat: Math.max(...polyLats) + 0.002,
+      minLng: Math.min(...polyLngs) - 0.002,
+      maxLng: Math.max(...polyLngs) + 0.002,
+    };
+
+    const renderMap = (records) => {
+      const withLocation = records.filter(r => r.lat && r.lng);
+
+      // Init map once — always locked to polygon area
+      if (!leafletMap) {
+        leafletMap = L.map('ispMap', {
+          center: POLYGON_CENTER,
+          zoom: POLYGON_ZOOM,
+          maxZoom: 19,
+        });
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors',
+          maxZoom: 19
+        }).addTo(leafletMap);
+
+        // Draw the study area polygon boundary
+        L.polygon(STUDY_POLYGON, {
+          color: '#4fffb0',
+          weight: 2.5,
+          opacity: 0.9,
+          fillColor: '#4fffb0',
+          fillOpacity: 0.07,
+          dashArray: '6 4',
+        }).addTo(leafletMap).bindTooltip('📍 Celina Plains Study Area', {
+          permanent: false,
+          direction: 'center',
+        });
+
+        markerLayer = L.layerGroup().addTo(leafletMap);
+      }
+
+      markerLayer.clearLayers();
+
+      if (!withLocation.length) return;
+
+      // Plot ALL markers — local and PH-wide
+      withLocation.forEach(r => {
+        const color = ISP_COLORS[r.isp] || '#6b7280';
+        const dlRating = r.downloadSpeed >= 100 ? 'Excellent' : r.downloadSpeed >= 25 ? 'Good' : r.downloadSpeed >= 10 ? 'Fair' : 'Poor';
+        const icon = L.divIcon({
+          className: '',
+          html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.5)"></div>`,
+          iconSize: [14, 14],
+          iconAnchor: [7, 7],
+          popupAnchor: [0, -10]
+        });
+        const date = new Intl.DateTimeFormat('en-PH', {month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date(r.timestamp));
+        L.marker([r.lat, r.lng], { icon })
+          .bindPopup(`
+            <div style="min-width:160px">
+              <div style="font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px">
+                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${color}"></span>
+                ${r.isp}
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;font-size:0.78rem">
+                <span style="color:#7a8aaa">Download</span><span>${r.downloadSpeed.toFixed(1)} Mbps <span style="color:${color}">(${dlRating})</span></span>
+                <span style="color:#7a8aaa">Upload</span><span>${r.uploadSpeed.toFixed(1)} Mbps</span>
+                <span style="color:#7a8aaa">Ping</span><span>${r.ping.toFixed(1)} ms</span>
+                <span style="color:#7a8aaa">Jitter</span><span>${r.jitter.toFixed(1)} ms</span>
+                <span style="color:#7a8aaa">Time</span><span>${r.timeOfDay === 'peak' ? 'Peak' : 'Off-Peak'}</span>
+                <span style="color:#7a8aaa">Submitted</span><span>${date}</span>
+              </div>
+            </div>
+          `)
+          .addTo(markerLayer);
+      });
+
+      // Always snap back to polygon center — never drift to PH-wide view
+      leafletMap.setView(POLYGON_CENTER, POLYGON_ZOOM);
+    };
+    // ─────────────────────────────────────────────────
+
+    // --- NEW CODE START ---
+    const OPENCAGE_API_KEY = '71ec28d2d6f34a4ab658b6ee9ecd0ed6';
+
+    /** Cache for geocode results keyed by rounded coordinate string "lat_lng". */
+    const geocodeCache = {};
+
+    /**
+     * reverseGeocodeForResults — looks up location data for a lat/lng pair via OpenCage.
+     * Results are cached by rounded coordinate key to avoid duplicate API calls.
+     * @param {number} lat - GPS latitude
+     * @param {number} lng - GPS longitude
+     * @returns {Promise<{city:string, municipality:string, barangay:string, province:string, region:string}>}
+     */
+    async function reverseGeocodeForResults(lat, lng) {
+      const empty = { city: '', municipality: '', barangay: '', province: '', region: '' };
+      const key = `${lat.toFixed(3)}_${lng.toFixed(3)}`;
+      if (geocodeCache[key]) return geocodeCache[key];
+      try {
+        const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${OPENCAGE_API_KEY}&language=en&no_annotations=1&countrycode=ph`;
+        const res = await fetch(url);
+        if (!res.ok) return empty;
+        const data = await res.json();
+        if (!data.results || !data.results.length) return empty;
+        const c = data.results[0].components;
+        const result = {
+          city:         c.city         || c.town         || c.village      || '',
+          municipality: c.municipality || c.city_district || c.county       || '',
+          barangay:     c.suburb       || c.neighbourhood || c.quarter      || '',
+          province:     c.state        || c.province      || '',
+          region:       c.region       || c.state_district || '',
+        };
+        geocodeCache[key] = result;
+        return result;
+      } catch (err) {
+        console.warn('Reverse geocode failed:', err);
+        return empty;
+      }
+    }
+
+    /**
+     * enrichOldSubmissionsWithGeocode — enriches old submissions that have lat/lng
+     * but no city/municipality/etc. with reverse geocoded location data.
+     * Mutates records in place. Processes at most 20 per page load to stay within
+     * OpenCage free-tier rate limits.
+     * @param {Array} records - Full submissions array (mutated in place)
+     * @returns {Promise<void>}
+     */
+    async function enrichOldSubmissionsWithGeocode(records) {
+      const needsGeocode = records.filter(r =>
+        r.lat && r.lng &&
+        !r.city && !r.municipality && !r.barangay && !r.province
+      );
+      const batch = needsGeocode.slice(0, 20);
+      for (const r of batch) {
+        const geo = await reverseGeocodeForResults(r.lat, r.lng);
+        r.city         = geo.city;
+        r.municipality = geo.municipality;
+        r.barangay     = geo.barangay;
+        r.province     = geo.province;
+        r.region       = geo.region;
+      }
+    }
+
+    /**
+     * buildLocationGroups — groups submissions by location and computes per-group stats.
+     * Uses city as the primary label, falling back to municipality → barangay → province.
+     * Skips submissions with no location fields at all.
+     * @param {Array} submissions - Array of normalized submission records
+     * @returns {Array} Sorted array of location group stat objects, highest count first
+     */
+    function buildLocationGroups(submissions) {
+      const groups = {};
+      for (const s of submissions) {
+        const label = s.city || s.municipality || s.barangay || s.province || '';
+        if (!label) continue;
+        if (!groups[label]) {
+          groups[label] = {
+            label,
+            city: s.city, municipality: s.municipality,
+            barangay: s.barangay, province: s.province, region: s.region,
+            submissions: [],
+          };
+        }
+        groups[label].submissions.push(s);
+      }
+      return Object.values(groups).map(g => {
+        const subs = g.submissions;
+        const n = subs.length;
+        const avgDl     = subs.reduce((a, s) => a + s.downloadSpeed, 0) / n;
+        const avgUl     = subs.reduce((a, s) => a + s.uploadSpeed,   0) / n;
+        const avgPing   = subs.reduce((a, s) => a + s.ping,          0) / n;
+        const avgJitter = subs.reduce((a, s) => a + s.jitter,        0) / n;
+        const ispMap = {};
+        for (const s of subs) {
+          if (!ispMap[s.isp]) ispMap[s.isp] = { isp: s.isp, subs: [] };
+          ispMap[s.isp].subs.push(s);
+        }
+        const ispStats = Object.values(ispMap).map(entry => ({
+          isp:    entry.isp,
+          count:  entry.subs.length,
+          avgDl:  entry.subs.reduce((a, s) => a + s.downloadSpeed, 0) / entry.subs.length,
+          avgUl:  entry.subs.reduce((a, s) => a + s.uploadSpeed,   0) / entry.subs.length,
+          avgPing:entry.subs.reduce((a, s) => a + s.ping,          0) / entry.subs.length,
+        })).sort((a, b) => b.avgDl - a.avgDl);
+        return {
+          label: g.label,
+          city: g.city, municipality: g.municipality,
+          barangay: g.barangay, province: g.province, region: g.region,
+          count: n, avgDl, avgUl, avgPing, avgJitter,
+          topIsp: ispStats[0] ? ispStats[0].isp : '—',
+          ispStats,
+        };
+      }).sort((a, b) => b.count - a.count);
+    }
+
+    /**
+     * escapeHtml — sanitizes a string for safe insertion into innerHTML.
+     * @param {string} str
+     * @returns {string}
+     */
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    /**
+     * renderLocationSummary — renders the "Results by Location" section into
+     * #location-summary-root with search filtering, meta counts, and location cards.
+     * Each card shows avg stats and an expandable ISP breakdown table.
+     * @param {Array} submissions - Array of normalized submission records
+     */
+    function renderLocationSummary(submissions) {
+      const root = document.getElementById('location-summary-root');
+      if (!root) return;
+
+      const currentLang = localStorage.getItem('lang') || 'en';
+      const isTl = currentLang === 'tl';
+      const sub_word    = isTl ? 'mga submission' : 'submissions';
+      const nogps_word  = isTl ? 'walang GPS'     : 'without GPS';
+      const sectionTitle    = isTl ? '🌏 Mga Resulta ayon sa Lokasyon' : '🌏 Results by Location';
+      const searchPH        = isTl ? 'Hanapin ang lungsod, barangay, probinsya...' : 'Search city, barangay, province...';
+
+      const withLocation = submissions.filter(s => s.city || s.municipality || s.barangay || s.province);
+      const withoutGps   = submissions.filter(s => !s.lat && !s.lng).length;
+
+      root.innerHTML = `
+        <section id="loc-section" style="margin-bottom:28px">
+          <div style="margin-bottom:16px">
+            <div class="section-label" style="margin-bottom:6px">${sectionTitle}</div>
+            <p id="loc-meta" class="loc-meta-line">${withLocation.length} of ${submissions.length} ${sub_word} have location data &middot; ${withoutGps} ${nogps_word} (not shown here)</p>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px">
+              <input id="loc-search" type="text" class="loc-search-input" placeholder="${escapeHtml(searchPH)}" autocomplete="off" />
+              <span id="loc-showing" class="loc-showing-count"></span>
+            </div>
+          </div>
+          <div id="loc-grid" class="loc-grid"></div>
+        </section>
+      `;
+
+      const groups   = buildLocationGroups(submissions);
+      const grid     = document.getElementById('loc-grid');
+      const showingEl = document.getElementById('loc-showing');
+
+      function buildCard(g) {
+        const isLowData = g.count < 5;
+        const lowWarn   = isTl
+          ? '⚠️ Mababang datos \u2014 maaaring hindi kinatawan ang mga resulta'
+          : '⚠️ Low data \u2014 results may not be representative';
+        const breakdownLabel = isTl ? 'Breakdown ng ISP' : 'ISP Breakdown';
+        const ispRows = g.ispStats.map((isp, idx) => `
+          <tr class="${idx === 0 ? 'loc-top-isp' : ''}">
+            <td>${idx === 0 ? '🏆 ' : ''}${escapeHtml(isp.isp)}</td>
+            <td>${isp.count}</td>
+            <td>${isp.avgDl.toFixed(1)}</td>
+            <td>${isp.avgUl.toFixed(1)}</td>
+            <td>${isp.avgPing.toFixed(0)}ms</td>
+          </tr>`).join('');
+        const muniLine = (g.municipality && g.municipality !== g.label)
+          ? `<div class="loc-subtitle">Municipality: ${escapeHtml(g.municipality)}</div>` : '';
+        const brgyLine = g.barangay
+          ? `<div class="loc-subtitle">Barangay: ${escapeHtml(g.barangay)}</div>` : '';
+        const regionLine = g.region
+          ? `<div class="loc-subtitle">Region: ${escapeHtml(g.region)}</div>` : '';
+        return `
+          <div class="loc-card${isLowData ? ' loc-card-low' : ''}">
+            <div class="loc-card-head">
+              <div>
+                <span>📍</span>
+                <strong class="loc-city">${escapeHtml(g.label)}</strong>
+                ${g.province ? `<span class="loc-badge">${escapeHtml(g.province)}</span>` : ''}
+              </div>
+              <span class="loc-count-badge">${g.count} tests</span>
+            </div>
+            ${muniLine}${brgyLine}${regionLine}
+            ${isLowData ? `<div class="loc-low-data-warn">${lowWarn}</div>` : ''}
+            <div class="loc-stats">
+              <div class="loc-stat">
+                <div class="loc-stat-val">${g.avgDl.toFixed(1)}</div>
+                <div class="loc-stat-lbl">Avg Download</div>
+                <div class="loc-stat-unit">Mbps</div>
+              </div>
+              <div class="loc-stat">
+                <div class="loc-stat-val">${g.avgPing.toFixed(0)}</div>
+                <div class="loc-stat-lbl">Avg Ping</div>
+                <div class="loc-stat-unit">ms</div>
+              </div>
+              <div class="loc-stat">
+                <div class="loc-stat-val loc-stat-isp">${escapeHtml(g.topIsp)}</div>
+                <div class="loc-stat-lbl">Top ISP</div>
+              </div>
+            </div>
+            <details class="loc-breakdown">
+              <summary>${escapeHtml(breakdownLabel)} (${g.ispStats.length} provider${g.ispStats.length !== 1 ? 's' : ''})</summary>
+              <table class="loc-table">
+                <thead><tr><th>ISP</th><th>Tests</th><th>&#8595;Mbps</th><th>&#8593;Mbps</th><th>Ping</th></tr></thead>
+                <tbody>${ispRows}</tbody>
+              </table>
+            </details>
+          </div>`;
+      }
+
+      function renderCards(filteredGroups) {
+        showingEl.textContent = `${filteredGroups.length} location${filteredGroups.length !== 1 ? 's' : ''}`;
+        if (!filteredGroups.length) {
+          grid.innerHTML = `<p style="color:var(--muted);grid-column:1/-1;padding:20px 0">No locations match your search.</p>`;
+          return;
+        }
+        grid.innerHTML = filteredGroups.map(buildCard).join('');
+      }
+
+      renderCards(groups);
+
+      document.getElementById('loc-search').addEventListener('input', function() {
+        const q = this.value.trim().toLowerCase();
+        if (!q) { renderCards(groups); return; }
+        renderCards(groups.filter(g =>
+          [g.city, g.municipality, g.barangay, g.province, g.region, g.label]
+            .some(v => v && v.toLowerCase().includes(q))
+        ));
+      });
+    }
+    // --- NEW CODE END ---
+
+    const refresh = async () => {
+      if (!dataLoaded) {
+        document.getElementById('sTotal').textContent = 'Loading...';
+        await loadRecords();
+        // --- NEW CODE START ---
+        if (!geocodeEnriched) {
+          geocodeEnriched = true;
+          await enrichOldSubmissionsWithGeocode(cachedRecords);
+        }
+        // --- NEW CODE END ---
+      }
+      const all=getRecords();
+      populateFilters(all);
+      updateStats(all);
+      try {
+        renderCharts(all);
+        renderMap(all);
+      } catch (error) {
+        // Keep stats and table visible even if chart rendering fails.
+      }
+      renderTable(getFiltered(all));
+      // --- NEW CODE START ---
+      renderLocationSummary(all);
+      // --- NEW CODE END ---
+    };
+
+    document.querySelectorAll('th[data-sort]').forEach(th=>th.addEventListener('click',()=>{
+      const f=th.dataset.sort;
+      if(sortField===f) sortDir=sortDir==='asc'?'desc':'asc'; else{sortField=f;sortDir='asc';}
+      renderTable(getFiltered(getRecords()));
+    }));
+
+    ['fIsp','fConn','fTime'].forEach(id=>document.getElementById(id).addEventListener('change',()=>renderTable(getFiltered(getRecords()))));
+    document.getElementById('fSearch').addEventListener('input',()=>renderTable(getFiltered(getRecords())));
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const records = getRecords();
+      const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const now = new Date();
+      const stamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      a.href = url;
+      a.download = `celina-plains-results-${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // Refresh every 30 seconds to check for new submissions
+    setInterval(() => loadRecords().then(() => refresh()), 30000);
+
+    // Language
+    const i18n = {
+      en:{'nav.home':'Home','nav.study':'Study','nav.test':'Run Test','btn.clear':'Clear Data','page.label':'Community Data','page.title':'Community ISP Results','page.subtitle':'Crowdsourced speed test data from Celina Plains residents, visualized with live charts and sortable records.','s.total':'Total Submissions','s.avgDl':'Avg Download','s.fastest':'Fastest Result','s.top':'Most Common ISP','ch.dl':'Avg Download per ISP (Mbps)','ch.ul':'Avg Upload per ISP (Mbps)','ch.ping':'Avg Ping per ISP (ms)','ch.jitter':'Avg Jitter per ISP (ms)','ch.peak':'Peak vs Off-Peak Download (Mbps)','fi.isp':'Filter ISP','fi.conn':'Filter Connection','fi.time':'Filter Time','fi.search':'Search ISP','th.isp':'ISP','th.conn':'Connection','th.dl':'Download','th.ul':'Upload','th.ping':'Ping','th.jitter':'Jitter','th.time':'Time','th.when':'Submitted'},
+      tl:{'nav.home':'Bahay','nav.study':'Pag-aaral','nav.test':'Mag-test','btn.clear':'Burahin ang Data','page.label':'Community Data','page.title':'Community ISP Results','page.subtitle':'Crowdsourced speed test data mula sa mga residente ng Celina Plains, visualized gamit ang live charts at sortable records.','s.total':'Kabuuang Submissions','s.avgDl':'Avg Download','s.fastest':'Pinakamabilis','s.top':'Pinaka-Madalas na ISP','ch.dl':'Avg Download kada ISP (Mbps)','ch.ul':'Avg Upload kada ISP (Mbps)','ch.ping':'Avg Ping kada ISP (ms)','ch.jitter':'Avg Jitter kada ISP (ms)','ch.peak':'Peak vs Off-Peak Download (Mbps)','fi.isp':'I-filter ang ISP','fi.conn':'I-filter ang Koneksyon','fi.time':'I-filter ang Oras','fi.search':'Maghanap ng ISP','th.isp':'ISP','th.conn':'Koneksyon','th.dl':'Download','th.ul':'Upload','th.ping':'Ping','th.jitter':'Jitter','th.time':'Oras','th.when':'Pagsumite'}
+    };
+    let lang=localStorage.getItem('lang')||'en';
+    const applyLang=l=>{lang=l;localStorage.setItem('lang',l);document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(i18n[l]?.[k])el.textContent=i18n[l][k];});document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));};
+    applyLang(lang);
+    document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>{applyLang(b.dataset.lang);renderLocationSummary(getRecords());}));
+
+    refresh();
+  </script>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    // ⚠️ REPLACE WITH YOUR FIREBASE CONFIG (same as hosted.html)
+    // Get this from: Firebase Console → Project Settings → General → Your apps → Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBg8pY1KD-K5r447A_Enq0de1c1TWScQnE",
+      authDomain: "celina-isp-study.firebaseapp.com",
+      projectId: "celina-isp-study",
+      storageBucket: "celina-isp-study.firebasestorage.app",
+      messagingSenderId: "601030738633",
+      appId: "1:601030738633:web:d861e03b3490c4aa7a8318",
+      measurementId: "G-F8RXD1H2QZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.firestoreDB = db;
+    window.firestoreReady = true;
+  </script>
+<!-- ISP ASSISTANT CHATBOT -->
+<style>
+#chat-fab{position:fixed;bottom:28px;right:28px;z-index:9999;width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(79,255,176,0.4);font-size:1.3rem;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+#chat-fab:hover{transform:scale(1.12)}
+#chat-fab .fab-badge{position:absolute;top:2px;right:2px;background:#ff6b6b;color:#fff;font-size:.6rem;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #07090f}
+#chat-fab .fab-badge.hide{display:none}
+#chat-win{position:fixed;bottom:96px;right:28px;z-index:9998;width:360px;max-height:580px;display:flex;flex-direction:column;background:#0c1018;border:1px solid rgba(255,255,255,.14);border-radius:20px;overflow:hidden;box-shadow:0 32px 64px rgba(0,0,0,.55);transform:scale(.92) translateY(16px);opacity:0;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .25s;font-family:'DM Sans',sans-serif}
+#chat-win.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+#chat-head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:linear-gradient(135deg,rgba(79,255,176,.1),rgba(56,200,255,.07));border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.ch-left{display:flex;align-items:center;gap:10px}
+.ch-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#4fffb0,#38c8ff);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.ch-name{font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;color:#f0f4ff}
+.ch-status{display:flex;align-items:center;gap:5px;font-size:.72rem;color:#7a8aaa;margin-top:1px}
+.ch-dot{width:7px;height:7px;border-radius:50%;background:#4fffb0;box-shadow:0 0 6px #4fffb0;display:inline-block;animation:pulse 2s infinite}
+#chat-close-btn{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#7a8aaa;border-radius:8px;padding:6px;cursor:pointer;display:flex;align-items:center;transition:all .2s}
+#chat-close-btn:hover{color:#f0f4ff}
+#chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:11px;min-height:220px;scroll-behavior:smooth}
+#chat-msgs::-webkit-scrollbar{width:3px}
+#chat-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:4px}
+.cmsg{display:flex;flex-direction:column;max-width:84%;animation:msgIn .22s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.cmsg.bot{align-self:flex-start}.cmsg.user{align-self:flex-end}
+.cbubble{padding:10px 13px;border-radius:14px;font-size:.875rem;line-height:1.55}
+.cmsg.bot .cbubble{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);color:#f0f4ff;border-bottom-left-radius:4px}
+.cmsg.user .cbubble{background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;font-weight:500;border-bottom-right-radius:4px}
+.ctime{font-size:.67rem;color:#7a8aaa;margin-top:3px;padding:0 3px}
+.cmsg.user .ctime{text-align:right}
+#typing-ind{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:14px;border-bottom-left-radius:4px;padding:11px 15px;display:flex;gap:5px;align-items:center;align-self:flex-start}
+.tdot{width:7px;height:7px;border-radius:50%;background:#7a8aaa;animation:tdot 1.2s infinite ease}
+.tdot:nth-child(2){animation-delay:.18s}.tdot:nth-child(3){animation-delay:.36s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+#chat-sugg{display:flex;gap:6px;padding:0 12px 10px;overflow-x:auto;flex-shrink:0}
+#chat-sugg::-webkit-scrollbar{display:none}
+.sugg-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#7a8aaa;font:500 .73rem 'DM Sans',sans-serif;padding:5px 11px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.sugg-btn:hover{border-color:#4fffb0;color:#4fffb0}
+#chat-inp-row{display:flex;gap:8px;padding:11px 13px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0;background:#0c1018}
+#chat-inp{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#f0f4ff;font:400 .88rem 'DM Sans',sans-serif;padding:9px 12px;outline:none;transition:border-color .2s}
+#chat-inp:focus{border-color:#4fffb0;box-shadow:0 0 0 3px rgba(79,255,176,.1)}
+#chat-inp::placeholder{color:#7a8aaa}
+#chat-send{width:38px;height:38px;border:none;border-radius:10px;background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+#chat-send:hover{filter:brightness(1.1)}
+#chat-send:disabled{opacity:.4;cursor:not-allowed}
+body.light #chat-win{background:#fff;border-color:rgba(0,0,0,.1)}
+body.light #chat-fab{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
+body.light .cmsg.bot .cbubble{background:#f0f4ff;border-color:rgba(0,0,0,.08);color:#0d1117}
+body.light .cmsg.user .cbubble{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
+body.light #chat-inp-row{background:#fff;border-color:rgba(0,0,0,.08)}
+body.light #chat-inp{background:#f5f7ff;border-color:rgba(0,0,0,.1);color:#0d1117}
+body.light #chat-send{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
+body.light .sugg-btn{background:#f5f7ff;border-color:rgba(0,0,0,.1);color:#5a6480}
+body.light #chat-close-btn{background:#f5f7ff;border-color:rgba(0,0,0,.1)}
+body.light .fab-badge{border-color:#fff}
+@media(max-width:480px){#chat-win{width:calc(100vw - 24px);right:12px;bottom:84px}#chat-fab{right:16px;bottom:20px}}
+</style>
+
+<button id="chat-fab" aria-label="Open ISP Assistant">
+  <span id="fab-icon">💬</span>
+  <span class="fab-badge" id="fab-badge">1</span>
+</button>
+
+<div id="chat-win" role="dialog" aria-label="ISP Assistant">
+  <div id="chat-head">
+    <div class="ch-left">
+      <div class="ch-avatar">⚡</div>
+      <div>
+        <div class="ch-name">ISP Assistant</div>
+        <div class="ch-status"><span class="ch-dot"></span><span>Online · Celina Plains</span></div>
+      </div>
+    </div>
+    <button id="chat-close-btn" aria-label="Close">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div id="chat-msgs" role="log" aria-live="polite"></div>
+  <div id="chat-sugg">
+    <button class="sugg-btn" data-q="Which ISP is best in Celina Plains?">Best ISP?</button>
+    <button class="sugg-btn" data-q="What are peak hours?">Peak hours?</button>
+    <button class="sugg-btn" data-q="How do I improve my internet speed?">Improve speed?</button>
+    <button class="sugg-btn" data-q="What is jitter?">What is jitter?</button>
+  </div>
+  <div id="chat-inp-row">
+    <input id="chat-inp" type="text" placeholder="Ask about ISPs in Celina Plains…" autocomplete="off" maxlength="280"/>
+    <button id="chat-send" aria-label="Send">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var SPACE = 'https://keita1421-celinaisp.hf.space';
+
+  var SYS = 'You are a friendly assistant for the Celina Plains ISP Study. Benchmarks: PLDT 85Mbps/40up/18ms | Globe 62/28/24ms | Converge 110/55/15ms | Meridian 45/20/30ms | Cablelink 38/15/35ms. Peak hours 7PM-10PM. Be concise, max 3 sentences. Reply in English or Filipino.';
+
+  var LOCAL = [
+    [/converge/i,'Converge has the highest average download speed at 110 Mbps with the best ping (15ms). It is the top performer among wired ISPs in Celina Plains.'],
+    [/pldt/i,'PLDT averages 85 Mbps download and 40 Mbps upload with an 18ms ping. It is the most balanced ISP in the study.'],
+    [/globe/i,'Globe averages 62 Mbps download and 28 Mbps upload in Celina Plains.'],
+    [/meridian/i,'Meridian averages 45 Mbps download and 20 Mbps upload. Good for basic internet needs.'],
+    [/cablelink/i,'Cablelink averages 38 Mbps download with a 35ms ping — the highest among wired ISPs.'],
+    [/peak|7pm|evening/i,'Peak hours are 7PM–10PM when congestion is highest. Test off-peak for accurate results.'],
+    [/jitter/i,'Jitter is variation in ping over time. Excellent is ≤5ms, Good ≤20ms, Fair ≤50ms, Poor >50ms.'],
+    [/ping|latency/i,'Ping is round-trip response time. Excellent ≤20ms, Good ≤50ms, Fair ≤100ms, Poor >100ms.'],
+    [/improve|slow|fix|boost/i,'Try a wired Ethernet connection, test during off-peak hours, and restart your router. If speeds are still low, consider upgrading your plan.'],
+    [/best|fastest|top/i,'Converge leads in speed (110 Mbps). PLDT is the most balanced overall. The best ISP depends on coverage in your street.'],
+  ];
+
+  var fallback = function(q) {
+    for (var i = 0; i < LOCAL.length; i++) {
+      if (LOCAL[i][0].test(q)) return LOCAL[i][1];
+    }
+    return 'I can help with ISP questions about Celina Plains! Ask me about providers, speed ratings, peak hours, or how to improve your connection.';
+  };
+
+  var isOpen = false, busy = false, history = [];
+
+  var fab    = document.getElementById('chat-fab');
+  var win    = document.getElementById('chat-win');
+  var msgs   = document.getElementById('chat-msgs');
+  var inp    = document.getElementById('chat-inp');
+  var sndBtn = document.getElementById('chat-send');
+  var closeB = document.getElementById('chat-close-btn');
+  var badge  = document.getElementById('fab-badge');
+  var fabIco = document.getElementById('fab-icon');
+  var suggBox= document.getElementById('chat-sugg');
+
+  if (!fab || !win) { console.error('Chatbot elements not found'); return; }
+
+  var ts = function() { return new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}); };
+
+  var addMsg = function(text, role) {
+    var w = document.createElement('div'); w.className = 'cmsg ' + role;
+    var b = document.createElement('div'); b.className = 'cbubble'; b.textContent = text;
+    var t = document.createElement('div'); t.className = 'ctime'; t.textContent = ts();
+    w.appendChild(b); w.appendChild(t); msgs.appendChild(w);
+    msgs.scrollTop = msgs.scrollHeight;
+  };
+
+  var showTyping = function() {
+    var el = document.createElement('div'); el.id = 'typing-ind';
+    el.innerHTML = '<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
+    msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight;
+  };
+  var hideTyping = function() { var el = document.getElementById('typing-ind'); if(el) el.remove(); };
+
+  var callHF = async function(userMsg) {
+    var submitRes = await fetch(SPACE + '/gradio_api/call/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        data: [userMsg, history, SYS, 200, 0.4, 0.9]
+      })
+    });
+    if (!submitRes.ok) throw new Error('Submit failed: ' + submitRes.status);
+    var json = await submitRes.json();
+    var event_id = json.event_id;
+    if (!event_id) throw new Error('No event_id returned');
+
+    var streamRes = await fetch(SPACE + '/gradio_api/call/chat/' + event_id);
+    if (!streamRes.ok) throw new Error('Stream failed: ' + streamRes.status);
+
+    var raw = await streamRes.text();
+    var reply = '';
+    var lines = raw.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith('event: complete')) {
+        for (var j = i + 1; j < lines.length; j++) {
+          if (lines[j].startsWith('data:')) {
+            try {
+              var parsed = JSON.parse(lines[j].slice(5).trim());
+              if (Array.isArray(parsed) && typeof parsed[0] === 'string') {
+                reply = parsed[0];
+              }
+            } catch(e) {}
+            break;
+          }
+        }
+        break;
+      }
+    }
+    if (!reply) throw new Error('Empty response');
+    return reply;
+  };
+
+  var send = async function() {
+    var text = inp.value.trim();
+    if (!text || busy) return;
+    suggBox.style.display = 'none';
+    addMsg(text, 'user');
+    history.push({role:'user', content:text});
+    inp.value = ''; sndBtn.disabled = true; busy = true;
+    showTyping();
+    try {
+      var reply = await callHF(text);
+      hideTyping(); addMsg(reply, 'bot');
+      history.push({role:'assistant', content:reply});
+    } catch(e) {
+      console.error('Chat error:', e);
+      hideTyping();
+      addMsg(fallback(text), 'bot');
+    }
+    sndBtn.disabled = false; busy = false;
+  };
+
+  var openChat = function() {
+    isOpen = true;
+    win.classList.add('open');
+    fabIco.textContent = '✕';
+    badge.classList.add('hide');
+    inp.focus();
+  };
+  var closeChat = function() {
+    isOpen = false;
+    win.classList.remove('open');
+    fabIco.textContent = '💬';
+  };
+
+  fab.addEventListener('click', function() { isOpen ? closeChat() : openChat(); });
+  closeB.addEventListener('click', closeChat);
+  sndBtn.addEventListener('click', send);
+  inp.addEventListener('keydown', function(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
+  document.querySelectorAll('.sugg-btn').forEach(function(b) {
+    b.addEventListener('click', function() { inp.value = b.dataset.q; send(); });
+  });
+
+  setTimeout(function() {
+    addMsg("👋 Hi! I'm the ISP Assistant for Celina Plains. Ask me anything about providers, speed benchmarks, or our research findings!", 'bot');
+  }, 800);
+});
+</script>
+</body>
+</html>

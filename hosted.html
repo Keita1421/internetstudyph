@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speed Test — Celina Plains ISP Study</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #07090f; --bg2: #0c1018;
+      --surface: rgba(255,255,255,0.04); --surface2: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14);
+      --text: #f0f4ff; --muted: #7a8aaa;
+      --accent: #4fffb0; --accent2: #38c8ff; --accent3: #7c6fff;
+      --danger: #ff6b6b; --input: rgba(255,255,255,0.05);
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; line-height: 1.6; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 70% 50% at 15% -5%, rgba(79,255,176,0.07) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 85% 105%, rgba(56,200,255,0.06) 0%, transparent 55%); pointer-events: none; z-index: 0; }
+    body::after { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; z-index: 0; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: rgba(7,9,15,0.85); backdrop-filter: blur(16px); }
+    .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-logo .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 6px 12px; border-radius: 8px; transition: color 0.2s, background 0.2s; }
+    .nav-links a:hover { color: var(--text); background: var(--surface2); }
+    .nav-controls { display: flex; align-items: center; gap: 8px; }
+    .lang-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 2px; }
+    .lang-btn { border: none; background: none; color: var(--muted); font: 500 0.8rem 'DM Sans', sans-serif; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .lang-btn.active { background: var(--accent); color: #07090f; font-weight: 700; }
+    .theme-btn { border: 1px solid var(--border); background: var(--surface); color: var(--muted); font: 500 0.8rem 'DM Sans', sans-serif; padding: 7px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .theme-btn:hover { border-color: var(--border2); color: var(--text); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; border: none; background: none; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
+    .mobile-menu { display: none; position: fixed; top: 64px; left: 0; right: 0; background: rgba(7,9,15,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 16px 24px; z-index: 99; flex-direction: column; gap: 4px; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--muted); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1rem; font-weight: 500; }
+    .mobile-theme-btn { width: 100%; margin-top: 10px; justify-content: center; }
+
+    main { position: relative; z-index: 1; padding: 80px 24px 60px; max-width: 1200px; margin: 0 auto; }
+    .page-header { padding: 32px 0 36px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+    .section-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .page-header p { color: var(--muted); font-size: 0.95rem; max-width: 560px; }
+
+    .main-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 20px; }
+    .panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 20px; padding: 24px; }
+    .panel-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .panel-title .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .span2 { grid-column: span 2; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 0.82rem; color: var(--muted); font-weight: 600; letter-spacing: 0.02em; }
+    .field input, .field select { background: var(--input); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font: 400 0.95rem 'DM Sans', sans-serif; padding: 11px 13px; width: 100%; transition: border-color 0.2s, box-shadow 0.2s; }
+    .field input:focus, .field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,255,176,0.12); }
+    .field select option { background: #0c1018; }
+    .field .hint { font-size: 0.77rem; color: var(--muted); }
+
+    .form-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .btn-primary { background: var(--accent); color: #07090f; font: 700 0.95rem 'DM Sans', sans-serif; padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 20px rgba(79,255,176,0.2); }
+    .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .btn-ghost { background: var(--surface2); color: var(--muted); font: 600 0.9rem 'DM Sans', sans-serif; padding: 12px 20px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.2s; }
+    .btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+
+    .iframe-box { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; min-height: 520px; background: #020910; }
+    .iframe-box iframe { display: block; width: 100%; min-height: 520px; border: 0; }
+
+    .results-panel { display: none; margin-top: 20px; }
+    .results-panel.visible { display: block; animation: fadeUp 0.4s ease; }
+
+    .metric-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 16px; }
+    .metric-box { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px; transition: border-color 0.2s, transform 0.2s; }
+    .metric-box:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .metric-lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    .metric-val { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; margin: 4px 0; }
+    .metric-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--surface2); border: 1px solid var(--border); }
+
+    .score-block { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 14px; display: flex; align-items: center; gap: 20px; }
+    .score-circle { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: grid; place-items: center; font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: #07090f; flex-shrink: 0; box-shadow: 0 0 24px rgba(79,255,176,0.25); }
+    .score-meta h3 { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 4px; }
+    .grade-tag { display: inline-block; background: rgba(79,255,176,0.1); border: 1px solid rgba(79,255,176,0.3); color: var(--accent); font-weight: 700; font-size: 0.9rem; padding: 4px 12px; border-radius: 8px; margin-bottom: 6px; }
+    .score-desc { color: var(--muted); font-size: 0.85rem; }
+
+    .analysis-block, .compare-block, .recs-block { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 14px; }
+    .block-title { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 14px; }
+
+    .analysis-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .analysis-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .analysis-item h4 { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; }
+    .analysis-item p { color: var(--muted); font-size: 0.82rem; }
+
+    .compare-desc { color: var(--muted); font-size: 0.83rem; margin-bottom: 14px; }
+    .compare-block { overflow: hidden; }
+    .compare-charts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; min-width: 0; }
+    .cmp-chart { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px 8px; min-width: 0; overflow: hidden; }
+    .cmp-chart h4 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 8px; white-space: normal; word-break: break-word; }
+    .cmp-chart .chart-wrap { position: relative; height: 120px; width: 100%; min-width: 0; }
+    .cmp-chart canvas { display: block; width: 100% !important; height: 100% !important; }
+    .mobile-note { margin-top: 10px; padding: 12px 14px; background: rgba(56,200,255,0.06); border: 1px solid rgba(56,200,255,0.2); border-radius: 10px; color: var(--muted); font-size: 0.83rem; }
+
+    .recs-list { display: flex; flex-direction: column; gap: 8px; list-style: none; }
+    .recs-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.88rem; color: var(--muted); }
+    .recs-list li::before { content: '→'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+    .cta-row { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .count-badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 999px; font-size: 0.8rem; font-weight: 600; padding: 5px 12px; color: var(--muted); }
+    .community-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #07090f; font: 700 0.88rem 'DM Sans', sans-serif; padding: 10px 18px; border-radius: 10px; text-decoration: none; transition: all 0.2s; }
+    .community-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+
+    /* Light mode */
+    body.light { --bg: #f5f7ff; --bg2: #eef1fb; --surface: rgba(0,0,0,0.03); --surface2: rgba(0,0,0,0.06); --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.14); --text: #0d1117; --muted: #5a6480; --accent: #00a86b; --accent2: #0077cc; --accent3: #5c4dcc; --input: rgba(0,0,0,0.03); }
+    body.light::before { background: radial-gradient(ellipse 70% 50% at 15% -5%, rgba(0,168,107,0.05) 0%, transparent 60%); }
+    body.light::after { background-image: linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px); background-size: 60px 60px; }
+    body.light nav { background: rgba(245,247,255,0.9); }
+    body.light .panel { background: #fff; }
+    body.light .metric-box, body.light .score-block, body.light .analysis-block, body.light .compare-block, body.light .recs-block, body.light .cta-row { background: #fff; }
+    body.light .analysis-item, body.light .cmp-chart { background: #f5f7ff; }
+    body.light .mobile-menu { background: rgba(245,247,255,0.97); }
+    body.light .field input, body.light .field select { background: #fff; color: #0d1117; }
+    body.light .field select option { background: #fff; }
+    body.light .btn-primary { color: #fff; }
+    body.light .score-circle { color: #fff; }
+
+    footer { border-top: 1px solid var(--border); background: var(--bg2); padding: 32px 24px; position: relative; z-index: 1; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .footer-brand { font-family: 'Syne', sans-serif; font-weight: 800; color: var(--text); }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy { color: var(--muted); font-size: 0.8rem; }
+
+    @media (max-width: 1000px) { .main-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 700px) {
+      .hamburger { display: flex; }
+      .nav-links { display: none; }
+      .nav-controls { display: flex; margin-left: auto; }
+      .nav-controls .lang-toggle, .nav-controls .theme-btn { display: none; }
+      .metric-strip { grid-template-columns: repeat(2,1fr); }
+      .analysis-cols, .compare-charts { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .span2 { grid-column: auto; }
+    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* GPS permission banner */
+    #gpsBanner { display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:200; background:#0c1018; border:1px solid rgba(79,255,176,0.3); border-radius:16px; padding:16px 20px; max-width:480px; width:calc(100% - 48px); box-shadow:0 8px 32px rgba(0,0,0,0.6); animation:fadeUp 0.3s ease; }
+    #gpsBanner .gps-top { display:flex; align-items:flex-start; gap:12px; }
+    #gpsBanner .gps-icon { font-size:1.5rem; flex-shrink:0; margin-top:2px; }
+    #gpsBanner .gps-body h4 { font-family:'Syne',sans-serif; font-size:0.92rem; font-weight:700; margin-bottom:4px; }
+    #gpsBanner .gps-body p { font-size:0.8rem; color:var(--muted); line-height:1.5; }
+    #gpsBanner .gps-actions { display:flex; gap:8px; margin-top:12px; justify-content:flex-end; }
+    #gpsBanner .gps-allow { background:var(--accent); color:#07090f; font:700 0.82rem 'DM Sans',sans-serif; border:none; border-radius:8px; padding:8px 16px; cursor:pointer; transition:all 0.2s; }
+    #gpsBanner .gps-allow:hover { filter:brightness(1.08); }
+    #gpsBanner .gps-deny { background:transparent; color:var(--muted); font:500 0.82rem 'DM Sans',sans-serif; border:1px solid var(--border); border-radius:8px; padding:8px 14px; cursor:pointer; transition:all 0.2s; }
+    #gpsBanner .gps-deny:hover { color:var(--text); border-color:var(--border2); }
+    body.light #gpsBanner { background:#fff; box-shadow:0 8px 32px rgba(0,0,0,0.15); }
+
+    /* Location map in results */
+    .loc-map-block { background:var(--bg); border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:14px; }
+    .loc-map-block .loc-map-head { padding:14px 16px 10px; display:flex; align-items:center; gap:8px; }
+    .loc-map-block .loc-map-head h4 { font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); }
+    .loc-map-block .loc-status { font-size:0.78rem; color:var(--muted); padding:0 16px 12px; }
+    #userLocMap { height:200px; width:100%; }
+    .leaflet-popup-content-wrapper { background:#0c1018; border:1px solid rgba(255,255,255,0.12); color:#f0f4ff; border-radius:10px; font-family:'DM Sans',sans-serif; font-size:0.82rem; }
+    .leaflet-popup-tip { background:#0c1018; }
+    body.light .leaflet-popup-content-wrapper { background:#fff; color:#0d1117; }
+    body.light .leaflet-popup-tip { background:#fff; }
+  </style>
+</head>
+<body>
+  <!-- GPS permission banner -->
+  <div id="gpsBanner">
+    <div class="gps-top">
+      <div class="gps-icon">📍</div>
+      <div class="gps-body">
+        <h4>Allow location access?</h4>
+        <p>We use your approximate location to map speed test results across Celina Plains. This helps the study show which areas have the best or worst internet — your exact address is never stored, only GPS coordinates.</p>
+      </div>
+    </div>
+    <div class="gps-actions">
+      <button class="gps-deny" id="gpsDeny">Not now</button>
+      <button class="gps-allow" id="gpsAllow">Allow location</button>
+    </div>
+  </div>
+
+  <nav>
+    <a href="index.html" class="nav-logo"><span class="logo-dot"></span>CelinaISP</a>
+    <ul class="nav-links">
+      <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="study.html" data-i18n="nav.study">Study</a></li>
+      <li><a href="results.html" data-i18n="nav.results">Community</a></li>
+    </ul>
+    <div class="nav-controls">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="tl">TL</button>
+      </div>
+      <button class="theme-btn" id="themeBtn">☀ Light</button>
+      <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" data-i18n="nav.home">Home</a>
+    <a href="study.html" data-i18n="nav.study">Study Details</a>
+    <a href="results.html" data-i18n="nav.results">Community Results</a>
+    <button class="theme-btn mobile-theme-btn" id="mobileThemeBtn" type="button">☀ Light</button>
+  </div>
+
+  <main>
+    <div class="page-header">
+      <div class="section-label" data-i18n="page.label">Speed Test Tool</div>
+      <h1 data-i18n="page.title">Run Your Speed Test</h1>
+      <p data-i18n="page.subtitle">Test on SpeedTestGo, enter your values below, and get instant analysis against our Celina Plains study benchmarks.</p>
+    </div>
+
+    <div class="main-grid">
+      <div>
+        <div class="panel">
+          <div class="panel-title"><span class="dot"></span><span data-i18n="form.title">Result Input Form</span></div>
+          <form id="speedForm">
+            <div class="form-grid">
+              <div class="field span2">
+                <label data-i18n="f.isp">ISP / Provider</label>
+                <select id="isp" required>
+                  <option value="PLDT">PLDT</option><option value="Globe">Globe</option>
+                  <option value="Converge">Converge</option><option value="Meridian">Meridian</option>
+                  <option value="Cablelink">Cablelink</option><option value="Others">Others</option>
+                  <option value="Sky Broadband">Sky Broadband</option>
+                </select>
+              </div>
+              <div class="field">
+                <label data-i18n="f.conn">Connection Type</label>
+                <select id="connType" required>
+                  <option value="fiber">Fiber</option><option value="dsl">DSL</option>
+                  <option value="cable">Cable</option><option value="others">Others</option>
+                  <option value="fixedWireless">Fixed Wireless</option>
+                </select>
+              </div>
+              <div class="field">
+                <label data-i18n="f.time">Time of Day</label>
+                <select id="timeOfDay" required>
+                  <option value="peak">Peak Hours 7PM–10PM</option>
+                  <option value="offpeak">Off-Peak</option>
+                </select>
+                <span class="hint" id="timeHint"></span>
+              </div>
+              <div class="field"><label data-i18n="f.dl">Download (Mbps)</label><input id="dl" type="number" min="0" step="0.01" required /></div>
+              <div class="field"><label data-i18n="f.ul">Upload (Mbps)</label><input id="ul" type="number" min="0" step="0.01" required /></div>
+              <div class="field"><label data-i18n="f.ping">Ping (ms)</label><input id="ping" type="number" min="0" step="0.01" required /></div>
+              <div class="field"><label data-i18n="f.jitter">Jitter (ms)</label><input id="jitter" type="number" min="0" step="0.01" required /></div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn-primary" data-i18n="f.submit">Show Results</button>
+              <button type="button" id="resetBtn" class="btn-ghost" data-i18n="f.clear">Clear</button>
+            </div>
+          </form>
+
+          <div class="results-panel" id="resultsPanel">
+            <div class="metric-strip">
+              <div class="metric-box"><div class="metric-lbl" data-i18n="m.dl">Download</div><div class="metric-val" id="mDl">—</div><div class="metric-badge" id="bDl"></div></div>
+              <div class="metric-box"><div class="metric-lbl" data-i18n="m.ul">Upload</div><div class="metric-val" id="mUl">—</div><div class="metric-badge" id="bUl"></div></div>
+              <div class="metric-box"><div class="metric-lbl" data-i18n="m.ping">Ping</div><div class="metric-val" id="mPing">—</div><div class="metric-badge" id="bPing"></div></div>
+              <div class="metric-box"><div class="metric-lbl" data-i18n="m.jitter">Jitter</div><div class="metric-val" id="mJitter">—</div><div class="metric-badge" id="bJitter"></div></div>
+            </div>
+            <div class="score-block">
+              <div class="score-circle" id="scoreNum">0</div>
+              <div class="score-meta">
+                <h3 data-i18n="score.title">Overall Score</h3>
+                <div class="grade-tag" id="scoreGrade">—</div>
+                <div class="score-desc" id="scoreDesc"></div>
+              </div>
+            </div>
+            <div class="analysis-block">
+              <div class="block-title" data-i18n="analysis.title">Performance Analysis</div>
+              <div class="analysis-cols">
+                <div class="analysis-item" id="aDl"></div>
+                <div class="analysis-item" id="aUl"></div>
+                <div class="analysis-item" id="aPing"></div>
+                <div class="analysis-item" id="aJitter"></div>
+              </div>
+            </div>
+            <div class="compare-block">
+              <div class="block-title" data-i18n="cmp.title">How You Compare</div>
+              <div class="compare-desc" id="cmpDesc"></div>
+              <div class="compare-charts" id="cmpCharts" style="display:none">
+                <div class="cmp-chart"><h4>Download (Mbps)</h4><div class="chart-wrap"><canvas id="ccDl"></canvas></div></div>
+                <div class="cmp-chart"><h4>Upload (Mbps)</h4><div class="chart-wrap"><canvas id="ccUl"></canvas></div></div>
+                <div class="cmp-chart"><h4>Ping (ms) ↓ lower=better</h4><div class="chart-wrap"><canvas id="ccPing"></canvas></div></div>
+                <div class="cmp-chart"><h4>Jitter (ms) ↓ lower=better</h4><div class="chart-wrap"><canvas id="ccJitter"></canvas></div></div>
+              </div>
+              <div class="mobile-note" id="mobileNote" style="display:none"></div>
+            </div>
+            <div class="recs-block">
+              <div class="block-title" data-i18n="recs.title">Recommendations</div>
+              <ul class="recs-list" id="recsList"></ul>
+            </div>
+            <div class="loc-map-block" id="locMapBlock" style="display:none">
+              <div class="loc-map-head">
+                <h4>📍 Your Test Location</h4>
+              </div>
+              <div class="loc-status" id="locStatus">Locating...</div>
+              <div id="userLocMap"></div>
+            </div>
+
+            <div class="cta-row">
+              <span class="count-badge" id="countBadge"></span>
+              <a href="results.html" class="community-btn" data-i18n="cta.community">📊 See Community Results</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <div class="panel-title"><span class="dot"></span><span data-i18n="iframe.title">SpeedTestGo Panel</span></div>
+          <p style="color:var(--muted);font-size:0.85rem;margin-bottom:14px" data-i18n="iframe.hint">Run your test here, then copy the Download, Upload, Ping, and Jitter values into the form.</p>
+          <div class="iframe-box">
+            <iframe src="https://speedtest.ph/" title="SpeedTestGo" scrolling="no" allowfullscreen
+  allow="geolocation; microphone; camera; fullscreen"></iframe>camera; fullscreen"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">CelinaISP Study</div>
+      <div class="footer-links">
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="study.html" data-i18n="nav.study">Study</a>
+        <a href="results.html" data-i18n="nav.results">Community</a>
+      </div>
+      <div class="footer-copy">© 2026 Celina Plains ISP Study</div>
+    </div>
+  </footer>
+
+  <script>
+    // --- NEW CODE START ---
+    const OPENCAGE_API_KEY = '71ec28d2d6f34a4ab658b6ee9ecd0ed6';
+
+    /**
+     * reverseGeocode — converts GPS coordinates to human-readable location fields
+     * using the OpenCage Geocoding API.
+     * @param {number} latitude - GPS latitude
+     * @param {number} longitude - GPS longitude
+     * @returns {Promise<{city:string, municipality:string, barangay:string, province:string, region:string}>}
+     *   Returns location fields, or all empty strings if geocoding fails or coords unavailable.
+     */
+    async function reverseGeocode(latitude, longitude) {
+      const empty = { city: '', municipality: '', barangay: '', province: '', region: '' };
+      if (!latitude || !longitude) return empty;
+      try {
+        const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${OPENCAGE_API_KEY}&language=en&no_annotations=1&countrycode=ph`;
+        const res = await fetch(url);
+        if (!res.ok) return empty;
+        const data = await res.json();
+        if (!data.results || !data.results.length) return empty;
+        const c = data.results[0].components;
+        return {
+          city:         c.city         || c.town         || c.village      || '',
+          municipality: c.municipality || c.city_district || c.county       || '',
+          barangay:     c.suburb       || c.neighbourhood || c.quarter      || '',
+          province:     c.state        || c.province      || '',
+          region:       c.region       || c.state_district || '',
+        };
+      } catch (err) {
+        console.warn('Reverse geocode failed:', err);
+        return empty;
+      }
+    }
+    // --- NEW CODE END ---
+
+    const benchmarks = { PLDT:{dl:85,ul:40,ping:18,jitter:4}, Globe:{dl:62,ul:28,ping:24,jitter:7}, Converge:{dl:110,ul:55,ping:15,jitter:3}, Meridian:{dl:45,ul:20,ping:30,jitter:9}, Cablelink:{dl:38,ul:15,ping:35,jitter:11} };
+    const mobileISPs = new Set(['Others']);
+
+    const themeBtn = document.getElementById('themeBtn');
+    const mobileThemeBtn = document.getElementById('mobileThemeBtn');
+    const setThemeButtonLabel = t => {
+      const label = t==='light'?'🌙 Dark':'☀ Light';
+      themeBtn.textContent = label;
+      if (mobileThemeBtn) mobileThemeBtn.textContent = label;
+    };
+    const applyTheme = t => { document.body.classList.toggle('light', t==='light'); setThemeButtonLabel(t); localStorage.setItem('theme',t); };
+    applyTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+    themeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light')?'dark':'light'));
+    if (mobileThemeBtn) {
+      mobileThemeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light')?'dark':'light'));
+    }
+
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    document.addEventListener('click', e => { if(!e.target.closest('nav')&&!e.target.closest('.mobile-menu')) mobileMenu.classList.remove('open'); });
+
+    const timeSelect = document.getElementById('timeOfDay');
+    const timeHint = document.getElementById('timeHint');
+    const detectTime = () => { const h=new Date().getHours(); const peak=h>=19&&h<22; timeSelect.value=peak?'peak':'offpeak'; timeHint.textContent=peak?'⚡ Auto-detected: Peak hours':'✓ Auto-detected: Off-peak'; };
+    detectTime();
+
+    // Firebase Firestore save (replaces localStorage)
+    const saveRecord = async (r) => {
+      try {
+        // Wait for Firebase to initialize
+        while (!window.firestoreReady) await new Promise(resolve => setTimeout(resolve, 50));
+        
+        const { getFirestore, collection, addDoc } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        const db = window.firestoreDB;
+        
+        await addDoc(collection(db, 'submissions'), {
+          ...r,
+          createdAt: new Date().toISOString()
+        });
+        
+        // Get count (optional, for display)
+        const { getDocs, query } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        const q = query(collection(db, 'submissions'));
+        const snapshot = await getDocs(q);
+        return snapshot.size;
+      } catch (error) {
+        console.error('Firebase save error:', error);
+        alert('Error saving to database. Please try again.');
+        return 0;
+      }
+    };
+
+    const rateDl = v => { if(v>=100)return{lbl:'Excellent',score:100}; if(v>=50)return{lbl:'Very Good',score:85}; if(v>=25)return{lbl:'Good',score:70}; if(v>=10)return{lbl:'Fair',score:50}; return{lbl:'Poor',score:30}; };
+    const rateUl = v => { if(v>=35)return{lbl:'Excellent',score:100}; if(v>=10)return{lbl:'Very Good',score:80}; if(v>=5)return{lbl:'Good',score:65}; if(v>=2)return{lbl:'Fair',score:45}; return{lbl:'Poor',score:25}; };
+    const ratePing = v => { if(v<20)return{lbl:'Excellent',score:100}; if(v<50)return{lbl:'Good',score:80}; if(v<100)return{lbl:'Fair',score:60}; return{lbl:'Poor',score:30}; };
+    const rateJitter = v => { if(v<5)return{lbl:'Excellent',score:100}; if(v<10)return{lbl:'Good',score:80}; if(v<20)return{lbl:'Fair',score:60}; return{lbl:'Poor',score:30}; };
+    const overallScore = (dl,ul,ping,jitter) => Math.round(rateDl(dl).score*0.4+rateUl(ul).score*0.25+ratePing(ping).score*0.2+rateJitter(jitter).score*0.15);
+    const gradeMeta = s => { if(s>=90)return{grade:'Grade A',desc:'Outstanding connection quality.'}; if(s>=80)return{grade:'Grade B',desc:'Strong and reliable for most workloads.'}; if(s>=70)return{grade:'Grade C',desc:'Functional but with occasional limits.'}; if(s>=60)return{grade:'Grade D',desc:'Below average — upgrades may help.'}; return{grade:'Grade F',desc:'Poor quality under current conditions.'}; };
+    const analyzeDesc = (v,key) => { if(key==='dl'){if(v>=50)return'Excellent for 4K streaming and multi-device use.';if(v>=20)return'Good for HD streaming and work apps.';return'Fair — basic browsing with occasional buffering.';} if(key==='ul'){if(v>=15)return'Great for video calls, uploads, and cloud sync.';if(v>=5)return'Suitable for standard meetings and uploads.';return'May struggle with uploads and HD calls.';} if(key==='ping'){if(v<40)return'Low latency — great for gaming and real-time calls.';if(v<90)return'Acceptable for most everyday activities.';return'Noticeable lag in calls and games.';} if(v<8)return'Stable link, minimal packet timing variation.';if(v<20)return'Generally stable with occasional inconsistency.';return'Unstable — may impact call and stream quality.'; };
+
+    const makeChart = (id, yourVal, benchVal, unit, lowerBetter) => {
+      if (typeof Chart === 'undefined') return;
+      const canvas = document.getElementById(id);
+      const existing = Chart.getChart(canvas); if(existing) existing.destroy();
+      const isDark = !document.body.classList.contains('light');
+      const mutedColor = isDark?'#7a8aaa':'#5a6480';
+      const gridColor = isDark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.06)';
+      const aboveBench = yourVal > benchVal;
+      const yourColor = lowerBetter?(aboveBench?'#ff6b6b':'#4fffb0'):(aboveBench?'#4fffb0':'#ff6b6b');
+      new Chart(canvas.getContext('2d'), {
+        type:'bar',
+        data:{ labels:['You','Study Avg'], datasets:[{data:[yourVal,benchVal], backgroundColor:[yourColor,isDark?'rgba(255,255,255,0.1)':'rgba(0,0,0,0.1)'], borderColor:[yourColor,'transparent'], borderWidth:1, borderRadius:6}]},
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y.toFixed(2)} ${unit}`}}}, scales:{ x:{ticks:{color:mutedColor,font:{size:11}},grid:{color:gridColor}}, y:{beginAtZero:true,ticks:{color:mutedColor,font:{size:10}},grid:{color:gridColor}} } }
+      });
+    };
+
+    document.getElementById('speedForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const isp = document.getElementById('isp').value;
+      const connType = document.getElementById('connType').value;
+      const timeOfDay = document.getElementById('timeOfDay').value;
+      const dl = parseFloat(document.getElementById('dl').value);
+      const ul = parseFloat(document.getElementById('ul').value);
+      const ping = parseFloat(document.getElementById('ping').value);
+      const jitter = parseFloat(document.getElementById('jitter').value);
+      if([dl,ul,ping,jitter].some(v=>isNaN(v)||v<0)){alert('Please enter valid non-negative values.');return;}
+      
+      const submitBtn = e.target.querySelector('[type="submit"]');
+      submitBtn.textContent = 'Saving...';
+      submitBtn.disabled = true;
+      
+      const connLabels={fiber:'Fiber',dsl:'DSL',cable:'Cable',others:'Others',fixedWireless:'Fixed Wireless'};
+
+      // --- NEW CODE START ---
+      // Reverse geocode GPS coordinates before saving to Firestore
+      let geoFields = { city: '', municipality: '', barangay: '', province: '', region: '' };
+      if (window._userLocation && window._userLocation.lat && window._userLocation.lng) {
+        geoFields = await reverseGeocode(window._userLocation.lat, window._userLocation.lng);
+      }
+      // --- NEW CODE END ---
+
+      // Use already-captured GPS coords (from banner prompt on load)
+      const count = await saveRecord({isp,connectionType:connType,connectionTypeLabel:connLabels[connType]||connType,timeOfDay,timeOfDayLabel:timeOfDay==='peak'?'Peak Hours 7PM–10PM':'Off-Peak',downloadSpeed:dl,uploadSpeed:ul,ping,jitter,timestamp:Date.now(),...(window._userLocation ? {lat:window._userLocation.lat,lng:window._userLocation.lng,accuracy:window._userLocation.accuracy} : {}),...geoFields});
+
+      // Show location map in results if we have coords
+      if (window._userLocation) {
+        showUserLocMap(window._userLocation, isp);
+      }
+      
+      submitBtn.textContent = i18n[lang]['f.submit'] || 'Show Results';
+      submitBtn.disabled = false;
+
+      document.getElementById('mDl').textContent=`${dl.toFixed(2)} Mbps`;
+      document.getElementById('mUl').textContent=`${ul.toFixed(2)} Mbps`;
+      document.getElementById('mPing').textContent=`${ping.toFixed(2)} ms`;
+      document.getElementById('mJitter').textContent=`${jitter.toFixed(2)} ms`;
+      document.getElementById('bDl').textContent=rateDl(dl).lbl;
+      document.getElementById('bUl').textContent=rateUl(ul).lbl;
+      document.getElementById('bPing').textContent=ratePing(ping).lbl;
+      document.getElementById('bJitter').textContent=rateJitter(jitter).lbl;
+
+      const score=overallScore(dl,ul,ping,jitter); const meta=gradeMeta(score);
+      document.getElementById('scoreNum').textContent=score;
+      document.getElementById('scoreGrade').textContent=meta.grade;
+      document.getElementById('scoreDesc').textContent=meta.desc;
+
+      document.getElementById('aDl').innerHTML=`<h4>Download</h4><p>${analyzeDesc(dl,'dl')}</p>`;
+      document.getElementById('aUl').innerHTML=`<h4>Upload</h4><p>${analyzeDesc(ul,'ul')}</p>`;
+      document.getElementById('aPing').innerHTML=`<h4>Latency</h4><p>${analyzeDesc(ping,'ping')}</p>`;
+      document.getElementById('aJitter').innerHTML=`<h4>Stability</h4><p>${analyzeDesc(jitter,'jitter')}</p>`;
+
+      const cmpDesc=document.getElementById('cmpDesc');
+      const cmpCharts=document.getElementById('cmpCharts');
+      const mobileNote=document.getElementById('mobileNote');
+      cmpCharts.style.display='none'; mobileNote.style.display='none';
+      document.getElementById('resultsPanel').classList.add('visible');
+
+      if(benchmarks[isp]){
+        const b=benchmarks[isp];
+        cmpDesc.textContent=`Benchmark: ${isp} study average from Celina Plains research.`;
+        cmpCharts.style.display='grid';
+        try {
+          makeChart('ccDl',dl,b.dl,'Mbps',false);
+          makeChart('ccUl',ul,b.ul,'Mbps',false);
+          makeChart('ccPing',ping,b.ping,'ms',true);
+          makeChart('ccJitter',jitter,b.jitter,'ms',true);
+        } catch (error) {
+          cmpCharts.style.display='none';
+        }
+      } else if(mobileISPs.has(isp)){
+        cmpDesc.textContent='No fixed benchmark available for this mobile provider.';
+        mobileNote.style.display='block';
+        mobileNote.textContent='Mobile data benchmarks vary widely — your result reflects real-world conditions in Celina Plains.';
+      } else {
+        cmpDesc.textContent='No fixed benchmark available for this provider yet.';
+      }
+
+      const recs=['Retest at different times to confirm consistency.'];
+      if(dl<25)recs.push('Consider upgrading to a higher-speed plan for better download performance.');
+      if(ul<8)recs.push('Low upload speed may affect video calls and cloud backups.');
+      if(ping>70)recs.push('High latency detected. Try using a wired Ethernet connection.');
+      if(jitter>15)recs.push('High jitter may affect call quality. Limit background traffic during calls.');
+      document.getElementById('recsList').innerHTML=recs.map(r=>`<li>${r}</li>`).join('');
+      document.getElementById('countBadge').textContent=`${count} submission${count!==1?'s':''} saved`;
+      document.getElementById('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('speedForm').reset();
+      document.getElementById('resultsPanel').classList.remove('visible');
+      detectTime();
+    });
+
+    const i18n = {
+      en:{'nav.home':'Home','nav.study':'Study','nav.results':'Community','page.label':'Speed Test Tool','page.title':'Run Your Speed Test','page.subtitle':'Test on SpeedTestGo, enter your values below, and get instant analysis against our Celina Plains study benchmarks.','form.title':'Result Input Form','f.isp':'ISP / Provider','f.conn':'Connection Type','f.time':'Time of Day','f.dl':'Download (Mbps)','f.ul':'Upload (Mbps)','f.ping':'Ping (ms)','f.jitter':'Jitter (ms)','f.submit':'Show Results','f.clear':'Clear','m.dl':'Download','m.ul':'Upload','m.ping':'Ping','m.jitter':'Jitter','score.title':'Overall Score','analysis.title':'Performance Analysis','cmp.title':'How You Compare','recs.title':'Recommendations','cta.community':'📊 See Community Results','iframe.title':'SpeedTestGo Panel','iframe.hint':'Run your test here, then copy the Download, Upload, Ping, and Jitter values into the form.'},
+      tl:{'nav.home':'Bahay','nav.study':'Pag-aaral','nav.results':'Komunidad','page.label':'Speed Test Tool','page.title':'Patakbuhin ang Speed Test','page.subtitle':'Mag-test sa SpeedTestGo, ilagay ang iyong mga values, at makakuha ng agarang pagsusuri laban sa aming mga benchmark.','form.title':'Form ng Resulta','f.isp':'ISP / Provider','f.conn':'Uri ng Koneksyon','f.time':'Oras ng Araw','f.dl':'Download (Mbps)','f.ul':'Upload (Mbps)','f.ping':'Ping (ms)','f.jitter':'Jitter (ms)','f.submit':'Ipakita ang Resulta','f.clear':'I-clear','m.dl':'Download','m.ul':'Upload','m.ping':'Ping','m.jitter':'Jitter','score.title':'Kabuuang Score','analysis.title':'Pagsusuri ng Performance','cmp.title':'Paano Ka Kumpara','recs.title':'Mga Rekomendasyon','cta.community':'📊 Tingnan ang Community Results','iframe.title':'SpeedTestGo Panel','iframe.hint':'Patakbuhin ang test dito, tapos ilagay ang Download, Upload, Ping, at Jitter sa form.'}
+    };
+    let lang=localStorage.getItem('lang')||'en';
+    const applyLang=l=>{lang=l;localStorage.setItem('lang',l);document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(i18n[l]?.[k])el.textContent=i18n[l][k];});document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===l));};
+    applyLang(lang);
+    document.querySelectorAll('.lang-btn').forEach(b=>b.addEventListener('click',()=>applyLang(b.dataset.lang)));
+  </script>
+
+  <!-- Firebase SDK -->
+    <script>
+    // ── GPS permission banner ────────────────────────
+    window._userLocation = null;
+    let _userLocMap = null;
+    const ISP_COLORS_H = { PLDT:'#3b82f6', Globe:'#ef4444', Converge:'#10b981', Meridian:'#f59e0b', Cablelink:'#8b5cf6', Others:'#06b6d4', 'Sky Broadband':'#14b8a6' };
+
+    const requestGPS = () => {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          window._userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: Math.round(pos.coords.accuracy) };
+          document.getElementById('gpsBanner').style.display = 'none';
+        },
+        err => {
+          console.warn('GPS denied:', err.message);
+          document.getElementById('gpsBanner').style.display = 'none';
+        },
+        { timeout: 10000, maximumAge: 60000 }
+      );
+    };
+
+    document.getElementById('gpsAllow').addEventListener('click', () => {
+      document.getElementById('gpsBanner').style.display = 'none';
+      requestGPS();
+    });
+    document.getElementById('gpsDeny').addEventListener('click', () => {
+      document.getElementById('gpsBanner').style.display = 'none';
+    });
+
+    // Show banner on load if permission not yet granted
+    window.addEventListener('load', () => {
+      if (!navigator.geolocation) return;
+      navigator.permissions.query({ name: 'geolocation' }).then(result => {
+        if (result.state === 'granted') {
+          // Already allowed — silently grab coords
+          requestGPS();
+        } else if (result.state === 'prompt') {
+          // Show our custom explanation banner
+          setTimeout(() => { document.getElementById('gpsBanner').style.display = 'block'; }, 800);
+        }
+        // If 'denied', do nothing
+      }).catch(() => {
+        // permissions API not supported — show banner anyway
+        setTimeout(() => { document.getElementById('gpsBanner').style.display = 'block'; }, 800);
+      });
+    });
+
+    // Show the user's pin on the mini map in results panel
+    window.showUserLocMap = (loc, isp) => {
+      const block = document.getElementById('locMapBlock');
+      const statusEl = document.getElementById('locStatus');
+      block.style.display = 'block';
+      statusEl.textContent = `Coordinates captured (±${loc.accuracy}m accuracy). Your pin is shown below.`;
+
+      if (!_userLocMap) {
+        _userLocMap = L.map('userLocMap', { zoomControl: true, scrollWheelZoom: false }).setView([loc.lat, loc.lng], 17);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap', maxZoom: 19
+        }).addTo(_userLocMap);
+      } else {
+        _userLocMap.setView([loc.lat, loc.lng], 17);
+      }
+
+      const color = ISP_COLORS_H[isp] || '#4fffb0';
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="width:16px;height:16px;border-radius:50%;background:${color};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.5)"></div>`,
+        iconSize: [16, 16], iconAnchor: [8, 8], popupAnchor: [0, -12]
+      });
+      L.marker([loc.lat, loc.lng], { icon })
+        .bindPopup(`<strong>${isp}</strong><br>Your test location<br><small style="color:#7a8aaa">±${loc.accuracy}m accuracy</small>`)
+        .addTo(_userLocMap)
+        .openPopup();
+
+      // Invalidate size in case map rendered while hidden
+      setTimeout(() => _userLocMap.invalidateSize(), 100);
+    };
+  </script>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, getDocs, query, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    // ⚠️ REPLACE WITH YOUR FIREBASE CONFIG
+    // Get this from: Firebase Console → Project Settings → General → Your apps → Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBg8pY1KD-K5r447A_Enq0de1c1TWScQnE",
+      authDomain: "celina-isp-study.firebaseapp.com",
+      projectId: "celina-isp-study",
+      storageBucket: "celina-isp-study.firebasestorage.app",
+      messagingSenderId: "601030738633",
+      appId: "1:601030738633:web:d861e03b3490c4aa7a8318",
+      measurementId: "G-F8RXD1H2QZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.firestoreDB = db;
+    window.firestoreReady = true;
+  </script>
+<!-- ISP ASSISTANT CHATBOT -->
+<style>
+#chat-fab{position:fixed;bottom:28px;right:28px;z-index:9999;width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(79,255,176,0.4);font-size:1.3rem;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+#chat-fab:hover{transform:scale(1.12)}
+#chat-fab .fab-badge{position:absolute;top:2px;right:2px;background:#ff6b6b;color:#fff;font-size:.6rem;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #07090f}
+#chat-fab .fab-badge.hide{display:none}
+#chat-win{position:fixed;bottom:96px;right:28px;z-index:9998;width:360px;max-height:580px;display:flex;flex-direction:column;background:#0c1018;border:1px solid rgba(255,255,255,.14);border-radius:20px;overflow:hidden;box-shadow:0 32px 64px rgba(0,0,0,.55);transform:scale(.92) translateY(16px);opacity:0;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .25s;font-family:'DM Sans',sans-serif}
+#chat-win.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+#chat-head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:linear-gradient(135deg,rgba(79,255,176,.1),rgba(56,200,255,.07));border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.ch-left{display:flex;align-items:center;gap:10px}
+.ch-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#4fffb0,#38c8ff);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.ch-name{font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;color:#f0f4ff}
+.ch-status{display:flex;align-items:center;gap:5px;font-size:.72rem;color:#7a8aaa;margin-top:1px}
+.ch-dot{width:7px;height:7px;border-radius:50%;background:#4fffb0;box-shadow:0 0 6px #4fffb0;display:inline-block;animation:pulse 2s infinite}
+#chat-close-btn{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#7a8aaa;border-radius:8px;padding:6px;cursor:pointer;display:flex;align-items:center;transition:all .2s}
+#chat-close-btn:hover{color:#f0f4ff}
+#chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:11px;min-height:220px;scroll-behavior:smooth}
+#chat-msgs::-webkit-scrollbar{width:3px}
+#chat-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:4px}
+.cmsg{display:flex;flex-direction:column;max-width:84%;animation:msgIn .22s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.cmsg.bot{align-self:flex-start}.cmsg.user{align-self:flex-end}
+.cbubble{padding:10px 13px;border-radius:14px;font-size:.875rem;line-height:1.55}
+.cmsg.bot .cbubble{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);color:#f0f4ff;border-bottom-left-radius:4px}
+.cmsg.user .cbubble{background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;font-weight:500;border-bottom-right-radius:4px}
+.ctime{font-size:.67rem;color:#7a8aaa;margin-top:3px;padding:0 3px}
+.cmsg.user .ctime{text-align:right}
+#typing-ind{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:14px;border-bottom-left-radius:4px;padding:11px 15px;display:flex;gap:5px;align-items:center;align-self:flex-start}
+.tdot{width:7px;height:7px;border-radius:50%;background:#7a8aaa;animation:tdot 1.2s infinite ease}
+.tdot:nth-child(2){animation-delay:.18s}.tdot:nth-child(3){animation-delay:.36s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+#chat-sugg{display:flex;gap:6px;padding:0 12px 10px;overflow-x:auto;flex-shrink:0}
+#chat-sugg::-webkit-scrollbar{display:none}
+.sugg-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#7a8aaa;font:500 .73rem 'DM Sans',sans-serif;padding:5px 11px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.sugg-btn:hover{border-color:#4fffb0;color:#4fffb0}
+#chat-inp-row{display:flex;gap:8px;padding:11px 13px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0;background:#0c1018}
+#chat-inp{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#f0f4ff;font:400 .88rem 'DM Sans',sans-serif;padding:9px 12px;outline:none;transition:border-color .2s}
+#chat-inp:focus{border-color:#4fffb0;box-shadow:0 0 0 3px rgba(79,255,176,.1)}
+#chat-inp::placeholder{color:#7a8aaa}
+#chat-send{width:38px;height:38px;border:none;border-radius:10px;background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+#chat-send:hover{filter:brightness(1.1)}
+#chat-send:disabled{opacity:.4;cursor:not-allowed}
+body.light #chat-win{background:#fff;border-color:rgba(0,0,0,.1)}
+body.light #chat-fab{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
+body.light .cmsg.bot .cbubble{background:#f0f4ff;border-color:rgba(0,0,0,.08);color:#0d1117}
+body.light .cmsg.user .cbubble{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
+body.light #chat-inp-row{background:#fff;border-color:rgba(0,0,0,.08)}
+body.light #chat-inp{background:#f5f7ff;border-color:rgba(0,0,0,.1);color:#0d1117}
+body.light #chat-send{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
+body.light .sugg-btn{background:#f5f7ff;border-color:rgba(0,0,0,.1);color:#5a6480}
+body.light #chat-close-btn{background:#f5f7ff;border-color:rgba(0,0,0,.1)}
+body.light .fab-badge{border-color:#fff}
+@media(max-width:480px){#chat-win{width:calc(100vw - 24px);right:12px;bottom:84px}#chat-fab{right:16px;bottom:20px}}
+</style>
+
+<button id="chat-fab" aria-label="Open ISP Assistant">
+  <span id="fab-icon">💬</span>
+  <span class="fab-badge" id="fab-badge">1</span>
+</button>
+
+<div id="chat-win" role="dialog" aria-label="ISP Assistant">
+  <div id="chat-head">
+    <div class="ch-left">
+      <div class="ch-avatar">⚡</div>
+      <div>
+        <div class="ch-name">ISP Assistant</div>
+        <div class="ch-status"><span class="ch-dot"></span><span>Online · Celina Plains</span></div>
+      </div>
+    </div>
+    <button id="chat-close-btn" aria-label="Close">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div id="chat-msgs" role="log" aria-live="polite"></div>
+  <div id="chat-sugg">
+    <button class="sugg-btn" data-q="Which ISP is best in Celina Plains?">Best ISP?</button>
+    <button class="sugg-btn" data-q="What are peak hours?">Peak hours?</button>
+    <button class="sugg-btn" data-q="How do I improve my internet speed?">Improve speed?</button>
+    <button class="sugg-btn" data-q="What is jitter?">What is jitter?</button>
+  </div>
+  <div id="chat-inp-row">
+    <input id="chat-inp" type="text" placeholder="Ask about ISPs in Celina Plains…" autocomplete="off" maxlength="280"/>
+    <button id="chat-send" aria-label="Send">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var SPACE = 'https://keita1421-celinaisp.hf.space';
+
+  var SYS = 'You are a friendly assistant for the Celina Plains ISP Study. Benchmarks: PLDT 85Mbps/40up/18ms | Globe 62/28/24ms | Converge 110/55/15ms | Meridian 45/20/30ms | Cablelink 38/15/35ms. Peak hours 7PM-10PM. Be concise, max 3 sentences. Reply in English or Filipino.';
+
+  var LOCAL = [
+    [/converge/i,'Converge has the highest average download speed at 110 Mbps with the best ping (15ms). It is the top performer among wired ISPs in Celina Plains.'],
+    [/pldt/i,'PLDT averages 85 Mbps download and 40 Mbps upload with an 18ms ping. It is the most balanced ISP in the study.'],
+    [/globe/i,'Globe averages 62 Mbps download and 28 Mbps upload in Celina Plains.'],
+    [/meridian/i,'Meridian averages 45 Mbps download and 20 Mbps upload. Good for basic internet needs.'],
+    [/cablelink/i,'Cablelink averages 38 Mbps download with a 35ms ping — the highest among wired ISPs.'],
+    [/peak|7pm|evening/i,'Peak hours are 7PM–10PM when congestion is highest. Test off-peak for accurate results.'],
+    [/jitter/i,'Jitter is variation in ping over time. Excellent is ≤5ms, Good ≤20ms, Fair ≤50ms, Poor >50ms.'],
+    [/ping|latency/i,'Ping is round-trip response time. Excellent ≤20ms, Good ≤50ms, Fair ≤100ms, Poor >100ms.'],
+    [/improve|slow|fix|boost/i,'Try a wired Ethernet connection, test during off-peak hours, and restart your router. If speeds are still low, consider upgrading your plan.'],
+    [/best|fastest|top/i,'Converge leads in speed (110 Mbps). PLDT is the most balanced overall. The best ISP depends on coverage in your street.'],
+  ];
+
+  var fallback = function(q) {
+    for (var i = 0; i < LOCAL.length; i++) {
+      if (LOCAL[i][0].test(q)) return LOCAL[i][1];
+    }
+    return 'I can help with ISP questions about Celina Plains! Ask me about providers, speed ratings, peak hours, or how to improve your connection.';
+  };
+
+  var isOpen = false, busy = false, history = [];
+
+  var fab    = document.getElementById('chat-fab');
+  var win    = document.getElementById('chat-win');
+  var msgs   = document.getElementById('chat-msgs');
+  var inp    = document.getElementById('chat-inp');
+  var sndBtn = document.getElementById('chat-send');
+  var closeB = document.getElementById('chat-close-btn');
+  var badge  = document.getElementById('fab-badge');
+  var fabIco = document.getElementById('fab-icon');
+  var suggBox= document.getElementById('chat-sugg');
+
+  if (!fab || !win) { console.error('Chatbot elements not found'); return; }
+
+  var ts = function() { return new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}); };
+
+  var addMsg = function(text, role) {
+    var w = document.createElement('div'); w.className = 'cmsg ' + role;
+    var b = document.createElement('div'); b.className = 'cbubble'; b.textContent = text;
+    var t = document.createElement('div'); t.className = 'ctime'; t.textContent = ts();
+    w.appendChild(b); w.appendChild(t); msgs.appendChild(w);
+    msgs.scrollTop = msgs.scrollHeight;
+  };
+
+  var showTyping = function() {
+    var el = document.createElement('div'); el.id = 'typing-ind';
+    el.innerHTML = '<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
+    msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight;
+  };
+  var hideTyping = function() { var el = document.getElementById('typing-ind'); if(el) el.remove(); };
+
+  var callHF = async function(userMsg) {
+    var submitRes = await fetch(SPACE + '/gradio_api/call/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        data: [userMsg, history, SYS, 200, 0.4, 0.9]
+      })
+    });
+    if (!submitRes.ok) throw new Error('Submit failed: ' + submitRes.status);
+    var json = await submitRes.json();
+    var event_id = json.event_id;
+    if (!event_id) throw new Error('No event_id returned');
+
+    var streamRes = await fetch(SPACE + '/gradio_api/call/chat/' + event_id);
+    if (!streamRes.ok) throw new Error('Stream failed: ' + streamRes.status);
+
+    var raw = await streamRes.text();
+    var reply = '';
+    var lines = raw.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith('event: complete')) {
+        for (var j = i + 1; j < lines.length; j++) {
+          if (lines[j].startsWith('data:')) {
+            try {
+              var parsed = JSON.parse(lines[j].slice(5).trim());
+              if (Array.isArray(parsed) && typeof parsed[0] === 'string') {
+                reply = parsed[0];
+              }
+            } catch(e) {}
+            break;
+          }
+        }
+        break;
+      }
+    }
+    if (!reply) throw new Error('Empty response');
+    return reply;
+  };
+
+  var send = async function() {
+    var text = inp.value.trim();
+    if (!text || busy) return;
+    suggBox.style.display = 'none';
+    addMsg(text, 'user');
+    history.push({role:'user', content:text});
+    inp.value = ''; sndBtn.disabled = true; busy = true;
+    showTyping();
+    try {
+      var reply = await callHF(text);
+      hideTyping(); addMsg(reply, 'bot');
+      history.push({role:'assistant', content:reply});
+    } catch(e) {
+      console.error('Chat error:', e);
+      hideTyping();
+      addMsg(fallback(text), 'bot');
+    }
+    sndBtn.disabled = false; busy = false;
+  };
+
+  var openChat = function() {
+    isOpen = true;
+    win.classList.add('open');
+    fabIco.textContent = '✕';
+    badge.classList.add('hide');
+    inp.focus();
+  };
+  var closeChat = function() {
+    isOpen = false;
+    win.classList.remove('open');
+    fabIco.textContent = '💬';
+  };
+
+  fab.addEventListener('click', function() { isOpen ? closeChat() : openChat(); });
+  closeB.addEventListener('click', closeChat);
+  sndBtn.addEventListener('click', send);
+  inp.addEventListener('keydown', function(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
+  document.querySelectorAll('.sugg-btn').forEach(function(b) {
+    b.addEventListener('click', function() { inp.value = b.dataset.q; send(); });
+  });
+
+  setTimeout(function() {
+    addMsg("👋 Hi! I'm the ISP Assistant for Celina Plains. Ask me anything about providers, speed benchmarks, or our research findings!", 'bot');
+  }, 800);
+});
+</script>
+</body>
+</html>

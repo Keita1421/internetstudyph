@@ -1,0 +1,1 @@
+record_id,isp,download_mbps,upload_mbps,ping_ms,jitter_ms,peak_period,connection_type,device_type,service_quality_score,user_satisfaction_score

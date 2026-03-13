@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Celina Plains ISP Study</title>
+  <meta name="description" content="ISP Connectivity Performance in Celina Plains. Compare providers, service quality, and performance metrics." />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/icons/favicon-16x16.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-x: hidden; }
+
+    :root {
+      --bg: #07090f;
+      --bg2: #0c1018;
+      --surface: rgba(255,255,255,0.04);
+      --surface2: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --text: #f0f4ff;
+      --muted: #7a8aaa;
+      --accent: #4fffb0;
+      --accent2: #38c8ff;
+      --accent3: #7c6fff;
+      --glow: rgba(79,255,176,0.2);
+      --glow2: rgba(56,200,255,0.15);
+      --danger: #ff6b6b;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Ambient background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(79,255,176,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(56,200,255,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(124,111,255,0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Grid texture */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7,9,15,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo .logo-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); background: var(--surface2); }
+
+    .nav-cta {
+      background: var(--accent) !important;
+      color: #07090f !important;
+      font-weight: 700 !important;
+      padding: 7px 16px !important;
+      border-radius: 8px !important;
+    }
+
+    .nav-cta:hover { filter: brightness(1.1); background: var(--accent) !important; }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .lang-btn {
+      border: none;
+      background: none;
+      color: var(--muted);
+      font: 500 0.8rem 'DM Sans', sans-serif;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .lang-btn.active {
+      background: var(--accent);
+      color: #07090f;
+      font-weight: 700;
+    }
+
+    .theme-btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font: 500 0.8rem 'DM Sans', sans-serif;
+      padding: 7px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .theme-btn:hover { border-color: var(--border2); color: var(--text); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      border: none;
+      background: none;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* MAIN */
+    main {
+      position: relative;
+      z-index: 1;
+      padding-top: 64px;
+    }
+
+    /* HERO */
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 120px 24px 80px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(79,255,176,0.3);
+      background: rgba(79,255,176,0.06);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 32px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 5vw, 5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    .hero h1 .grad {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto 40px;
+      font-weight: 300;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #07090f;
+      font: 700 1rem 'DM Sans', sans-serif;
+      padding: 14px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 0 30px rgba(79,255,176,0.3);
+    }
+
+    .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 0 40px rgba(79,255,176,0.4); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      color: var(--text);
+      font: 600 1rem 'DM Sans', sans-serif;
+      padding: 14px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: 1px solid var(--border2);
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
+
+    /* STATS BAR */
+    .stats-bar {
+      max-width: 900px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .stat-item {
+      background: var(--bg2);
+      padding: 24px;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+    .stat-item:hover { background: var(--surface2); }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent);
+      display: block;
+    }
+
+    .stat-label { color: var(--muted); font-size: 0.85rem; }
+
+    /* FEATURES */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 48px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .feature-card {
+      background: var(--bg2);
+      padding: 32px 28px;
+      transition: background 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feature-card:hover { background: var(--surface2); }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .feature-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .feature-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+    /* ISP LOGOS ROW */
+    .isp-row {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .isp-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .isp-chip {
+      border: 1px solid var(--border2);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 999px;
+      transition: all 0.2s;
+    }
+
+    .isp-chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(79,255,176,0.06); }
+
+    /* CTA BANNER */
+    .cta-banner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 100px;
+    }
+
+    .cta-inner {
+      background: linear-gradient(135deg, rgba(79,255,176,0.08) 0%, rgba(56,200,255,0.06) 50%, rgba(124,111,255,0.06) 100%);
+      border: 1px solid rgba(79,255,176,0.2);
+      border-radius: 24px;
+      padding: 60px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at center, rgba(79,255,176,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .cta-inner h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .cta-inner p { color: var(--muted); margin-bottom: 32px; font-size: 1rem; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--bg2);
+      padding: 48px 24px 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    .footer-brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .footer-brand-sub { color: var(--muted); font-size: 0.85rem; max-width: 260px; }
+
+    .footer-links-col h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .footer-links-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .footer-links-col a { color: var(--muted); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+    .footer-links-col a:hover { color: var(--accent); }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 32px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* LIGHT MODE */
+    body.light {
+      --bg: #f5f7ff;
+      --bg2: #eef1fb;
+      --surface: rgba(0,0,0,0.03);
+      --surface2: rgba(0,0,0,0.06);
+      --border: rgba(0,0,0,0.08);
+      --border2: rgba(0,0,0,0.14);
+      --text: #0d1117;
+      --muted: #5a6480;
+      --accent: #00a86b;
+      --accent2: #0077cc;
+      --accent3: #5c4dcc;
+      --glow: rgba(0,168,107,0.2);
+    }
+
+    body.light::before {
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0,168,107,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(0,119,204,0.05) 0%, transparent 55%);
+    }
+
+    body.light::after {
+      background-image: linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    body.light nav { background: rgba(245,247,255,0.9); }
+    body.light .feature-card { background: #fff; }
+    body.light .feature-card:hover { background: #f0f4ff; }
+    body.light .stat-item { background: #fff; }
+    body.light .stat-item:hover { background: #f0f4ff; }
+    body.light .btn-primary { color: #fff; background: var(--accent); }
+    body.light .isp-chip { background: #fff; }
+    body.light .cta-inner { background: linear-gradient(135deg, rgba(0,168,107,0.06) 0%, rgba(0,119,204,0.04) 100%); }
+
+    /* NAV MOBILE */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px; left: 0; right: 0;
+      background: rgba(7,9,15,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      z-index: 99;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    body.light .mobile-menu { background: rgba(245,247,255,0.97); }
+
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--muted); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1rem; font-weight: 500; }
+    .mobile-menu a:last-child { border: none; }
+    .mobile-menu a:hover { color: var(--text); }
+    .mobile-theme-btn { width: 100%; margin-top: 10px; justify-content: center; }
+
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-links { display: none; }
+      .nav-controls { display: none; }
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-bar { grid-template-columns: 1fr; }
+      .hero { padding: 80px 20px 60px; }
+      .hero h1 { font-size: 2.4rem; }
+      .footer-inner { flex-direction: column; gap: 32px; }
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero > * { animation: fadeUp 0.6s ease both; }
+    .hero-badge { animation-delay: 0.1s; }
+    .hero h1 { animation-delay: 0.2s; }
+    .hero p { animation-delay: 0.3s; }
+    .hero-actions { animation-delay: 0.4s; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span class="logo-dot"></span>
+      CelinaISP
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="study.html#info" data-i18n="nav.info">Info</a></li>
+      <li><a href="study.html#research" data-i18n="nav.research">Researcher</a></li>
+      <li><a href="study.html#contact" data-i18n="nav.contact">Contact</a></li>
+      <li><a href="results.html" data-i18n="nav.results">Community</a></li>
+      <li><a href="hosted.html" class="nav-cta" data-i18n="nav.test">Run Test</a></li>
+    </ul>
+    <div class="nav-controls">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="tl">TL</button>
+      </div>
+      <button class="theme-btn" id="themeBtn">☀ Light</button>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" data-i18n="nav.home">Home</a>
+    <a href="study.html#info" data-i18n="nav.info">Info</a>
+    <a href="study.html#research" data-i18n="nav.research">Researcher</a>
+    <a href="study.html#contact" data-i18n="nav.contact">Contact</a>
+    <a href="results.html" data-i18n="nav.results">Community Results</a>
+    <a href="hosted.html" data-i18n="nav.test">Run Speed Test →</a>
+    <button class="theme-btn mobile-theme-btn" id="mobileThemeBtn" type="button">☀ Light</button>
+  </div>
+
+  <main>
+    <section class="hero">
+      <div class="hero-badge" data-i18n="hero.badge">Celina Plains Research Study</div>
+      <h1><span class="grad" data-i18n="hero.title1">ISP Connectivity</span><br data-i18n="hero.title2"> Performance Study</h1>
+      <p data-i18n="hero.subtitle">A comparative correlational study of internet service providers, combining technical metrics and service quality feedback from residents.</p>
+      <div class="hero-actions">
+        <a href="hosted.html" class="btn-primary" data-i18n="hero.cta">⚡ Start Speed Test</a>
+        <a href="study.html" class="btn-secondary" data-i18n="hero.secondary">View Research →</a>
+      </div>
+    </section>
+
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-num" data-i18n="stat.models">2</span>
+        <span class="stat-label" data-i18n="stat.modelsLabel">Research Frameworks</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" data-i18n="stat.isps">5+</span>
+        <span class="stat-label" data-i18n="stat.ispsLabel">ISPs Studied</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num" data-i18n="stat.respondents">100</span>
+        <span class="stat-label" data-i18n="stat.respondentsLabel">Resident Respondents</span>
+      </div>
+    </div>
+
+    <section class="section" id="features">
+      <div class="section-label" data-i18n="features.label">What We Study</div>
+      <h2 class="section-title" data-i18n="features.title">Built on Real Research</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">📊</span>
+          <h3 data-i18n="features.f1Title">ISP Comparison</h3>
+          <p data-i18n="features.f1Desc">Compare PLDT, Globe, Converge, Meridian, and Cablelink using consistent performance indicators measured in Celina Plains.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🛠️</span>
+          <h3 data-i18n="features.f2Title">Service Quality (SERVQUAL)</h3>
+          <p data-i18n="features.f2Desc">Evaluate reliability, responsiveness, assurance, empathy, and tangibles using direct resident feedback.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📡</span>
+          <h3 data-i18n="features.f3Title">Performance Metrics</h3>
+          <p data-i18n="features.f3Desc">Measure download, upload, latency, and jitter during peak and off-peak hours for accurate benchmarks.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🏆</span>
+          <h3 data-i18n="features.f4Title">How You Compare</h3>
+          <p data-i18n="features.f4Desc">Submit your speed results and instantly see how you stack up against our Celina Plains study averages per ISP.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🌐</span>
+          <h3 data-i18n="features.f5Title">Community Dashboard</h3>
+          <p data-i18n="features.f5Desc">Live charts from community-submitted results, filterable by ISP, connection type, and time of day.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">⏱️</span>
+          <h3 data-i18n="features.f6Title">Peak Hour Detection</h3>
+          <p data-i18n="features.f6Desc">Automatically detects if you're testing during peak hours (7–10PM) and factors it into your analysis.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="isp-row">
+      <div class="section-label" data-i18n="isps.label">Providers Covered</div>
+      <h2 class="section-title" data-i18n="isps.title">ISPs in This Study</h2>
+      <div class="isp-chips">
+        <span class="isp-chip" style="border-color:#3b82f6;color:#3b82f6">🔵 PLDT <small style="opacity:.6;font-weight:400">Fiber/DSL</small></span>
+        <span class="isp-chip" style="border-color:#ef4444;color:#ef4444">🔴 Globe <small style="opacity:.6;font-weight:400">Fiber</small></span>
+        <span class="isp-chip" style="border-color:#10b981;color:#10b981">🟢 Converge <small style="opacity:.6;font-weight:400">Fiber</small></span>
+        <span class="isp-chip" style="border-color:#f59e0b;color:#f59e0b">🟡 Meridian <small style="opacity:.6;font-weight:400">Cable</small></span>
+        <span class="isp-chip" style="border-color:#8b5cf6;color:#8b5cf6">🟣 Cablelink <small style="opacity:.6;font-weight:400">Cable</small></span>
+        <span class="isp-chip" style="border-color:#14b8a6;color:#14b8a6">📡 Sky Broadband <small style="opacity:.6;font-weight:400">Cable</small></span>
+      </div>
+    </section>
+
+    <section class="cta-banner">
+      <div class="cta-inner">
+        <h2 data-i18n="cta.title">See How Your Connection Compares</h2>
+        <p data-i18n="cta.desc">Run a speed test on SpeedTestGo, enter your results, and get an instant analysis against our research benchmarks.</p>
+        <a href="hosted.html" class="btn-primary" data-i18n="cta.btn">⚡ Start Now — It's Free</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">CelinaISP Study</div>
+        <div class="footer-brand-sub" data-i18n="footer.desc">ISP Connectivity Performance Research in Celina Plains Subdivision, Philippines.</div>
+      </div>
+      <div class="footer-links-col">
+        <h4 data-i18n="footer.pages">Pages</h4>
+        <ul>
+          <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+          <li><a href="study.html" data-i18n="nav.info">Study Details</a></li>
+          <li><a href="hosted.html" data-i18n="nav.test">Run Test</a></li>
+          <li><a href="results.html" data-i18n="nav.results">Community</a></li>
+        </ul>
+      </div>
+      <div class="footer-links-col">
+        <h4 data-i18n="footer.study">Study</h4>
+        <ul>
+          <li><a href="study.html#info" data-i18n="nav.info">Info</a></li>
+          <li><a href="study.html#research" data-i18n="nav.research">Researchers</a></li>
+          <li><a href="study.html#contact" data-i18n="nav.contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Celina Plains ISP Study. All rights reserved.</span>
+      <span data-i18n="footer.locale">Celina Plains, Philippines</span>
+    </div>
+  </footer>
+
+  <script>
+    // Theme
+    const themeBtn = document.getElementById('themeBtn');
+    const mobileThemeBtn = document.getElementById('mobileThemeBtn');
+    const setThemeButtonLabel = (t) => {
+      const label = t === 'light' ? '🌙 Dark' : '☀ Light';
+      themeBtn.textContent = label;
+      if (mobileThemeBtn) mobileThemeBtn.textContent = label;
+    };
+    const applyTheme = (t) => {
+      document.body.classList.toggle('light', t === 'light');
+      setThemeButtonLabel(t);
+      localStorage.setItem('theme', t);
+    };
+    const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    applyTheme(savedTheme);
+    themeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light') ? 'dark' : 'light'));
+    if (mobileThemeBtn) {
+      mobileThemeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light') ? 'dark' : 'light'));
+    }
+
+    // Mobile menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    document.addEventListener('click', (e) => { if (!e.target.closest('nav') && !e.target.closest('.mobile-menu')) mobileMenu.classList.remove('open'); });
+
+    // Language
+    const translations = {
+      en: {
+        'nav.home': 'Home', 'nav.info': 'Info', 'nav.research': 'Researcher',
+        'nav.contact': 'Contact', 'nav.results': 'Community', 'nav.test': 'Run Test',
+        'hero.badge': 'Celina Plains Research Study',
+        'hero.title1': 'ISP Connectivity', 'hero.title2': ' Performance Study',
+        'hero.subtitle': 'A comparative correlational study of internet service providers, combining technical metrics and service quality feedback from residents.',
+        'hero.cta': '⚡ Start Speed Test', 'hero.secondary': 'View Research →',
+        'stat.models': '2', 'stat.modelsLabel': 'Research Frameworks',
+        'stat.isps': '5+', 'stat.ispsLabel': 'ISPs Studied',
+        'stat.respondents': '100', 'stat.respondentsLabel': 'Resident Respondents',
+        'features.label': 'What We Study', 'features.title': 'Built on Real Research',
+        'features.f1Title': 'ISP Comparison', 'features.f1Desc': 'Compare PLDT, Globe, Converge, Meridian, and Cablelink using consistent performance indicators measured in Celina Plains.',
+        'features.f2Title': 'Service Quality (SERVQUAL)', 'features.f2Desc': 'Evaluate reliability, responsiveness, assurance, empathy, and tangibles using direct resident feedback.',
+        'features.f3Title': 'Performance Metrics', 'features.f3Desc': 'Measure download, upload, latency, and jitter during peak and off-peak hours for accurate benchmarks.',
+        'features.f4Title': 'How You Compare', 'features.f4Desc': 'Submit your speed results and instantly see how you stack up against our Celina Plains study averages per ISP.',
+        'features.f5Title': 'Community Dashboard', 'features.f5Desc': 'Live charts from community-submitted results, filterable by ISP, connection type, and time of day.',
+        'features.f6Title': 'Peak Hour Detection', 'features.f6Desc': 'Automatically detects if you\'re testing during peak hours (7–10PM) and factors it into your analysis.',
+        'isps.label': 'Providers Covered', 'isps.title': 'ISPs in This Study',
+        'cta.title': 'See How Your Connection Compares',
+        'cta.desc': 'Run a speed test on SpeedTestGo, enter your results, and get an instant analysis against our research benchmarks.',
+        'cta.btn': '⚡ Start Now — It\'s Free',
+        'footer.desc': 'ISP Connectivity Performance Research in Celina Plains Subdivision, Philippines.',
+        'footer.pages': 'Pages', 'footer.study': 'Study', 'footer.locale': 'Celina Plains, Philippines'
+      },
+      tl: {
+        'nav.home': 'Bahay', 'nav.info': 'Impormasyon', 'nav.research': 'Mananaliksik',
+        'nav.contact': 'Makipag-ugnayan', 'nav.results': 'Komunidad', 'nav.test': 'Mag-test',
+        'hero.badge': 'Pananaliksik sa Celina Plains',
+        'hero.title1': 'Pagganap ng ISP', 'hero.title2': ' Pag-aaral',
+        'hero.subtitle': 'Isang komparatibong korelasyonal na pag-aaral ng mga ISP gamit ang teknikal na sukatan at feedback ng mga residente.',
+        'hero.cta': '⚡ Simulan ang Speed Test', 'hero.secondary': 'Tingnan ang Pananaliksik →',
+        'stat.models': '2', 'stat.modelsLabel': 'Mga Framework',
+        'stat.isps': '5+', 'stat.ispsLabel': 'Mga ISP na Sinuri',
+        'stat.respondents': '100', 'stat.respondentsLabel': 'Mga Respondent',
+        'features.label': 'Ano ang Sinisuri', 'features.title': 'Batay sa Tunay na Pananaliksik',
+        'features.f1Title': 'Paghahambing ng ISP', 'features.f1Desc': 'Ihambing ang PLDT, Globe, Converge, Meridian, at Cablelink gamit ang iisang sukatan sa Celina Plains.',
+        'features.f2Title': 'Kalidad ng Serbisyo (SERVQUAL)', 'features.f2Desc': 'Sinusukat ang reliability, responsiveness, assurance, empathy, at tangibles.',
+        'features.f3Title': 'Mga Sukatan ng Performance', 'features.f3Desc': 'Sinusukat ang download, upload, latency, at jitter sa peak at off-peak hours.',
+        'features.f4Title': 'Paano Ka Kumpara', 'features.f4Desc': 'Isumite ang iyong resulta at agad makita kung paano ito kumpara sa aming mga benchmark.',
+        'features.f5Title': 'Community Dashboard', 'features.f5Desc': 'Live charts mula sa mga resulta ng komunidad, mafi-filter sa ISP, uri ng koneksyon, at oras.',
+        'features.f6Title': 'Pag-detect ng Peak Hour', 'features.f6Desc': 'Awtomatikong dine-detect kung nagta-test ka sa peak hours (7–10PM).',
+        'isps.label': 'Mga Provider', 'isps.title': 'Mga ISP sa Pag-aaral',
+        'cta.title': 'Tingnan Kung Paano ang Iyong Koneksyon',
+        'cta.desc': 'Mag-test sa SpeedTestGo, ilagay ang iyong resulta, at makakuha ng agarang pagsusuri.',
+        'cta.btn': '⚡ Magsimula — Libre',
+        'footer.desc': 'Pananaliksik sa Pagganap ng ISP sa Celina Plains Subdivision, Pilipinas.',
+        'footer.pages': 'Mga Pahina', 'footer.study': 'Pag-aaral', 'footer.locale': 'Celina Plains, Pilipinas'
+      }
+    };
+
+    let lang = localStorage.getItem('lang') || 'en';
+    const applyLang = (l) => {
+      lang = l;
+      localStorage.setItem('lang', l);
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const k = el.getAttribute('data-i18n');
+        if (translations[l] && translations[l][k]) el.textContent = translations[l][k];
+      });
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === l));
+    };
+    applyLang(lang);
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => applyLang(btn.dataset.lang)));
+  </script>
+<!-- ISP ASSISTANT CHATBOT -->
+<style>
+#chat-fab{position:fixed;bottom:28px;right:28px;z-index:9999;width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(79,255,176,0.4);font-size:1.3rem;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+#chat-fab:hover{transform:scale(1.12)}
+#chat-fab .fab-badge{position:absolute;top:2px;right:2px;background:#ff6b6b;color:#fff;font-size:.6rem;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #07090f}
+#chat-fab .fab-badge.hide{display:none}
+#chat-win{position:fixed;bottom:96px;right:28px;z-index:9998;width:360px;max-height:580px;display:flex;flex-direction:column;background:#0c1018;border:1px solid rgba(255,255,255,.14);border-radius:20px;overflow:hidden;box-shadow:0 32px 64px rgba(0,0,0,.55);transform:scale(.92) translateY(16px);opacity:0;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .25s;font-family:'DM Sans',sans-serif}
+#chat-win.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+#chat-head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:linear-gradient(135deg,rgba(79,255,176,.1),rgba(56,200,255,.07));border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.ch-left{display:flex;align-items:center;gap:10px}
+.ch-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#4fffb0,#38c8ff);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.ch-name{font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;color:#f0f4ff}
+.ch-status{display:flex;align-items:center;gap:5px;font-size:.72rem;color:#7a8aaa;margin-top:1px}
+.ch-dot{width:7px;height:7px;border-radius:50%;background:#4fffb0;box-shadow:0 0 6px #4fffb0;display:inline-block;animation:pulse 2s infinite}
+#chat-close-btn{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#7a8aaa;border-radius:8px;padding:6px;cursor:pointer;display:flex;align-items:center;transition:all .2s}
+#chat-close-btn:hover{color:#f0f4ff}
+#chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:11px;min-height:220px;scroll-behavior:smooth}
+#chat-msgs::-webkit-scrollbar{width:3px}
+#chat-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:4px}
+.cmsg{display:flex;flex-direction:column;max-width:84%;animation:msgIn .22s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.cmsg.bot{align-self:flex-start}.cmsg.user{align-self:flex-end}
+.cbubble{padding:10px 13px;border-radius:14px;font-size:.875rem;line-height:1.55}
+.cmsg.bot .cbubble{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);color:#f0f4ff;border-bottom-left-radius:4px}
+.cmsg.user .cbubble{background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;font-weight:500;border-bottom-right-radius:4px}
+.ctime{font-size:.67rem;color:#7a8aaa;margin-top:3px;padding:0 3px}
+.cmsg.user .ctime{text-align:right}
+#typing-ind{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:14px;border-bottom-left-radius:4px;padding:11px 15px;display:flex;gap:5px;align-items:center;align-self:flex-start}
+.tdot{width:7px;height:7px;border-radius:50%;background:#7a8aaa;animation:tdot 1.2s infinite ease}
+.tdot:nth-child(2){animation-delay:.18s}.tdot:nth-child(3){animation-delay:.36s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+#chat-sugg{display:flex;gap:6px;padding:0 12px 10px;overflow-x:auto;flex-shrink:0}
+#chat-sugg::-webkit-scrollbar{display:none}
+.sugg-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#7a8aaa;font:500 .73rem 'DM Sans',sans-serif;padding:5px 11px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.sugg-btn:hover{border-color:#4fffb0;color:#4fffb0}
+#chat-inp-row{display:flex;gap:8px;padding:11px 13px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0;background:#0c1018}
+#chat-inp{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#f0f4ff;font:400 .88rem 'DM Sans',sans-serif;padding:9px 12px;outline:none;transition:border-color .2s}
+#chat-inp:focus{border-color:#4fffb0;box-shadow:0 0 0 3px rgba(79,255,176,.1)}
+#chat-inp::placeholder{color:#7a8aaa}
+#chat-send{width:38px;height:38px;border:none;border-radius:10px;background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+#chat-send:hover{filter:brightness(1.1)}
+#chat-send:disabled{opacity:.4;cursor:not-allowed}
+body.light #chat-win{background:#fff;border-color:rgba(0,0,0,.1)}
+body.light #chat-fab{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
+body.light .cmsg.bot .cbubble{background:#f0f4ff;border-color:rgba(0,0,0,.08);color:#0d1117}
+body.light .cmsg.user .cbubble{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
+body.light #chat-inp-row{background:#fff;border-color:rgba(0,0,0,.08)}
+body.light #chat-inp{background:#f5f7ff;border-color:rgba(0,0,0,.1);color:#0d1117}
+body.light #chat-send{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
+body.light .sugg-btn{background:#f5f7ff;border-color:rgba(0,0,0,.1);color:#5a6480}
+body.light #chat-close-btn{background:#f5f7ff;border-color:rgba(0,0,0,.1)}
+body.light .fab-badge{border-color:#fff}
+@media(max-width:480px){#chat-win{width:calc(100vw - 24px);right:12px;bottom:84px}#chat-fab{right:16px;bottom:20px}}
+</style>
+
+<button id="chat-fab" aria-label="Open ISP Assistant">
+  <span id="fab-icon">💬</span>
+  <span class="fab-badge" id="fab-badge">1</span>
+</button>
+
+<div id="chat-win" role="dialog" aria-label="ISP Assistant">
+  <div id="chat-head">
+    <div class="ch-left">
+      <div class="ch-avatar">⚡</div>
+      <div>
+        <div class="ch-name">ISP Assistant</div>
+        <div class="ch-status"><span class="ch-dot"></span><span>Online · Celina Plains</span></div>
+      </div>
+    </div>
+    <button id="chat-close-btn" aria-label="Close">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div id="chat-msgs" role="log" aria-live="polite"></div>
+  <div id="chat-sugg">
+    <button class="sugg-btn" data-q="Which ISP is best in Celina Plains?">Best ISP?</button>
+    <button class="sugg-btn" data-q="What are peak hours?">Peak hours?</button>
+    <button class="sugg-btn" data-q="How do I improve my internet speed?">Improve speed?</button>
+    <button class="sugg-btn" data-q="What is jitter?">What is jitter?</button>
+  </div>
+  <div id="chat-inp-row">
+    <input id="chat-inp" type="text" placeholder="Ask about ISPs in Celina Plains…" autocomplete="off" maxlength="280"/>
+    <button id="chat-send" aria-label="Send">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var SPACE = 'https://keita1421-celinaisp.hf.space';
+
+  var SYS = 'You are a friendly assistant for the Celina Plains ISP Study. Benchmarks: PLDT 85Mbps/40up/18ms | Globe 62/28/24ms | Converge 110/55/15ms | Meridian 45/20/30ms | Cablelink 38/15/35ms. Peak hours 7PM-10PM. Be concise, max 3 sentences. Reply in English or Filipino.';
+
+  var LOCAL = [
+    [/converge/i,'Converge has the highest average download speed at 110 Mbps with the best ping (15ms). It is the top performer among wired ISPs in Celina Plains.'],
+    [/pldt/i,'PLDT averages 85 Mbps download and 40 Mbps upload with an 18ms ping. It is the most balanced ISP in the study.'],
+    [/globe/i,'Globe averages 62 Mbps download and 28 Mbps upload in Celina Plains.'],
+    [/meridian/i,'Meridian averages 45 Mbps download and 20 Mbps upload. Good for basic internet needs.'],
+    [/cablelink/i,'Cablelink averages 38 Mbps download with a 35ms ping — the highest among wired ISPs.'],
+    [/peak|7pm|evening/i,'Peak hours are 7PM–10PM when congestion is highest. Test off-peak for accurate results.'],
+    [/jitter/i,'Jitter is variation in ping over time. Excellent is ≤5ms, Good ≤20ms, Fair ≤50ms, Poor >50ms.'],
+    [/ping|latency/i,'Ping is round-trip response time. Excellent ≤20ms, Good ≤50ms, Fair ≤100ms, Poor >100ms.'],
+    [/improve|slow|fix|boost/i,'Try a wired Ethernet connection, test during off-peak hours, and restart your router. If speeds are still low, consider upgrading your plan.'],
+    [/best|fastest|top/i,'Converge leads in speed (110 Mbps). PLDT is the most balanced overall. The best ISP depends on coverage in your street.'],
+  ];
+
+  var fallback = function(q) {
+    for (var i = 0; i < LOCAL.length; i++) {
+      if (LOCAL[i][0].test(q)) return LOCAL[i][1];
+    }
+    return 'I can help with ISP questions about Celina Plains! Ask me about providers, speed ratings, peak hours, or how to improve your connection.';
+  };
+
+  var isOpen = false, busy = false, history = [];
+
+  var fab    = document.getElementById('chat-fab');
+  var win    = document.getElementById('chat-win');
+  var msgs   = document.getElementById('chat-msgs');
+  var inp    = document.getElementById('chat-inp');
+  var sndBtn = document.getElementById('chat-send');
+  var closeB = document.getElementById('chat-close-btn');
+  var badge  = document.getElementById('fab-badge');
+  var fabIco = document.getElementById('fab-icon');
+  var suggBox= document.getElementById('chat-sugg');
+
+  if (!fab || !win) { console.error('Chatbot elements not found'); return; }
+
+  var ts = function() { return new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}); };
+
+  var addMsg = function(text, role) {
+    var w = document.createElement('div'); w.className = 'cmsg ' + role;
+    var b = document.createElement('div'); b.className = 'cbubble'; b.textContent = text;
+    var t = document.createElement('div'); t.className = 'ctime'; t.textContent = ts();
+    w.appendChild(b); w.appendChild(t); msgs.appendChild(w);
+    msgs.scrollTop = msgs.scrollHeight;
+  };
+
+  var showTyping = function() {
+    var el = document.createElement('div'); el.id = 'typing-ind';
+    el.innerHTML = '<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
+    msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight;
+  };
+  var hideTyping = function() { var el = document.getElementById('typing-ind'); if(el) el.remove(); };
+
+  var callHF = async function(userMsg) {
+    var submitRes = await fetch(SPACE + '/gradio_api/call/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        data: [userMsg, history, SYS, 200, 0.4, 0.9]
+      })
+    });
+    if (!submitRes.ok) throw new Error('Submit failed: ' + submitRes.status);
+    var json = await submitRes.json();
+    var event_id = json.event_id;
+    if (!event_id) throw new Error('No event_id returned');
+
+    var streamRes = await fetch(SPACE + '/gradio_api/call/chat/' + event_id);
+    if (!streamRes.ok) throw new Error('Stream failed: ' + streamRes.status);
+
+    var raw = await streamRes.text();
+    var reply = '';
+    var lines = raw.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith('event: complete')) {
+        for (var j = i + 1; j < lines.length; j++) {
+          if (lines[j].startsWith('data:')) {
+            try {
+              var parsed = JSON.parse(lines[j].slice(5).trim());
+              if (Array.isArray(parsed) && typeof parsed[0] === 'string') {
+                reply = parsed[0];
+              }
+            } catch(e) {}
+            break;
+          }
+        }
+        break;
+      }
+    }
+    if (!reply) throw new Error('Empty response');
+    return reply;
+  };
+
+  var send = async function() {
+    var text = inp.value.trim();
+    if (!text || busy) return;
+    suggBox.style.display = 'none';
+    addMsg(text, 'user');
+    history.push({role:'user', content:text});
+    inp.value = ''; sndBtn.disabled = true; busy = true;
+    showTyping();
+    try {
+      var reply = await callHF(text);
+      hideTyping(); addMsg(reply, 'bot');
+      history.push({role:'assistant', content:reply});
+    } catch(e) {
+      console.error('Chat error:', e);
+      hideTyping();
+      addMsg(fallback(text), 'bot');
+    }
+    sndBtn.disabled = false; busy = false;
+  };
+
+  var openChat = function() {
+    isOpen = true;
+    win.classList.add('open');
+    fabIco.textContent = '✕';
+    badge.classList.add('hide');
+    inp.focus();
+  };
+  var closeChat = function() {
+    isOpen = false;
+    win.classList.remove('open');
+    fabIco.textContent = '💬';
+  };
+
+  fab.addEventListener('click', function() { isOpen ? closeChat() : openChat(); });
+  closeB.addEventListener('click', closeChat);
+  sndBtn.addEventListener('click', send);
+  inp.addEventListener('keydown', function(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
+  document.querySelectorAll('.sugg-btn').forEach(function(b) {
+    b.addEventListener('click', function() { inp.value = b.dataset.q; send(); });
+  });
+
+  setTimeout(function() {
+    addMsg("👋 Hi! I'm the ISP Assistant for Celina Plains. Ask me anything about providers, speed benchmarks, or our research findings!", 'bot');
+  }, 800);
+});
+</script>
+</body>
+</html>

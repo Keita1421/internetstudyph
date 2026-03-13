@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Details — Celina Plains ISP Study</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #07090f;
+      --bg2: #0c1018;
+      --surface: rgba(255,255,255,0.04);
+      --surface2: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --text: #f0f4ff;
+      --muted: #7a8aaa;
+      --accent: #4fffb0;
+      --accent2: #38c8ff;
+      --accent3: #7c6fff;
+      --glow: rgba(79,255,176,0.2);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(79,255,176,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(56,200,255,0.06) 0%, transparent 55%);
+      pointer-events: none; z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none; z-index: 0;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 24px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(7,9,15,0.85);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem;
+      color: var(--text); text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .nav-logo .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+
+    .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; padding: 6px 12px; border-radius: 8px; transition: color 0.2s, background 0.2s; }
+    .nav-links a:hover { color: var(--text); background: var(--surface2); }
+    .nav-cta { background: var(--accent) !important; color: #07090f !important; font-weight: 700 !important; padding: 7px 16px !important; border-radius: 8px !important; }
+    .nav-cta:hover { filter: brightness(1.1); background: var(--accent) !important; }
+
+    .nav-controls { display: flex; align-items: center; gap: 8px; }
+    .lang-toggle { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 2px; }
+    .lang-btn { border: none; background: none; color: var(--muted); font: 500 0.8rem 'DM Sans', sans-serif; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .lang-btn.active { background: var(--accent); color: #07090f; font-weight: 700; }
+    .theme-btn { border: 1px solid var(--border); background: var(--surface); color: var(--muted); font: 500 0.8rem 'DM Sans', sans-serif; padding: 7px 12px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .theme-btn:hover { border-color: var(--border2); color: var(--text); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; border: none; background: none; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
+    .mobile-menu { display: none; position: fixed; top: 64px; left: 0; right: 0; background: rgba(7,9,15,0.97); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 16px 24px; z-index: 99; flex-direction: column; gap: 4px; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--muted); text-decoration: none; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 1rem; font-weight: 500; }
+    .mobile-menu a:last-child { border: none; }
+    .mobile-theme-btn { width: 100%; margin-top: 10px; justify-content: center; }
+
+    main { position: relative; z-index: 1; padding-top: 64px; max-width: 1100px; margin: 0 auto; padding-left: 24px; padding-right: 24px; padding-bottom: 80px; }
+
+    .page-hero { padding: 60px 0 48px; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
+    .section-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+    .page-hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 12px; }
+    .page-hero p { color: var(--muted); font-size: 1rem; max-width: 600px; }
+
+    .quick-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+    .quick-nav a { border: 1px solid var(--border2); background: var(--surface); color: var(--muted); text-decoration: none; font-size: 0.85rem; font-weight: 600; padding: 7px 16px; border-radius: 999px; transition: all 0.2s; }
+    .quick-nav a:hover { border-color: var(--accent); color: var(--accent); background: rgba(79,255,176,0.05); }
+
+    /* Overview cards */
+    .overview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 60px; }
+    .overview-card { background: var(--bg2); padding: 28px 24px; transition: background 0.2s; }
+    .overview-card:hover { background: var(--surface2); }
+    .overview-card h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .overview-card p { color: var(--muted); font-size: 0.88rem; }
+
+    /* Tabs */
+    .tabs-wrap { margin-bottom: 60px; }
+    .section-title { font-family: 'Syne', sans-serif; font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 20px; }
+
+    .tab-list { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 2px; }
+    .tab-btn { border: 1px solid var(--border); background: var(--surface); color: var(--muted); font: 600 0.85rem 'DM Sans', sans-serif; padding: 9px 18px; border-radius: 10px 10px 0 0; cursor: pointer; transition: all 0.2s; border-bottom: none; }
+    .tab-btn:hover { color: var(--text); border-color: var(--border2); }
+    .tab-btn.active { background: var(--bg2); color: var(--accent); border-color: var(--border2); border-bottom-color: var(--bg2); }
+
+    .tab-body { background: var(--bg2); border: 1px solid var(--border2); border-radius: 0 12px 12px 12px; padding: 28px; min-height: 180px; }
+    .tab-panel { display: none; animation: fadeUp 0.3s ease; }
+    .tab-panel.active { display: block; }
+
+    .tab-panel h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+    .tab-panel > p { color: var(--muted); font-size: 0.9rem; margin-bottom: 20px; }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+    .mini-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; transition: border-color 0.2s; }
+    .mini-card:hover { border-color: var(--border2); }
+    .mini-card h3 { font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; }
+    .mini-card p { color: var(--muted); font-size: 0.83rem; line-height: 1.5; }
+    .mini-card a { display: inline-block; margin-top: 8px; color: var(--accent); font-size: 0.82rem; font-weight: 600; text-decoration: none; }
+    .mini-card a:hover { text-decoration: underline; }
+
+    /* Stats row */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 60px; }
+    .stat-box { background: var(--bg2); padding: 24px; text-align: center; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--accent); display: block; }
+    .stat-lbl { color: var(--muted); font-size: 0.82rem; }
+
+    /* Objectives */
+    .objectives-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 60px; }
+    .objectives-list li { display: flex; align-items: flex-start; gap: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; font-size: 0.92rem; transition: border-color 0.2s; }
+    .objectives-list li:hover { border-color: var(--border2); }
+    .objectives-list li::before { content: counter(obj); counter-increment: obj; min-width: 24px; height: 24px; background: var(--accent); color: #07090f; font-weight: 800; font-family: 'Syne', sans-serif; font-size: 0.75rem; border-radius: 50%; display: grid; place-items: center; }
+    .objectives-list { counter-reset: obj; }
+
+    /* Team */
+    .team-section { margin-bottom: 60px; }
+    .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
+    .team-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 24px 20px; text-align: center; transition: all 0.2s; }
+    .team-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .team-card img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border2); margin-bottom: 12px; }
+    .team-card h3 { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .team-card .role { color: var(--accent); font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+    .team-card .contact { color: var(--muted); font-size: 0.8rem; line-height: 1.6; }
+    .team-card .contact a { color: var(--accent2); text-decoration: none; }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); background: var(--bg2); padding: 40px 24px 28px; position: relative; z-index: 1; }
+    .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; flex-wrap: wrap; }
+    .footer-brand { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--text); margin-bottom: 6px; }
+    .footer-brand-sub { color: var(--muted); font-size: 0.83rem; max-width: 240px; }
+    .footer-links-col h4 { font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .footer-links-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .footer-links-col a { color: var(--muted); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+    .footer-links-col a:hover { color: var(--accent); }
+    .footer-bottom { max-width: 1100px; margin: 24px auto 0; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+    /* Light mode */
+    body.light {
+      --bg: #f5f7ff; --bg2: #eef1fb; --surface: rgba(0,0,0,0.03); --surface2: rgba(0,0,0,0.06);
+      --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.14); --text: #0d1117; --muted: #5a6480;
+      --accent: #00a86b; --accent2: #0077cc; --accent3: #5c4dcc;
+    }
+    body.light::before { background: radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0,168,107,0.05) 0%, transparent 60%); }
+    body.light::after { background-image: linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px); background-size: 60px 60px; }
+    body.light nav { background: rgba(245,247,255,0.9); }
+    body.light .overview-card, body.light .mini-card, body.light .team-card { background: #fff; }
+    body.light .tab-body, body.light .stat-box { background: #fff; }
+    body.light .tab-btn.active { background: #fff; }
+    body.light .mobile-menu { background: rgba(245,247,255,0.97); }
+    body.light footer { background: #eef1fb; }
+
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-links { display: none; }
+      .nav-controls { display: none; }
+      .overview-grid, .stats-row { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: repeat(2, 1fr); }
+      .tab-list { gap: 3px; }
+      .tab-btn { font-size: 0.78rem; padding: 7px 12px; }
+    }
+
+    @media (max-width: 480px) {
+      .team-grid { grid-template-columns: 1fr; }
+    }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="nav-logo"><span class="logo-dot"></span>CelinaISP</a>
+    <ul class="nav-links">
+      <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="#info" data-i18n="nav.info">Info</a></li>
+      <li><a href="#research" data-i18n="nav.research">Researcher</a></li>
+      <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+      <li><a href="results.html" data-i18n="nav.results">Community</a></li>
+      <li><a href="hosted.html" class="nav-cta" data-i18n="nav.test">Run Test</a></li>
+    </ul>
+    <div class="nav-controls">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="tl">TL</button>
+      </div>
+      <button class="theme-btn" id="themeBtn">☀ Light</button>
+    </div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" data-i18n="nav.home">Home</a>
+    <a href="#info" data-i18n="nav.info">Info</a>
+    <a href="#research" data-i18n="nav.research">Researcher</a>
+    <a href="#contact" data-i18n="nav.contact">Contact</a>
+    <a href="results.html" data-i18n="nav.results">Community Results</a>
+    <a href="hosted.html" data-i18n="nav.test">Run Speed Test →</a>
+    <button class="theme-btn mobile-theme-btn" id="mobileThemeBtn" type="button">☀ Light</button>
+  </div>
+
+  <main>
+    <div class="page-hero" id="top">
+      <div class="section-label" data-i18n="page.label">Academic Research</div>
+      <h1 data-i18n="page.title">Study Details</h1>
+      <p data-i18n="page.subtitle">Explore methodology, key terms, rating criteria, ISP coverage, and research materials.</p>
+      <div class="quick-nav">
+        <a href="#info" data-i18n="qnav.overview">Study Overview</a>
+        <a href="#methodology" data-i18n="qnav.method">Methodology</a>
+        <a href="#objectives" data-i18n="qnav.obj">Objectives</a>
+        <a href="#research" data-i18n="qnav.team">Researchers</a>
+        <a href="hosted.html" data-i18n="qnav.test">→ Run a Test</a>
+      </div>
+    </div>
+
+    <!-- Overview -->
+    <section id="info">
+      <div class="section-label" data-i18n="overview.label">Overview</div>
+      <h2 class="section-title" data-i18n="overview.title">Study Overview</h2>
+      <p style="color:var(--muted);margin-bottom:24px;font-size:0.95rem" data-i18n="overview.desc">The study integrates the DeLone & McLean IS Success Model and the SERVQUAL framework to evaluate ISP performance and user satisfaction in Celina Plains Subdivision.</p>
+      <div class="overview-grid">
+        <div class="overview-card">
+          <h3 data-i18n="ov.sys">System Quality</h3>
+          <p data-i18n="ov.sysDesc">Measured through download speed, upload speed, latency, and jitter.</p>
+        </div>
+        <div class="overview-card">
+          <h3 data-i18n="ov.svc">Service Quality</h3>
+          <p data-i18n="ov.svcDesc">Assessed via reliability, responsiveness, assurance, empathy, and tangibles.</p>
+        </div>
+        <div class="overview-card">
+          <h3 data-i18n="ov.sat">User Satisfaction</h3>
+          <p data-i18n="ov.satDesc">Correlates technical performance with resident feedback and net benefits.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <section class="tabs-wrap" id="methodology">
+      <div class="section-label" data-i18n="tabs.label">Sections</div>
+      <h2 class="section-title" data-i18n="tabs.title">Study Sections</h2>
+      <div class="tab-list" role="tablist">
+        <button class="tab-btn active" data-tab="methodology" data-i18n="tab.method">Methodology</button>
+        <button class="tab-btn" data-tab="terms" data-i18n="tab.terms">Key Terms</button>
+        <button class="tab-btn" data-tab="criteria" data-i18n="tab.criteria">Rating Criteria</button>
+        <button class="tab-btn" data-tab="coverage" data-i18n="tab.coverage">ISP Coverage</button>
+        <button class="tab-btn" data-tab="data" data-i18n="tab.data">Data & Materials</button>
+      </div>
+      <div class="tab-body">
+        <div class="tab-panel active" id="tab-methodology">
+          <h2 data-i18n="method.title">Methodology Highlights</h2>
+          <p data-i18n="method.desc">The study uses a comparative correlational design to analyze performance differences and relationships between ISP metrics and user satisfaction among Celina Plains residents.</p>
+          <div class="card-grid">
+            <div class="mini-card"><h3 data-i18n="m.design">Research Design</h3><p data-i18n="m.designDesc">Comparative correlational approach measuring peak and off-peak performance.</p></div>
+            <div class="mini-card"><h3 data-i18n="m.instr">Instruments</h3><p data-i18n="m.instrDesc">Speed tests for technical metrics and a SERVQUAL-based survey for service quality.</p></div>
+            <div class="mini-card"><h3 data-i18n="m.analysis">Data Analysis</h3><p data-i18n="m.analysisDesc">Descriptive stats, ANOVA, and Pearson correlation for performance and satisfaction links.</p></div>
+            <div class="mini-card"><h3 data-i18n="m.sampling">Sampling</h3><p data-i18n="m.samplingDesc">Purposive sampling with quota distribution across major ISPs; 100 resident respondents.</p></div>
+            <div class="mini-card"><h3 data-i18n="m.peak">Peak vs Off-Peak</h3><p data-i18n="m.peakDesc">Tests conducted during evening peak hours and off-peak periods to capture variability.</p></div>
+            <div class="mini-card"><h3 data-i18n="m.device">Device & Protocol</h3><p data-i18n="m.deviceDesc">Standardized device setup; Wi-Fi and Ethernet noted, with consistent test apps (Ookla, Fast.com).</p></div>
+          </div>
+        </div>
+        <div class="tab-panel" id="tab-terms">
+          <h2 data-i18n="terms.title">Key Terms</h2>
+          <div class="card-grid">
+            <div class="mini-card"><h3 data-i18n="t.bw">Bandwidth</h3><p data-i18n="t.bwDesc">Maximum rate data can be transmitted, measured in Mbps.</p></div>
+            <div class="mini-card"><h3 data-i18n="t.dl">Download Speed</h3><p data-i18n="t.dlDesc">Rate data is received from the internet to a device, in Mbps.</p></div>
+            <div class="mini-card"><h3 data-i18n="t.ul">Upload Speed</h3><p data-i18n="t.ulDesc">Rate data is sent from a device to the internet, in Mbps.</p></div>
+            <div class="mini-card"><h3 data-i18n="t.lat">Latency & Jitter</h3><p data-i18n="t.latDesc">Latency is round-trip delay; jitter is variation in latency over time.</p></div>
+          </div>
+        </div>
+        <div class="tab-panel" id="tab-criteria">
+          <h2 data-i18n="crit.title">Rating Criteria</h2>
+          <div class="card-grid">
+            <div class="mini-card"><h3 data-i18n="c.dl">Download Thresholds</h3><p data-i18n="c.dlDesc">Excellent ≥100 Mbps • Good ≥25 • Fair ≥10 • Poor &lt;10</p></div>
+            <div class="mini-card"><h3 data-i18n="c.ul">Upload Thresholds</h3><p data-i18n="c.ulDesc">Single-thread: Excellent ≥20 • Good ≥10 • Fair ≥3 • Poor &lt;3</p></div>
+            <div class="mini-card"><h3 data-i18n="c.ping">Ping Thresholds</h3><p data-i18n="c.pingDesc">Excellent ≤20 ms • Good ≤50 • Fair ≤100 • Poor &gt;100</p></div>
+            <div class="mini-card"><h3 data-i18n="c.jitter">Jitter Thresholds</h3><p data-i18n="c.jitterDesc">Excellent ≤5 ms • Good ≤20 • Fair ≤50 • Poor &gt;50</p></div>
+          </div>
+        </div>
+        <div class="tab-panel" id="tab-coverage">
+          <h2 data-i18n="cov.title">ISP Coverage</h2>
+          <p style="color:var(--muted);font-size:.88rem;margin-bottom:16px" data-i18n="cov.subtitle">All ISPs operating in Celina Plains Subdivision are covered. Wired ISPs have fixed study benchmarks; mobile ISPs are tracked via community data.</p>
+          <div style="margin-bottom:10px;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)">Wired / Fixed Broadband</div>
+          <div class="card-grid" style="margin-bottom:20px">
+            <div class="mini-card isp-card" style="border-top:3px solid #3b82f6">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-size:1.1rem">🔵</span>
+                <h3 style="margin:0">PLDT</h3>
+                <span style="margin-left:auto;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(59,130,246,.15);color:#3b82f6">Fiber / DSL</span>
+              </div>
+              <p data-i18n="cov.pldt">Offers Fiber and DSL residential plans. Best balance of speed and service quality in Celina Plains.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:10px">
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">↓</span> <b>85 Mbps</b></div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">↑</span> <b>40 Mbps</b></div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">⏱</span> <b>18 ms</b> ping</div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">〰</span> <b>4 ms</b> jitter</div>
+              </div>
+            </div>
+            <div class="mini-card isp-card" style="border-top:3px solid #ef4444">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-size:1.1rem">🔴</span>
+                <h3 style="margin:0">Globe</h3>
+                <span style="margin-left:auto;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(239,68,68,.15);color:#ef4444">Fiber</span>
+              </div>
+              <p data-i18n="cov.globe">Residential Fiber plans assessed using consistent metrics. Reliable choice for everyday use.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:10px">
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">↓</span> <b>62 Mbps</b></div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">↑</span> <b>28 Mbps</b></div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">⏱</span> <b>24 ms</b> ping</div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">〰</span> <b>7 ms</b> jitter</div>
+              </div>
+            </div>
+            <div class="mini-card isp-card" style="border-top:3px solid #10b981">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-size:1.1rem">🟢</span>
+                <h3 style="margin:0">Converge</h3>
+                <span style="margin-left:auto;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(16,185,129,.15);color:#10b981">Fiber</span>
+              </div>
+              <p data-i18n="cov.converge">Highest average download speed in the study. Fastest and most stable wired option in Celina Plains.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:10px">
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">↓</span> <b>110 Mbps</b></div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">↑</span> <b>55 Mbps</b></div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">⏱</span> <b>15 ms</b> ping</div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">〰</span> <b>3 ms</b> jitter</div>
+              </div>
+            </div>
+            <div class="mini-card isp-card" style="border-top:3px solid #f59e0b">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-size:1.1rem">🟡</span>
+                <h3 style="margin:0">Meridian</h3>
+                <span style="margin-left:auto;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(245,158,11,.15);color:#f59e0b">Cable</span>
+              </div>
+              <p data-i18n="cov.meridian">Local cable ISP evaluated through technical tests and resident feedback. Solid for light usage.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:10px">
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">↓</span> <b>45 Mbps</b></div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">↑</span> <b>20 Mbps</b></div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">⏱</span> <b>30 ms</b> ping</div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">〰</span> <b>9 ms</b> jitter</div>
+              </div>
+            </div>
+            <div class="mini-card isp-card" style="border-top:3px solid #8b5cf6">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-size:1.1rem">🟣</span>
+                <h3 style="margin:0">Cablelink</h3>
+                <span style="margin-left:auto;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(139,92,246,.15);color:#8b5cf6">Cable</span>
+              </div>
+              <p data-i18n="cov.cablelink">Assessed for stability, latency, and service responsiveness. Entry-level cable option in the study.</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:10px">
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">↓</span> <b>38 Mbps</b></div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">↑</span> <b>15 Mbps</b></div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">⏱</span> <b>35 ms</b> ping</div>
+                <div style="background:var(--surface);border-radius:6px;padding:5px 8px;font-size:.72rem"><span style="color:var(--muted)">〰</span> <b>11 ms</b> jitter</div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-bottom:10px;font-family:'Syne',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2)">Mobile / Wireless</div>
+          <div class="card-grid">
+            <div class="mini-card isp-card" style="border-top:3px solid #06b6d4">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-size:1.1rem">📡</span><h3 style="margin:0">Smart</h3>
+                <span style="margin-left:auto;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(6,182,212,.15);color:#06b6d4">4G/5G</span>
+              </div>
+              <p data-i18n="cov.smart">PLDT's mobile arm. Tracked through community submissions; speeds vary by signal strength and location.</p>
+            </div>
+            <div class="mini-card isp-card" style="border-top:3px solid #f97316">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-size:1.1rem">📡</span><h3 style="margin:0">TNT</h3>
+                <span style="margin-left:auto;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(249,115,22,.15);color:#f97316">4G</span>
+              </div>
+              <p data-i18n="cov.tnt">Budget prepaid mobile network under Smart. Covered via community speed data in Celina Plains.</p>
+            </div>
+            <div class="mini-card isp-card" style="border-top:3px solid #ec4899">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-size:1.1rem">📡</span><h3 style="margin:0">Dito</h3>
+                <span style="margin-left:auto;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(236,72,153,.15);color:#ec4899">4G/5G</span>
+              </div>
+              <p data-i18n="cov.dito">Newest major telco in PH. Community submissions track real-world Dito performance in Celina Plains.</p>
+            </div>
+            <div class="mini-card isp-card" style="border-top:3px solid #84cc16">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-size:1.1rem">📡</span><h3 style="margin:0">TM (Touch Mobile)</h3>
+                <span style="margin-left:auto;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(132,204,22,.15);color:#84cc16">4G</span>
+              </div>
+              <p data-i18n="cov.tm">Globe's value prepaid brand. Tracked through community test results in the study area.</p>
+            </div>
+            <div class="mini-card isp-card" style="border-top:3px solid #14b8a6">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+                <span style="font-size:1.1rem">📡</span><h3 style="margin:0">Sky Broadband</h3>
+                <span style="margin-left:auto;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(20,184,166,.15);color:#14b8a6">Cable</span>
+              </div>
+              <p data-i18n="cov.sky">Cable and DSL residential service. Community data tracks Sky's presence in Celina Plains.</p>
+            </div>
+          </div>
+        </div>
+        <div class="tab-panel" id="tab-data">
+          <h2 data-i18n="data.title">Data & Materials</h2>
+          <div class="card-grid">
+            <div class="mini-card"><h3 data-i18n="d.csv">Dataset (CSV)</h3><p data-i18n="d.csvDesc">Download anonymized test records and survey summaries.</p><a href="assets/data/isp-dataset.csv" data-i18n="d.csvLink">Download dataset</a></div>
+            <div class="mini-card"><h3 data-i18n="d.book">Codebook</h3><p data-i18n="d.bookDesc">Variable definitions, scales, and survey mapping.</p><a href="assets/data/codebook.md" data-i18n="d.bookLink">View codebook</a></div>
+            <div class="mini-card"><h3 data-i18n="d.notes">Analysis Notes</h3><p data-i18n="d.notesDesc">Summary of statistical methods and interpretation notes.</p><a href="assets/data/analysis-notes.md" data-i18n="d.notesLink">View notes</a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <div class="stats-row" style="margin-bottom:60px">
+      <div class="stat-box"><span class="stat-num">2</span><span class="stat-lbl" data-i18n="s.models">Frameworks Used</span></div>
+      <div class="stat-box"><span class="stat-num">4</span><span class="stat-lbl" data-i18n="s.metrics">Download/Upload/Ping/Jitter</span></div>
+      <div class="stat-box"><span class="stat-num" data-i18n="s.locale">Celina Plains</span><span class="stat-lbl" data-i18n="s.localeLabel">Research Locale</span></div>
+    </div>
+
+    <!-- Objectives -->
+    <section id="objectives" style="margin-bottom:60px">
+      <div class="section-label" data-i18n="obj.label">Goals</div>
+      <h2 class="section-title" data-i18n="obj.title">Research Objectives</h2>
+      <ul class="objectives-list">
+        <li data-i18n="obj.1">Compare ISP performance using download, upload, latency, and jitter.</li>
+        <li data-i18n="obj.2">Determine differences in service quality across providers.</li>
+        <li data-i18n="obj.3">Identify the ISP with the best balance of performance and feedback.</li>
+        <li data-i18n="obj.4">Assess the relationship between performance and user satisfaction.</li>
+        <li data-i18n="obj.5">Provide evidence-based guidance for residents' ISP choices.</li>
+      </ul>
+    </section>
+
+    <!-- Team -->
+    <section class="team-section" id="research">
+      <div class="section-label" data-i18n="team.label">The Team</div>
+      <h2 class="section-title" data-i18n="team.title">Researchers</h2>
+      <div class="team-grid">
+        <div class="team-card">
+          <img src="assets/images/Adrian.png" alt="Adrian Divinagracia" />
+          <h3>Adrian Divinagracia</h3>
+          <div class="role" data-i18n="team.leader">Leader</div>
+          <div class="contact">
+            <a href="/cdn-cgi/l/email-protection#57133e213e393630253634321633253e363917303a363e3b7934383a"><span class="__cf_email__" data-cfemail="a2e6cbd4cbccc3c5d0c3c1c7e3c6d0cbc3cce2c5cfc3cbce8cc1cdcf">[email&#160;protected]</span></a><br>
+            0947-2017-689
+          </div>
+        </div>
+        <div class="team-card">
+          <img src="assets/images/Oraliza.png" alt="Christel Oraliza" />
+          <h3>Christel Oraliza</h3>
+          <div class="role" data-i18n="team.member">Member</div>
+          <div class="contact">
+            <a href="/cdn-cgi/l/email-protection#96f5fee4ffe5e2f3faf9e4f7faffecf7d6f1fbf7fffab8f5f9fb"><span class="__cf_email__" data-cfemail="e7848f958e9493828b8895868b8e9d86a7808a868e8bc984888a">[email&#160;protected]</span></a><br>
+            0938-7300-265
+          </div>
+        </div>
+        <div class="team-card">
+          <img src="assets/images/Ian_Kent_Timbal.png" alt="Ian Kent Timbal" />
+          <h3>Ian Kent Timbal</h3>
+          <div class="role" data-i18n="team.member">Member</div>
+          <div class="contact">
+            <a href="/cdn-cgi/l/email-protection#feb79f90959b908a97939c9f92be99939f9792d09d9193"><span class="__cf_email__" data-cfemail="e4ad858a8f818a908d89868588a48389858d88ca878b89">[email&#160;protected]</span></a><br>
+            0968-3229-754
+          </div>
+        </div>
+        <div class="team-card">
+          <img src="assets/images/Keita.JPG" alt="Yuuma Miyazaki" />
+          <h3>Yuuma Miyazaki</h3>
+          <div class="role" data-i18n="team.member">Member</div>
+          <div class="contact">
+            <a href="/cdn-cgi/l/email-protection#4d343838232c2024342c372c26247c7c7e7d0d2a202c2421632e2220"><span class="__cf_email__" data-cfemail="235a56564d424e4a5a425942484a1212101363444e424a4f0d404c4e">[email&#160;protected]</span></a><br>
+            0956-0158-453
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contact">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">CelinaISP Study</div>
+        <div class="footer-brand-sub" data-i18n="footer.desc">ISP Connectivity Performance Research in Celina Plains Subdivision, Philippines.</div>
+      </div>
+      <div class="footer-links-col">
+        <h4 data-i18n="footer.contacts">Contacts</h4>
+        <ul>
+          <li><a href="/cdn-cgi/l/email-protection#e6a28f908f88878194878583a782948f8788a6818b878f8ac885898b">Adrian Divinagracia</a></li>
+          <li><a href="/cdn-cgi/l/email-protection#ea89829883999e8f8685988b8683908baa8d878b8386c4898587">Christel Oraliza</a></li>
+          <li><a href="/cdn-cgi/l/email-protection#feb79f90959b908a97939c9f92be99939f9792d09d9193">Ian Kent Timbal</a></li>
+          <li><a href="/cdn-cgi/l/email-protection#e69f939388878b8f9f879c878d8fd7d7d5d6a6818b878f8ac885898b">Yuuma Miyazaki</a></li>
+        </ul>
+      </div>
+      <div class="footer-links-col">
+        <h4 data-i18n="footer.nav">Navigate</h4>
+        <ul>
+          <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+          <li><a href="hosted.html" data-i18n="nav.test">Run Test</a></li>
+          <li><a href="results.html" data-i18n="nav.results">Community</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Celina Plains ISP Study. All rights reserved.</span>
+      <span>Celina Plains, Philippines</span>
+    </div>
+  </footer>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // Theme
+    const themeBtn = document.getElementById('themeBtn');
+    const mobileThemeBtn = document.getElementById('mobileThemeBtn');
+    const setThemeButtonLabel = (t) => {
+      const label = t === 'light' ? '🌙 Dark' : '☀ Light';
+      themeBtn.textContent = label;
+      if (mobileThemeBtn) mobileThemeBtn.textContent = label;
+    };
+    const applyTheme = (t) => {
+      document.body.classList.toggle('light', t === 'light');
+      setThemeButtonLabel(t);
+      localStorage.setItem('theme', t);
+    };
+    applyTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+    themeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light') ? 'dark' : 'light'));
+    if (mobileThemeBtn) {
+      mobileThemeBtn.addEventListener('click', () => applyTheme(document.body.classList.contains('light') ? 'dark' : 'light'));
+    }
+
+    // Mobile
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+    document.addEventListener('click', e => { if (!e.target.closest('nav') && !e.target.closest('.mobile-menu')) mobileMenu.classList.remove('open'); });
+
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.tab;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + id));
+      });
+    });
+
+    // Language
+    const translations = {
+      en: {
+        'nav.home':'Home','nav.info':'Info','nav.research':'Researcher','nav.contact':'Contact','nav.results':'Community','nav.test':'Run Test',
+        'page.label':'Academic Research','page.title':'Study Details','page.subtitle':'Explore methodology, key terms, rating criteria, ISP coverage, and research materials.',
+        'qnav.overview':'Study Overview','qnav.method':'Methodology','qnav.obj':'Objectives','qnav.team':'Researchers','qnav.test':'→ Run a Test',
+        'overview.label':'Overview','overview.title':'Study Overview','overview.desc':'The study integrates the DeLone & McLean IS Success Model and the SERVQUAL framework to evaluate ISP performance and user satisfaction in Celina Plains Subdivision.',
+        'ov.sys':'System Quality','ov.sysDesc':'Measured through download speed, upload speed, latency, and jitter.',
+        'ov.svc':'Service Quality','ov.svcDesc':'Assessed via reliability, responsiveness, assurance, empathy, and tangibles.',
+        'ov.sat':'User Satisfaction','ov.satDesc':'Correlates technical performance with resident feedback and net benefits.',
+        'tabs.label':'Sections','tabs.title':'Study Sections',
+        'tab.method':'Methodology','tab.terms':'Key Terms','tab.criteria':'Rating Criteria','tab.coverage':'ISP Coverage','tab.data':'Data & Materials',
+        'method.title':'Methodology Highlights','method.desc':'The study uses a comparative correlational design to analyze performance differences and relationships between ISP metrics and user satisfaction.',
+        'm.design':'Research Design','m.designDesc':'Comparative correlational approach measuring peak and off-peak performance.',
+        'm.instr':'Instruments','m.instrDesc':'Speed tests for technical metrics and a SERVQUAL-based survey for service quality.',
+        'm.analysis':'Data Analysis','m.analysisDesc':'Descriptive stats, ANOVA, and Pearson correlation for performance and satisfaction links.',
+        'm.sampling':'Sampling','m.samplingDesc':'Purposive sampling with quota distribution across major ISPs; 100 resident respondents.',
+        'm.peak':'Peak vs Off-Peak','m.peakDesc':'Tests conducted during evening peak hours and off-peak periods to capture variability.',
+        'm.device':'Device & Protocol','m.deviceDesc':'Standardized device setup; Wi-Fi and Ethernet noted, with consistent test apps (Ookla, Fast.com).',
+        'terms.title':'Key Terms','t.bw':'Bandwidth','t.bwDesc':'Maximum rate data can be transmitted, measured in Mbps.',
+        't.dl':'Download Speed','t.dlDesc':'Rate data is received from the internet to a device, in Mbps.',
+        't.ul':'Upload Speed','t.ulDesc':'Rate data is sent from a device to the internet, in Mbps.',
+        't.lat':'Latency & Jitter','t.latDesc':'Latency is round-trip delay; jitter is variation in latency over time.',
+        'crit.title':'Rating Criteria',
+        'c.dl':'Download Thresholds','c.dlDesc':'Excellent ≥100 Mbps • Good ≥25 • Fair ≥10 • Poor <10',
+        'c.ul':'Upload Thresholds','c.ulDesc':'Single-thread: Excellent ≥20 • Good ≥10 • Fair ≥3 • Poor <3',
+        'c.ping':'Ping Thresholds','c.pingDesc':'Excellent ≤20 ms • Good ≤50 • Fair ≤100 • Poor >100',
+        'c.jitter':'Jitter Thresholds','c.jitterDesc':'Excellent ≤5 ms • Good ≤20 • Fair ≤50 • Poor >50',
+        'cov.title':'ISP Coverage','cov.subtitle':'All ISPs operating in Celina Plains Subdivision are covered.','cov.pldt':'Offers Fiber and DSL residential plans. Best balance of speed and service quality in Celina Plains.','cov.globe':'Residential Fiber plans assessed using consistent metrics. Reliable choice for everyday use.','cov.converge':'Highest average download speed in the study. Fastest and most stable wired option in Celina Plains.','cov.meridian':'Local cable ISP evaluated through technical tests and resident feedback. Solid for light usage.','cov.cablelink':'Assessed for stability, latency, and service responsiveness. Entry-level cable option in the study.','cov.smart':'PLDT\'s mobile arm. Tracked through community submissions; speeds vary by signal strength and location.','cov.tnt':'Budget prepaid mobile network under Smart. Covered via community speed data in Celina Plains.','cov.dito':'Newest major telco in PH. Community submissions track real-world Dito performance in Celina Plains.','cov.tm':'Globe\'s value prepaid brand. Tracked through community test results in the study area.','cov.sky':'Cable and DSL residential service. Community data tracks Sky\'s presence in Celina Plains.',
+        'data.title':'Data & Materials',
+        'd.csv':'Dataset (CSV)','d.csvDesc':'Download anonymized test records and survey summaries.','d.csvLink':'Download dataset',
+        'd.book':'Codebook','d.bookDesc':'Variable definitions, scales, and survey mapping.','d.bookLink':'View codebook',
+        'd.notes':'Analysis Notes','d.notesDesc':'Summary of statistical methods and interpretation notes.','d.notesLink':'View notes',
+        's.models':'Frameworks Used','s.metrics':'Download/Upload/Ping/Jitter','s.locale':'Celina Plains','s.localeLabel':'Research Locale',
+        'obj.label':'Goals','obj.title':'Research Objectives',
+        'obj.1':'Compare ISP performance using download, upload, latency, and jitter.',
+        'obj.2':'Determine differences in service quality across providers.',
+        'obj.3':'Identify the ISP with the best balance of performance and feedback.',
+        'obj.4':'Assess the relationship between performance and user satisfaction.',
+        'obj.5':'Provide evidence-based guidance for residents\' ISP choices.',
+        'team.label':'The Team','team.title':'Researchers','team.leader':'Leader','team.member':'Member',
+        'footer.desc':'ISP Connectivity Performance Research in Celina Plains Subdivision, Philippines.',
+        'footer.contacts':'Contacts','footer.nav':'Navigate'
+      },
+      tl: {
+        'nav.home':'Bahay','nav.info':'Impormasyon','nav.research':'Mananaliksik','nav.contact':'Makipag-ugnayan','nav.results':'Komunidad','nav.test':'Mag-test',
+        'page.label':'Akademikong Pananaliksik','page.title':'Mga Detalye ng Pag-aaral','page.subtitle':'Tuklasin ang metodolohiya, mahahalagang termino, pamantayan, saklaw ng ISP, at mga materyales.',
+        'qnav.overview':'Buod ng Pag-aaral','qnav.method':'Metodolohiya','qnav.obj':'Mga Layunin','qnav.team':'Mga Mananaliksik','qnav.test':'→ Mag-test',
+        'overview.label':'Buod','overview.title':'Buod ng Pag-aaral','overview.desc':'Pinagsasama ng pag-aaral ang DeLone & McLean IS Success Model at SERVQUAL para sa pagsusuri ng performance at kasiyahan ng gumagamit.',
+        'ov.sys':'Kalidad ng Sistema','ov.sysDesc':'Sinusukat gamit ang download speed, upload speed, latency, at jitter.',
+        'ov.svc':'Kalidad ng Serbisyo','ov.svcDesc':'Sinusuri ang reliability, responsiveness, assurance, empathy, at tangibles.',
+        'ov.sat':'Kasiyahan ng Gumagamit','ov.satDesc':'Iniuugnay ang teknikal na performance sa feedback ng residente.',
+        'tabs.label':'Mga Seksyon','tabs.title':'Mga Seksyon ng Pag-aaral',
+        'tab.method':'Metodolohiya','tab.terms':'Mahahalagang Termino','tab.criteria':'Pamantayan ng Rating','tab.coverage':'Saklaw ng ISP','tab.data':'Datos at Materyales',
+        'method.title':'Mga Highlight ng Metodolohiya','method.desc':'Gumamit ang pag-aaral ng komparatibong korelasyonal na disenyo para suriin ang pagkakaiba at ugnayan ng sukatan at kasiyahan ng mga residente.',
+        'm.design':'Disenyo ng Pananaliksik','m.designDesc':'Komparatibo at korelasyonal na pagsusuri sa peak at off-peak performance.',
+        'm.instr':'Mga Instrumento','m.instrDesc':'Speed test para sa teknikal na sukatan at SERVQUAL-based na survey.',
+        'm.analysis':'Pagsusuri ng Datos','m.analysisDesc':'Descriptive stats, ANOVA, at Pearson correlation para sa ugnayan.',
+        'm.sampling':'Pagpili ng Kalahok','m.samplingDesc':'Purposive sampling na may quota; 100 resident respondents.',
+        'm.peak':'Peak at Off-Peak','m.peakDesc':'Ginagawa ang tests sa peak hours sa gabi at off-peak periods.',
+        'm.device':'Device at Protocol','m.deviceDesc':'Standardized na device setup gamit ang Ookla at Fast.com.',
+        'terms.title':'Mahahalagang Termino','t.bw':'Bandwidth','t.bwDesc':'Pinakamataas na bilis ng pagpapadala ng data, sinusukat sa Mbps.',
+        't.dl':'Download Speed','t.dlDesc':'Bilis ng pagtanggap ng data mula sa internet papunta sa device.',
+        't.ul':'Upload Speed','t.ulDesc':'Bilis ng pagpapadala ng data mula sa device papunta sa internet.',
+        't.lat':'Latency at Jitter','t.latDesc':'Latency ang round-trip delay; jitter ang pagbabago-bago ng latency.',
+        'crit.title':'Pamantayan ng Rating',
+        'c.dl':'Download Thresholds','c.dlDesc':'Excellent ≥100 Mbps • Good ≥25 • Fair ≥10 • Poor <10',
+        'c.ul':'Upload Thresholds','c.ulDesc':'Single-thread: Excellent ≥20 • Good ≥10 • Fair ≥3 • Poor <3',
+        'c.ping':'Ping Thresholds','c.pingDesc':'Excellent ≤20 ms • Good ≤50 • Fair ≤100 • Poor >100',
+        'c.jitter':'Jitter Thresholds','c.jitterDesc':'Excellent ≤5 ms • Good ≤20 • Fair ≤50 • Poor >50',
+        'cov.title':'Saklaw na ISP','cov.subtitle':'Lahat ng ISP sa Celina Plains Subdivision ay sakop.','cov.pldt':'Nag-aalok ng Fiber at DSL na residential plans. Pinaka-balanseng ISP sa Celina Plains.','cov.globe':'Mga residential Fiber plans na sinusukat gamit ang iisang sukatan. Maaasahang pagpipilian para sa araw-araw na paggamit.','cov.converge':'Pinakamataas na average download speed sa pag-aaral. Pinakamabilis at pinaka-stable na wired ISP sa Celina Plains.','cov.meridian':'Lokal na cable ISP na sinuri gamit ang teknikal na test at feedback ng residente. Angkop para sa magaan na paggamit.','cov.cablelink':'Tinatasa sa stability, latency, at responsiveness. Entry-level cable option sa pag-aaral.','cov.smart':'Mobile arm ng PLDT. Tina-track sa pamamagitan ng community submissions; nag-iiba-iba ang bilis ayon sa signal.','cov.tnt':'Budget prepaid mobile network sa ilalim ng Smart. Tina-track gamit ang community speed data.','cov.dito':'Pinakabagong pangunahing telco sa Pilipinas. Tina-track ang performance sa Celina Plains sa pamamagitan ng community data.','cov.tm':'Value prepaid brand ng Globe. Tina-track sa pamamagitan ng community test results.','cov.sky':'Cable at DSL residential service. Tina-track ng community data ang presensya ng Sky sa Celina Plains.',
+        'data.title':'Datos at Materyales',
+        'd.csv':'Dataset (CSV)','d.csvDesc':'I-download ang anonymized na test records at survey summaries.','d.csvLink':'I-download ang dataset',
+        'd.book':'Codebook','d.bookDesc':'Kahulugan ng mga variable, scale, at survey mapping.','d.bookLink':'Tingnan ang codebook',
+        'd.notes':'Mga Tala ng Pagsusuri','d.notesDesc':'Buod ng estadistikal na pamamaraan at notes sa interpretasyon.','d.notesLink':'Tingnan ang notes',
+        's.models':'Mga Framework','s.metrics':'Download/Upload/Ping/Jitter','s.locale':'Celina Plains','s.localeLabel':'Lugar ng Pag-aaral',
+        'obj.label':'Mga Layunin','obj.title':'Mga Layunin ng Pananaliksik',
+        'obj.1':'Ihambing ang performance ng ISP gamit ang download, upload, latency, at jitter.',
+        'obj.2':'Tukuyin ang pagkakaiba ng kalidad ng serbisyo ng bawat ISP.',
+        'obj.3':'Kilalanin ang ISP na may pinakamainam na balanse ng performance at feedback.',
+        'obj.4':'Suriin ang ugnayan ng performance at kasiyahan ng gumagamit.',
+        'obj.5':'Magbigay ng batay-sa-ebidensyang gabay sa pagpili ng ISP.',
+        'team.label':'Ang Pangkat'
+      }
+    };
+    let lang=localStorage.getItem('lang')||'en';
+    const applyLang=l=>{lang=l;localStorage.setItem('lang',l);document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(translations[l]?.[k])el.textContent=translations[l][k];});document.querySelectorAll('.lang-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.lang===l));};
+    applyLang(lang);
+    document.querySelectorAll('.lang-btn').forEach(btn=>btn.addEventListener('click',()=>applyLang(btn.dataset.lang)));
+  </script>
+<!-- ISP ASSISTANT CHATBOT -->
+<style>
+#chat-fab{position:fixed;bottom:28px;right:28px;z-index:9999;width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(79,255,176,0.4);font-size:1.3rem;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+#chat-fab:hover{transform:scale(1.12)}
+#chat-fab .fab-badge{position:absolute;top:2px;right:2px;background:#ff6b6b;color:#fff;font-size:.6rem;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #07090f}
+#chat-fab .fab-badge.hide{display:none}
+#chat-win{position:fixed;bottom:96px;right:28px;z-index:9998;width:360px;max-height:580px;display:flex;flex-direction:column;background:#0c1018;border:1px solid rgba(255,255,255,.14);border-radius:20px;overflow:hidden;box-shadow:0 32px 64px rgba(0,0,0,.55);transform:scale(.92) translateY(16px);opacity:0;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .25s;font-family:'DM Sans',sans-serif}
+#chat-win.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}
+#chat-head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:linear-gradient(135deg,rgba(79,255,176,.1),rgba(56,200,255,.07));border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.ch-left{display:flex;align-items:center;gap:10px}
+.ch-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#4fffb0,#38c8ff);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.ch-name{font-family:'Syne',sans-serif;font-size:.92rem;font-weight:700;color:#f0f4ff}
+.ch-status{display:flex;align-items:center;gap:5px;font-size:.72rem;color:#7a8aaa;margin-top:1px}
+.ch-dot{width:7px;height:7px;border-radius:50%;background:#4fffb0;box-shadow:0 0 6px #4fffb0;display:inline-block;animation:pulse 2s infinite}
+#chat-close-btn{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#7a8aaa;border-radius:8px;padding:6px;cursor:pointer;display:flex;align-items:center;transition:all .2s}
+#chat-close-btn:hover{color:#f0f4ff}
+#chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:11px;min-height:220px;scroll-behavior:smooth}
+#chat-msgs::-webkit-scrollbar{width:3px}
+#chat-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:4px}
+.cmsg{display:flex;flex-direction:column;max-width:84%;animation:msgIn .22s ease}
+@keyframes msgIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.cmsg.bot{align-self:flex-start}.cmsg.user{align-self:flex-end}
+.cbubble{padding:10px 13px;border-radius:14px;font-size:.875rem;line-height:1.55}
+.cmsg.bot .cbubble{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);color:#f0f4ff;border-bottom-left-radius:4px}
+.cmsg.user .cbubble{background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;font-weight:500;border-bottom-right-radius:4px}
+.ctime{font-size:.67rem;color:#7a8aaa;margin-top:3px;padding:0 3px}
+.cmsg.user .ctime{text-align:right}
+#typing-ind{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:14px;border-bottom-left-radius:4px;padding:11px 15px;display:flex;gap:5px;align-items:center;align-self:flex-start}
+.tdot{width:7px;height:7px;border-radius:50%;background:#7a8aaa;animation:tdot 1.2s infinite ease}
+.tdot:nth-child(2){animation-delay:.18s}.tdot:nth-child(3){animation-delay:.36s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+#chat-sugg{display:flex;gap:6px;padding:0 12px 10px;overflow-x:auto;flex-shrink:0}
+#chat-sugg::-webkit-scrollbar{display:none}
+.sugg-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:#7a8aaa;font:500 .73rem 'DM Sans',sans-serif;padding:5px 11px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.sugg-btn:hover{border-color:#4fffb0;color:#4fffb0}
+#chat-inp-row{display:flex;gap:8px;padding:11px 13px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0;background:#0c1018}
+#chat-inp{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#f0f4ff;font:400 .88rem 'DM Sans',sans-serif;padding:9px 12px;outline:none;transition:border-color .2s}
+#chat-inp:focus{border-color:#4fffb0;box-shadow:0 0 0 3px rgba(79,255,176,.1)}
+#chat-inp::placeholder{color:#7a8aaa}
+#chat-send{width:38px;height:38px;border:none;border-radius:10px;background:linear-gradient(135deg,#4fffb0,#38c8ff);color:#07090f;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+#chat-send:hover{filter:brightness(1.1)}
+#chat-send:disabled{opacity:.4;cursor:not-allowed}
+body.light #chat-win{background:#fff;border-color:rgba(0,0,0,.1)}
+body.light #chat-fab{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
+body.light .cmsg.bot .cbubble{background:#f0f4ff;border-color:rgba(0,0,0,.08);color:#0d1117}
+body.light .cmsg.user .cbubble{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
+body.light #chat-inp-row{background:#fff;border-color:rgba(0,0,0,.08)}
+body.light #chat-inp{background:#f5f7ff;border-color:rgba(0,0,0,.1);color:#0d1117}
+body.light #chat-send{background:linear-gradient(135deg,#00a86b,#0077cc);color:#fff}
+body.light .sugg-btn{background:#f5f7ff;border-color:rgba(0,0,0,.1);color:#5a6480}
+body.light #chat-close-btn{background:#f5f7ff;border-color:rgba(0,0,0,.1)}
+body.light .fab-badge{border-color:#fff}
+@media(max-width:480px){#chat-win{width:calc(100vw - 24px);right:12px;bottom:84px}#chat-fab{right:16px;bottom:20px}}
+</style>
+
+<button id="chat-fab" aria-label="Open ISP Assistant">
+  <span id="fab-icon">💬</span>
+  <span class="fab-badge" id="fab-badge">1</span>
+</button>
+
+<div id="chat-win" role="dialog" aria-label="ISP Assistant">
+  <div id="chat-head">
+    <div class="ch-left">
+      <div class="ch-avatar">⚡</div>
+      <div>
+        <div class="ch-name">ISP Assistant</div>
+        <div class="ch-status"><span class="ch-dot"></span><span>Online · Celina Plains</span></div>
+      </div>
+    </div>
+    <button id="chat-close-btn" aria-label="Close">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div id="chat-msgs" role="log" aria-live="polite"></div>
+  <div id="chat-sugg">
+    <button class="sugg-btn" data-q="Which ISP is best in Celina Plains?">Best ISP?</button>
+    <button class="sugg-btn" data-q="What are peak hours?">Peak hours?</button>
+    <button class="sugg-btn" data-q="How do I improve my internet speed?">Improve speed?</button>
+    <button class="sugg-btn" data-q="What is jitter?">What is jitter?</button>
+  </div>
+  <div id="chat-inp-row">
+    <input id="chat-inp" type="text" placeholder="Ask about ISPs in Celina Plains…" autocomplete="off" maxlength="280"/>
+    <button id="chat-send" aria-label="Send">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var SPACE = 'https://keita1421-celinaisp.hf.space';
+
+  var SYS = 'You are a friendly assistant for the Celina Plains ISP Study. Benchmarks: PLDT 85Mbps/40up/18ms | Globe 62/28/24ms | Converge 110/55/15ms | Meridian 45/20/30ms | Cablelink 38/15/35ms. Peak hours 7PM-10PM. Be concise, max 3 sentences. Reply in English or Filipino.';
+
+  var LOCAL = [
+    [/converge/i,'Converge has the highest average download speed at 110 Mbps with the best ping (15ms). It is the top performer among wired ISPs in Celina Plains.'],
+    [/pldt/i,'PLDT averages 85 Mbps download and 40 Mbps upload with an 18ms ping. It is the most balanced ISP in the study.'],
+    [/globe/i,'Globe averages 62 Mbps download and 28 Mbps upload in Celina Plains.'],
+    [/meridian/i,'Meridian averages 45 Mbps download and 20 Mbps upload. Good for basic internet needs.'],
+    [/cablelink/i,'Cablelink averages 38 Mbps download with a 35ms ping — the highest among wired ISPs.'],
+    [/peak|7pm|evening/i,'Peak hours are 7PM–10PM when congestion is highest. Test off-peak for accurate results.'],
+    [/jitter/i,'Jitter is variation in ping over time. Excellent is ≤5ms, Good ≤20ms, Fair ≤50ms, Poor >50ms.'],
+    [/ping|latency/i,'Ping is round-trip response time. Excellent ≤20ms, Good ≤50ms, Fair ≤100ms, Poor >100ms.'],
+    [/improve|slow|fix|boost/i,'Try a wired Ethernet connection, test during off-peak hours, and restart your router. If speeds are still low, consider upgrading your plan.'],
+    [/best|fastest|top/i,'Converge leads in speed (110 Mbps). PLDT is the most balanced overall. The best ISP depends on coverage in your street.'],
+  ];
+
+  var fallback = function(q) {
+    for (var i = 0; i < LOCAL.length; i++) {
+      if (LOCAL[i][0].test(q)) return LOCAL[i][1];
+    }
+    return 'I can help with ISP questions about Celina Plains! Ask me about providers, speed ratings, peak hours, or how to improve your connection.';
+  };
+
+  var isOpen = false, busy = false, history = [];
+
+  var fab    = document.getElementById('chat-fab');
+  var win    = document.getElementById('chat-win');
+  var msgs   = document.getElementById('chat-msgs');
+  var inp    = document.getElementById('chat-inp');
+  var sndBtn = document.getElementById('chat-send');
+  var closeB = document.getElementById('chat-close-btn');
+  var badge  = document.getElementById('fab-badge');
+  var fabIco = document.getElementById('fab-icon');
+  var suggBox= document.getElementById('chat-sugg');
+
+  if (!fab || !win) { console.error('Chatbot elements not found'); return; }
+
+  var ts = function() { return new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}); };
+
+  var addMsg = function(text, role) {
+    var w = document.createElement('div'); w.className = 'cmsg ' + role;
+    var b = document.createElement('div'); b.className = 'cbubble'; b.textContent = text;
+    var t = document.createElement('div'); t.className = 'ctime'; t.textContent = ts();
+    w.appendChild(b); w.appendChild(t); msgs.appendChild(w);
+    msgs.scrollTop = msgs.scrollHeight;
+  };
+
+  var showTyping = function() {
+    var el = document.createElement('div'); el.id = 'typing-ind';
+    el.innerHTML = '<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
+    msgs.appendChild(el); msgs.scrollTop = msgs.scrollHeight;
+  };
+  var hideTyping = function() { var el = document.getElementById('typing-ind'); if(el) el.remove(); };
+
+  var callHF = async function(userMsg) {
+    var submitRes = await fetch(SPACE + '/gradio_api/call/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        data: [userMsg, history, SYS, 200, 0.4, 0.9]
+      })
+    });
+    if (!submitRes.ok) throw new Error('Submit failed: ' + submitRes.status);
+    var json = await submitRes.json();
+    var event_id = json.event_id;
+    if (!event_id) throw new Error('No event_id returned');
+
+    var streamRes = await fetch(SPACE + '/gradio_api/call/chat/' + event_id);
+    if (!streamRes.ok) throw new Error('Stream failed: ' + streamRes.status);
+
+    var raw = await streamRes.text();
+    var reply = '';
+    var lines = raw.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith('event: complete')) {
+        for (var j = i + 1; j < lines.length; j++) {
+          if (lines[j].startsWith('data:')) {
+            try {
+              var parsed = JSON.parse(lines[j].slice(5).trim());
+              if (Array.isArray(parsed) && typeof parsed[0] === 'string') {
+                reply = parsed[0];
+              }
+            } catch(e) {}
+            break;
+          }
+        }
+        break;
+      }
+    }
+    if (!reply) throw new Error('Empty response');
+    return reply;
+  };
+  
+  var send = async function() {
+    var text = inp.value.trim();
+    if (!text || busy) return;
+    suggBox.style.display = 'none';
+    addMsg(text, 'user');
+    history.push({role:'user', content:text});
+    inp.value = ''; sndBtn.disabled = true; busy = true;
+    showTyping();
+    try {
+      var reply = await callHF(text);
+      hideTyping(); addMsg(reply, 'bot');
+      history.push({role:'assistant', content:reply});
+    } catch(e) {
+      console.error('Chat error:', e);
+      hideTyping();
+      addMsg(fallback(text), 'bot');
+    }
+    sndBtn.disabled = false; busy = false;
+  };
+
+  var openChat = function() {
+    isOpen = true;
+    win.classList.add('open');
+    fabIco.textContent = '✕';
+    badge.classList.add('hide');
+    inp.focus();
+  };
+  var closeChat = function() {
+    isOpen = false;
+    win.classList.remove('open');
+    fabIco.textContent = '💬';
+  };
+
+  fab.addEventListener('click', function() { isOpen ? closeChat() : openChat(); });
+  closeB.addEventListener('click', closeChat);
+  sndBtn.addEventListener('click', send);
+  inp.addEventListener('keydown', function(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();} });
+  document.querySelectorAll('.sugg-btn').forEach(function(b) {
+    b.addEventListener('click', function() { inp.value = b.dataset.q; send(); });
+  });
+
+  setTimeout(function() {
+    addMsg("👋 Hi! I'm the ISP Assistant for Celina Plains. Ask me anything about providers, speed benchmarks, or our research findings!", 'bot');
+  }, 800);
+});
+</script>
+</body>
+</html>
