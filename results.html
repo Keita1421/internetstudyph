@@ -164,8 +164,9 @@
     .loc-breakdown summary::before { content: '▶ '; font-size: 0.7rem; }
     .loc-breakdown[open] summary::before { content: '▼ '; }
     .loc-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 8px; }
-    .loc-table th { color: var(--muted); font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 6px; border-bottom: 1px solid var(--border); text-align: left; position: static; background: none; cursor: default; }
-    .loc-table td { padding: 5px 6px; border-bottom: 1px solid var(--border); color: var(--text); }
+    .loc-table th { color: var(--muted); font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 6px; border-bottom: 1px solid var(--border); text-align: left; position: static; background: none; cursor: default; white-space: nowrap; }
+    .loc-table td { padding: 5px 6px; border-bottom: 1px solid var(--border); color: var(--text); white-space: nowrap; }
+    .loc-breakdown-inner { overflow-x: auto; width: 100%; }
     .loc-table tr:last-child td { border-bottom: none; }
     .loc-top-isp td { color: var(--accent); font-weight: 600; }
     .loc-search-input { background: var(--input); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font: 400 0.9rem 'DM Sans', sans-serif; padding: 10px 14px; width: 100%; max-width: 360px; transition: border-color 0.2s; }
@@ -283,12 +284,9 @@
   <script>
     let cachedRecords = [];
     let dataLoaded = false;
-    // --- NEW CODE START ---
-    let geocodeEnriched = false;
-    // Persistent store of geocoded location fields keyed by rounded lat_lng
-    // Survives loadRecords() re-fetches so cards don't disappear on 30s refresh
+    // --- PATCHED --- Persistent store of geocoded location fields keyed by rounded lat_lng.
+    // Survives loadRecords() re-fetches so cards don't disappear on 30s refresh.
     const geocodePersistCache = {};
-    // --- NEW CODE END ---
     const ISP_COLORS = { PLDT:'#3b82f6', Globe:'#ef4444', Converge:'#10b981', Meridian:'#f59e0b', Cablelink:'#8b5cf6', Others:'#06b6d4', 'Sky Broadband':'#14b8a6' };
     const MOBILE_ISPS = new Set(['Smart', 'TNT', 'Dito', 'TM (Touch Mobile)', 'Others Type', 'Others', 'Other']);
     const MOBILE_CONNECTIONS = new Set(['mobile4g', 'mobile5g']);
@@ -617,8 +615,7 @@
     /**
      * enrichOldSubmissionsWithGeocode — enriches old submissions that have lat/lng
      * but no city/municipality/etc. with reverse geocoded location data.
-     * Mutates records in place. Processes at most 20 per page load to stay within
-     * OpenCage free-tier rate limits.
+      * Mutates records in place.
      * @param {Array} records - Full submissions array (mutated in place)
      * @returns {Promise<void>}
      */
@@ -643,8 +640,8 @@
         r.lat && r.lng &&
         !r.city && !r.municipality && !r.barangay && !r.province
       );
-      const batch = needsGeocode.slice(0, 20);
-      for (const r of batch) {
+      // --- PATCHED --- No arbitrary cap; deduplication is handled by cache keying.
+      for (const r of needsGeocode) {
         const geo = await reverseGeocodeForResults(r.lat, r.lng);
         r.city         = geo.city;
         r.municipality = geo.municipality;
@@ -811,10 +808,12 @@
             </div>
             <details class="loc-breakdown">
               <summary>${escapeHtml(breakdownLabel)} (${g.ispStats.length} provider${g.ispStats.length !== 1 ? 's' : ''})</summary>
-              <table class="loc-table">
-                <thead><tr><th>ISP</th><th>Tests</th><th>&#8595;Mbps</th><th>&#8593;Mbps</th><th>Ping</th></tr></thead>
-                <tbody>${ispRows}</tbody>
-              </table>
+              <div class="loc-breakdown-inner">
+                <table class="loc-table">
+                  <thead><tr><th>ISP</th><th>Tests</th><th>&#8595;Mbps</th><th>&#8593;Mbps</th><th>Ping</th></tr></thead>
+                  <tbody>${ispRows}</tbody>
+                </table>
+              </div>
             </details>
           </div>`;
       }
@@ -845,10 +844,8 @@
       if (!dataLoaded) {
         document.getElementById('sTotal').textContent = 'Loading...';
         await loadRecords();
-        // --- NEW CODE START ---
+        // --- PATCHED --- Always enrich after each loadRecords() fetch.
         await enrichOldSubmissionsWithGeocode(cachedRecords);
-        geocodeEnriched = true;
-        // --- NEW CODE END ---
       }
       const all=getRecords();
       populateFilters(all);
@@ -889,11 +886,10 @@
       URL.revokeObjectURL(url);
     });
 
-    // Refresh every 30 seconds to check for new submissions
-    // dataLoaded must be reset so refresh() re-runs geocode enrichment
+    // --- PATCHED --- Refresh every 30 seconds and force full reload/enrichment cycle.
     setInterval(() => {
       dataLoaded = false;
-      loadRecords().then(() => refresh());
+      refresh();
     }, 30000);
 
     // Language
