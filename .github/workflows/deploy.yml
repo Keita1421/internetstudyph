@@ -18,12 +18,11 @@ jobs:
         uses: actions/checkout@v4
 
       # 2. Copy all files to a staging folder
+      #    rsync --exclude prevents copying _staging into itself
       - name: Prepare staging folder
         run: |
           mkdir -p _staging
-          cp -r . _staging/
-          # Remove the staging folder itself from the copy to avoid recursion
-          rm -rf _staging/_staging
+          rsync -a --exclude='_staging' --exclude='.git' . _staging/
 
       # 3. Inject the OpenCage API key — replaces __OPENCAGE_KEY__ in all HTML/JS files
       - name: Inject OpenCage API key
