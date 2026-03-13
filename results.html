@@ -252,6 +252,9 @@
     <!-- NEW CODE END -->
 
     <div class="filters">
+      <div class="field"><label>Filter Province</label><select id="filter-province"></select></div>
+      <div class="field"><label>Filter City</label><select id="filter-city"></select></div>
+      <div class="field"><label>Filter Barangay</label><select id="filter-barangay"></select></div>
       <div class="field"><label data-i18n="fi.isp">Filter ISP</label><select id="fIsp"></select></div>
       <div class="field"><label data-i18n="fi.conn">Filter Connection</label><select id="fConn"></select></div>
       <div class="field"><label data-i18n="fi.time">Filter Time</label><select id="fTime"></select></div>
@@ -414,6 +417,35 @@
       });
     };
 
+    function populateLocationDropdowns(allResults) {
+      const prevProvince = document.getElementById('filter-province').value;
+      const prevCity = document.getElementById('filter-city').value;
+      const prevBarangay = document.getElementById('filter-barangay').value;
+
+      const provinces = [...new Set(allResults.map(r => r.province).filter(Boolean))].sort();
+      const cities    = [...new Set(allResults.map(r => r.city).filter(Boolean))].sort();
+      const barangays = [...new Set(allResults.map(r => r.barangay).filter(Boolean))].sort();
+
+      const fill = (selectId, values, label) => {
+        const el = document.getElementById(selectId);
+        el.innerHTML = `<option value="">All ${label}s</option>`;
+        values.forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v;
+          opt.textContent = v;
+          el.appendChild(opt);
+        });
+      };
+
+      fill('filter-province', provinces, 'Province');
+      fill('filter-city',     cities,    'City');
+      fill('filter-barangay', barangays, 'Barangay');
+
+      if (prevProvince && provinces.includes(prevProvince)) document.getElementById('filter-province').value = prevProvince;
+      if (prevCity && cities.includes(prevCity)) document.getElementById('filter-city').value = prevCity;
+      if (prevBarangay && barangays.includes(prevBarangay)) document.getElementById('filter-barangay').value = prevBarangay;
+    }
+
     const populateFilters = records => {
       const selIsp=document.getElementById('fIsp'), selConn=document.getElementById('fConn'), selTime=document.getElementById('fTime');
       const prevIsp=selIsp.value, prevConn=selConn.value, prevTime=selTime.value;
@@ -428,12 +460,41 @@
     };
 
     const getFiltered = records => {
+      const province = document.getElementById('filter-province').value;
+      const city = document.getElementById('filter-city').value;
+      const barangay = document.getElementById('filter-barangay').value;
       const isp=document.getElementById('fIsp').value;
       const conn=document.getElementById('fConn').value;
       const time=document.getElementById('fTime').value;
       const search=document.getElementById('fSearch').value.trim().toLowerCase();
-      return records.filter(r=>(!isp||r.isp===isp)&&(!conn||r.connectionType===conn)&&(!time||r.timeOfDay===time)&&(!search||r.isp.toLowerCase().includes(search)));
+      return records.filter(r =>
+        (!province || r.province === province) &&
+        (!city || r.city === city) &&
+        (!barangay || r.barangay === barangay) &&
+        (!isp || r.isp === isp) &&
+        (!conn || r.connectionType === conn) &&
+        (!time || r.timeOfDay === time) &&
+        (!search || r.isp.toLowerCase().includes(search))
+      );
     };
+
+    function renderAll(records) {
+      updateStats(records);
+      try {
+        renderCharts(records);
+        renderMap(records);
+      } catch (error) {
+        // Keep stats and table visible even if chart rendering fails.
+      }
+      renderTable(records);
+      renderLocationSummary(records);
+    }
+
+    function applyAllFilters() {
+      const all = getRecords();
+      const filtered = getFiltered(all);
+      renderAll(filtered);
+    }
 
     const updateStats = records => {
       document.getElementById('sTotal').textContent = records.length;
@@ -666,7 +727,7 @@
 
     /**
      * buildLocationGroups — groups submissions by location and computes per-group stats.
-     * Uses city as the primary label, falling back to municipality → barangay → province.
+     * Uses barangay as the primary label, falling back to city → municipality → province.
      * Skips submissions with no location fields at all.
      * @param {Array} submissions - Array of normalized submission records
      * @returns {Array} Sorted array of location group stat objects, highest count first
@@ -674,7 +735,7 @@
     function buildLocationGroups(submissions) {
       const groups = {};
       for (const s of submissions) {
-        const label = s.city || s.municipality || s.barangay || s.province || '';
+        const label = s.barangay || s.city || s.municipality || s.province || '';
         if (!label) continue;
         if (!groups[label]) {
           groups[label] = {
@@ -775,12 +836,16 @@
         const isOpen    = openCards.has(id);
         const topIsps   = g.ispStats.slice(0, 4);
         const breakdownLabel = isTl ? 'ISP Breakdown' : 'ISP breakdown';
+        const barangayFallback = isTl ? 'Hindi natukoy' : 'Not available';
         const lowWarn   = isTl
           ? '⚠ Mababang datos — maaaring hindi kinatawan'
           : '⚠ Low data — results may not be representative';
 
         const subLine = [g.municipality !== g.label ? g.municipality : '', g.province]
           .filter(Boolean).join(', ');
+        const subText = [`Barangay: ${g.barangay || barangayFallback}`, subLine]
+          .filter(Boolean)
+          .join(' • ');
 
         const ispPills = topIsps.map((isp, i) => `
           <span class="loc-isp-pill${i === 0 ? ' loc-isp-pill-top' : ''}">
@@ -801,7 +866,7 @@
             <div class="loc-card-top">
               <div style="min-width:0">
                 <div class="loc-card-name">📍 ${escapeHtml(g.label)}</div>
-                ${subLine ? `<div class="loc-card-sub">${escapeHtml(subLine)}</div>` : ''}
+                <div class="loc-card-sub">${escapeHtml(subText)}</div>
               </div>
               <span class="loc-count-pill${isLow ? ' loc-count-pill-low' : ''}">${g.count} tests</span>
             </div>
@@ -875,27 +940,21 @@
       }
       const all=getRecords();
       populateFilters(all);
-      updateStats(all);
-      try {
-        renderCharts(all);
-        renderMap(all);
-      } catch (error) {
-        // Keep stats and table visible even if chart rendering fails.
-      }
-      renderTable(getFiltered(all));
-      // --- NEW CODE START ---
-      renderLocationSummary(all);
-      // --- NEW CODE END ---
+      populateLocationDropdowns(all);
+      applyAllFilters();
     };
 
     document.querySelectorAll('th[data-sort]').forEach(th=>th.addEventListener('click',()=>{
       const f=th.dataset.sort;
       if(sortField===f) sortDir=sortDir==='asc'?'desc':'asc'; else{sortField=f;sortDir='asc';}
-      renderTable(getFiltered(getRecords()));
+      applyAllFilters();
     }));
 
-    ['fIsp','fConn','fTime'].forEach(id=>document.getElementById(id).addEventListener('change',()=>renderTable(getFiltered(getRecords()))));
-    document.getElementById('fSearch').addEventListener('input',()=>renderTable(getFiltered(getRecords())));
+    ['fIsp','fConn','fTime'].forEach(id=>document.getElementById(id).addEventListener('change',applyAllFilters));
+    document.getElementById('fSearch').addEventListener('input',applyAllFilters);
+    ['filter-province', 'filter-city', 'filter-barangay'].forEach(id => {
+      document.getElementById(id).addEventListener('change', applyAllFilters);
+    });
 
     document.getElementById('exportBtn').addEventListener('click', () => {
       const records = getRecords();
